@@ -43,6 +43,14 @@
     ```
     wsl.exe --status
     ```
+    _Powershell command to show the properties of your WSL installation:_
+    ```
+    pwsh.exe -Command Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss"
+    ```
+    _In WSL CLI, keep just '{GUID}' for your WSL installation:_
+    ```
+    pwsh.exe -Command Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss" | grep -o -e "{[^}]*}"
+    ```
     _Set default user login for WSL distro (this user must exist, typically created during OOBE):_
     ```
     wsl.exe --manage Debian --set-default-user phil
