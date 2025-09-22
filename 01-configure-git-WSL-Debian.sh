@@ -1,0 +1,57 @@
+#!/bin/bash
+
+################################################################################
+# Configure Firefox on WSL Debian in an idempotent manner.
+#
+# See `#term-Idempotency` definition at:
+# https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html
+#
+# This shell script attempts to comply with:
+# https://google.github.io/styleguide/shellguide.html
+################################################################################
+
+# Set variables
+
+github_username="phil-gg"
+github_project="configure-wsl2"
+github_branch="main"
+filename="01-configure-git-WSL-Debian.sh"
+runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+normal=$(printf '\033[0m')
+redbold=$(printf '\033[91;1m')
+greenbold=$(printf '\033[92;1m')
+cyanbold=$(printf '\033[96;1m')
+bluebold=$(printf '\033[94;1m')
+
+# Now running `${filename}`
+
+echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
+
+# Make folder(s) if they don't exist
+
+echo -e "  mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+
+# Navigate to working directory
+
+echo -e "  cd       ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 101; }
+
+# Set run time for this latest `Config` operation
+
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
+echo -e "\n${bluebold}${filename} run at${normal}"
+echo -e "  ${runtime}"
+
+
+
+################################################################################
+#
+# Line wrap ruler
+#
+#   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
+#
+################################################################################
+
