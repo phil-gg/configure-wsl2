@@ -1,6 +1,15 @@
-sudo apt update && sudo apt upgrade
+3. Update and configure Debian, by cloning this repo into `~/git/phil-gg/configure-wsl2`, and running shell script:
+    ```
+    sudo apt update && sudo apt upgrade
+    ```
+    ```
+    sudo apt install git
+    ```
+...More to go here...
 
-sudo apt install wget gpg git
+# Firefox section:
+
+sudo apt install wget gpg
 
 mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
 
@@ -21,6 +30,13 @@ EOF
 sudo chmod 644 /etc/apt/sources.list.d/mozilla.sources && stat -c %a /etc/apt/sources.list.d/mozilla.sources
 
 sudo apt-get update && sudo apt-get install firefox-devedition firefox-devedition-l10n-en-gb libpci3 libegl1
+
+Need to reboot WSL2 here for firefox to run without errors:
+wsl.exe --shutdown
+
+Test run firefox using wslg:
+firefox-devedition
+
 
 sudo apt install gnome-core evince- papers alacritty gnome-terminal- gnome-console- ptyxis totem showtime firefox-esr- firefox- epiphany-browser seahorse gnome-remote-desktop freerdp3-wayland
 
@@ -76,3 +92,36 @@ Try again from scratch (no mucking about with polkit this time)
 Enable only remote desktop and not screensharing (and not both)
 
 If grd fails, try xrdp
+
+wsl.conf settings:
+
+cat <<EOF > /etc/wsl.conf
+# https://devblogs.microsoft.com/commandline/automatically-configuring-wsl/
+# https://learn.microsoft.com/en-us/windows/wsl/wsl-config
+
+# Use systemd in WSL2
+[boot]
+systemd=true
+
+# Enable WSL support for interop process like launching Windows apps and adding path variables
+[interop]
+appendWindowsPath=true
+
+# Enable Automatic mounting of Windows drive(s) when the distribution is launched
+[automount]
+enabled=true
+
+# Enable access to the Windows GPU via para-virtualization
+[gpu]
+enabled=true
+
+# Separate WSL network settings from Windows host
+[network]
+hostname=DebWSL
+generateHosts=false
+generateResolvConf=false
+
+EOF
+
+cat /etc/wsl.conf
+
