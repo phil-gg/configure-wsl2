@@ -93,6 +93,8 @@ Enable only remote desktop and not screensharing (and not both)
 
 If grd fails, try xrdp
 
+# https://avivarma1.medium.com/setting-up-debian-on-wsl2-with-systemd-fb4831dd7b82
+
 wsl.conf settings:
 
 cat <<EOF > /etc/wsl.conf
@@ -124,5 +126,6 @@ generateResolvConf=false
 EOF
 
 cat /etc/wsl.conf
+
 
 
