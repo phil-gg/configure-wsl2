@@ -1,20 +1,14 @@
-sudo apt update
+sudo apt update && sudo apt upgrade
 
-Sudo apt upgrade
+sudo apt install wget gpg git
 
-sudo apt-get install wget gpg git
-
-mkdir -p ~/.gnupg
-
-chmod 700 ~/.gnupg
+mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
 
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 
 gpg -n -q --import --import-options import-show /etc/apt/keyrings/packages.mozilla.org.asc | awk '/pub/{getline; gsub(/^ +| +$/,""); if($0 == "35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3") print "\nThe key fingerprint matches ("$0").\n"; else print "\nVerification failed: the fingerprint ("$0") does not match the expected one.\n"}'
 
-sudo touch /etc/apt/sources.list.d/mozilla.sources
-
-sudo chmod 777 /etc/apt/sources.list.d/mozilla.sources
+sudo touch /etc/apt/sources.list.d/mozilla.sources && sudo chmod 777 /etc/apt/sources.list.d/mozilla.sources
 
 cat <<EOF > /etc/apt/sources.list.d/mozilla.sources
 Types: deb
@@ -24,21 +18,17 @@ Components: main
 Signed-By: /etc/apt/keyrings/packages.mozilla.org.asc
 EOF
 
-sudo chmod 644 /etc/apt/sources.list.d/mozilla.sources
+sudo chmod 644 /etc/apt/sources.list.d/mozilla.sources && stat -c %a /etc/apt/sources.list.d/mozilla.sources
 
-stat -c %a /etc/apt/sources.list.d/mozilla.sources
+sudo apt-get update && sudo apt-get install firefox-devedition firefox-devedition-l10n-en-gb libpci3 libegl1
 
-sudo apt-get update && sudo apt-get install firefox-devedition firefox-devedition-l10n-en-gb
-
-sudo apt install gnome-core evince- papers alacritty gnome-terminal- gnome-console- ptyxis totem showtime firefox-esr- firefox- epiphany-browser seahorse
+sudo apt install gnome-core evince- papers alacritty gnome-terminal- gnome-console- ptyxis totem showtime firefox-esr- firefox- epiphany-browser seahorse gnome-remote-desktop freerdp3-wayland
 
 # https://gist.github.com/tdcosta100
 # https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e?permalink_comment_id=5680043#gistcomment-5680043
 # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/administering_rhel_by_using_the_gnome_desktop_environment/remotely-accessing-the-desktop#connecting-to-a-remote-desktop-session-on-a-headless-server-for-a-single-user
 # https://discourse.gnome.org/t/with-ssh-only-access-how-do-you-configure-headless-gnome-remote-desktop/24998
 # https://std.rocks/gnulinux_rdp_remotedesktop.html
-
-sudo apt install gnome-remote-desktop freerdp3-wayland
 
 mkdir -p ~/.local/share/gnome-remote-desktop
 
@@ -84,4 +74,5 @@ D3F3JM6D24303H7:3389
 
 Try again from scratch (no mucking about with polkit this time)
 Enable only remote desktop and not screensharing (and not both)
+
 If grd fails, try xrdp
