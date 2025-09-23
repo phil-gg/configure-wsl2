@@ -78,7 +78,11 @@
     wget -qO - https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-git-WSL-Debian.sh | bash
     ```
 
-## First enable use of gnome-shell in a wslg window
+## Graphical option #1: launch GUI linux app directly in a wslg window
+
+TO-DO: Document with firefox example
+
+## Graphical option #2: Run gnome-shell nested in a wslg window
 
 > [!NOTE]  
 >   - Application windows can sometimes be slow to open in the nested gnome session
@@ -86,10 +90,8 @@
 >   - Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)
 >   - Use this graphical session in RDP set-up step for `gnome-control-center` steps not yet moved to CLI / script
 
-_Run the following commands in Debian WSL CLI:_
+TO-DO: Document config
 
-```
-foo
-```
+## Graphical option #2: RDP session from Windows host into Debian on WSL
 
-## Second enable RDP graphical session for Debian on WSL
+TO-DO: Both actually get it running(!) and document
