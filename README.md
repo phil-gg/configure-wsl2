@@ -64,6 +64,7 @@
     wsl.exe --manage Debian --set-sparse true --allow-unsafe
     ```
 3. Configure Debian
+
     _Update Debian_
     ```
     sudo apt update && sudo apt upgrade
