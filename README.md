@@ -51,6 +51,10 @@
     ```
     pwsh.exe -Command Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss" | grep -o -e "{[^}]*}"
     ```
+    _Command to launch WSL distro in Windows Terminal_
+    ```
+    C:\WINDOWS\system32\wsl.exe --distribution-id {GUID} --cd ~
+    ```
     _Set default user login for WSL distro (this user must exist, typically created during OOBE):_
     ```
     wsl.exe --manage Debian --set-default-user phil
@@ -60,7 +64,7 @@
     wsl.exe --manage Debian --set-sparse true --allow-unsafe
     ```
 
-4. Configure Debian for graphical use
+3. Configure Debian for graphical use
 
 ## First enable use of gnome-shell in a wslg window
 
