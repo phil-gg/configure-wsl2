@@ -27,25 +27,14 @@ bluebold=$(printf '\033[94;1m')
 
 echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
 
-# Make folder(s) if they don't exist
-
-mkdir -p "${HOME}/git/${github_username}/${github_project}"
-
 # Navigate to working directory
 
-cd "${HOME}/git/${github_username}/${github_project}" \
-|| { echo "Failure"; exit 1; }
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 101; }
 
-# Set run time for this latest `Config` operation
 
-echo -e "$\n{filename} run at ${runtime}" >> config-runs.log
-echo -e "\n${bluebold}Config run at${normal}"
-echo -e "  ${runtime}"
-
-# Set alias commands
-  # TODO
-  # alias = update-alpine
-  # cd /git/${github_username}/${github_project} && busybox sh script-updater.sh
 
 ################################################################################
 #
@@ -55,24 +44,8 @@ echo -e "  ${runtime}"
 #
 ################################################################################
 
-# Test creating file in working directory
+# Set run time for this latest `Config` operation
 
-echo -n "\
-${runtime}
-One
-Two
-Three
-" > test.log
-
-# Test echo some commands to stdout
-
-echo -e "\n${bluebold}\
-Commands to locate & view files this script created\
-${normal}"
-
-echo -e "\
-  cd /git/${github_username}/${github_project} && ls
-  cat test.log
-  cat lastrun-upd.log
-  cat lastrun-conf.log
- "
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
+echo -e "\n${bluebold}${filename} run at${normal}"
+echo -e "  ${runtime}\n"
