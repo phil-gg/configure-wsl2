@@ -44,7 +44,7 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 #
 ################################################################################
 
-# Set run time for this latest `Config` operation
+# Log this latest `Config` operation and display runtime
 
 echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
 echo -e "\n${bluebold}${filename} run at${normal}"
