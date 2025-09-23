@@ -8,6 +8,9 @@
 #
 # This shell script attempts to comply with:
 # https://google.github.io/styleguide/shellguide.html
+#
+# Should (hopefully, mostly) pass analysis with ShellCheck, too:
+# https://www.shellcheck.net/
 ################################################################################
 
 # Set variables
