@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Configure Firefox on WSL Debian in an idempotent manner.
+# Configure git on WSL Debian in an idempotent manner.
 #
 # See `#term-Idempotency` definition at:
 # https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html
