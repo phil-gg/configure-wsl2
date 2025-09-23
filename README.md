@@ -63,6 +63,7 @@
     ```
     wsl.exe --manage Debian --set-sparse true --allow-unsafe
     ```
+
 3. Configure Debian
 
     _Update Debian_
@@ -76,6 +77,10 @@
     _Configure git_
     ```
     wget -qO - https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-git-WSL-Debian.sh | bash
+    ```
+    _Update git (subsequent uses of 'configure-wsl2' only)_
+    ```
+    cd ~/git/phil-gg/configure-wsl2/ && ./02-update-git-WSL-Debian.sh
     ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
@@ -92,6 +97,6 @@ TO-DO: Document with firefox example
 
 TO-DO: Document config
 
-## Graphical option #2: RDP session from Windows host into Debian on WSL
+## Graphical option #3: RDP session from Windows host into Debian on WSL
 
 TO-DO: Both actually get it running(!) and document
