@@ -27,6 +27,11 @@ bluebold=$(printf '\033[94;1m')
 
 echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
 
+# Make folder(s) if they don't exist
+
+echo -e "  mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+
 # Navigate to working directory
 
 echo -e "$ cd       ~/git/${github_username}/${github_project}"
