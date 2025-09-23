@@ -10,7 +10,7 @@
 # https://google.github.io/styleguide/shellguide.html
 #
 # Should (hopefully, mostly) pass analysis with ShellCheck, too:
-# https://www.shellcheck.net/
+# https://www.shellcheck.net
 ################################################################################
 
 # Set variables
