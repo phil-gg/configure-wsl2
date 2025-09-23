@@ -53,4 +53,4 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
 echo -e "\n${bluebold}${filename} run at${normal}"
-echo -e "  ${runtime}"
+echo -e "  ${runtime}\n"
