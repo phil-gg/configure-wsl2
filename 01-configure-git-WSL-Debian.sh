@@ -29,12 +29,12 @@ echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
 
 # Make folder(s) if they don't exist
 
-echo -e "  mkdir -p ~/git/${github_username}/${github_project}"
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}"
 mkdir -p "${HOME}/git/${github_username}/${github_project}"
 
 # Navigate to working directory
 
-echo -e "$ cd       ~/git/${github_username}/${github_project}"
+echo -e "$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
 ; exit 101; }
