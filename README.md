@@ -63,8 +63,19 @@
     ```
     wsl.exe --manage Debian --set-sparse true --allow-unsafe
     ```
-
-3. Configure Debian for graphical use
+3. Configure Debian
+    _Update Debian_
+    ```
+    sudo apt update && sudo apt upgrade
+    ```
+    _Install wget_
+    ```
+    sudo apt install wget
+    ```
+    _Configure git_
+    ```
+    wget -qO - https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-git-WSL-Debian.sh | bash
+    ```
 
 ## First enable use of gnome-shell in a wslg window
 
