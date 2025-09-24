@@ -50,7 +50,7 @@ wget -q --spider https://raw.githubusercontent.com\
 /${github_username}\
 /${github_project}\
 /${github_branch}\
-/configure-alpine.sh 2> /dev/null
+/${filename} 2> /dev/null
 
 if [ $? -eq 0 ]; then
 echo "${greenbold}  Online${normal}"
