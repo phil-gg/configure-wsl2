@@ -42,7 +42,31 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
 ; exit 101; }
 
+# Network test
 
+echo -e "\n${bluebold}Testing network connectivity${normal}"
+
+wget -q --spider https://raw.githubusercontent.com\
+/${github_username}\
+/${github_project}\
+/${github_branch}\
+/configure-alpine.sh 2> /dev/null
+
+if [ $? -eq 0 ]; then
+echo "${greenbold}  Online${normal}"
+else
+echo "${redbold}  Offline${normal}"
+exit 102
+fi
+
+# Check for presence of git
+
+gitcheck=$(git -v | cut -c1-3)
+if [ ${gitcheck}  =~ "git" ]; then
+    echo "Not installed"
+else
+    echo "Installed"
+fi
 
 ################################################################################
 #
