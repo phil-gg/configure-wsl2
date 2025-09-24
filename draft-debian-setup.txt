@@ -38,7 +38,25 @@ wsl.exe --shutdown
 firefox-devedition
 
 
-sudo apt install gnome-core evince- papers alacritty gnome-terminal- gnome-console- ptyxis totem showtime firefox-esr- firefox- epiphany-browser seahorse gnome-remote-desktop freerdp3-wayland
+sudo apt install \
+gnome-core \
+evince- \
+papers \
+alacritty \
+gnome-terminal- \
+gnome-console- \
+ptyxis \
+totem \
+showtime \
+firefox-esr- \
+firefox- \
+epiphany-browser \
+gnome-shell-extension-appindicator \
+gnome-shell-extension-prefs \
+libayatana-appindicator3-1  \
+seahorse \
+gnome-remote-desktop \
+freerdp3-wayland
 
 # https://gist.github.com/tdcosta100
 # https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e?permalink_comment_id=5680043#gistcomment-5680043
@@ -126,6 +144,7 @@ generateResolvConf=false
 EOF
 
 cat /etc/wsl.conf
+
 
 
 
