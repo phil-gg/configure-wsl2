@@ -119,11 +119,9 @@ git status # &> /dev/null
 
 fi
 
-# TODO: git status check and echo status result if already up-to-date
-
-# TODO: git status check and echo status result & actions here for local behind
-
-# TODO: git status check and echo status result if you need to review git
+# TODO-1: git pull if silenced status check says it is needed
+# TODO-2: git push if silenced status check says it is needed
+# TODO-3: print visible git status output once pull and/or push don
 
 
 
