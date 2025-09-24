@@ -45,28 +45,87 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 # Network test
 
 echo -e "\n${bluebold}Testing network connectivity${normal}"
+echo -e "  Test file https://raw.githubusercontent.com\
+/${github_username}\
+/${github_project}\
+/${github_branch}\
+/${filename}"
 
-wget -q --spider https://raw.githubusercontent.com\
+if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_username}\
 /${github_project}\
 /${github_branch}\
 /${filename} 2> /dev/null
-
-if [ $? -eq 0 ]; then
-echo "${greenbold}  Online${normal}"
-else
+then
 echo "${redbold}  Offline${normal}"
 exit 102
+else
+echo "${greenbold}  Online${normal}"
 fi
 
 # Check for presence of git
 
-gitcheck=$(git -v | cut -c1-3)
-if [ ${gitcheck}  =~ "git" ]; then
-    echo "Not installed"
-else
-    echo "Installed"
+gitcheck=$(git -v  2> /dev/null | cut -c1-3)
+if [ "${gitcheck}" != "git" ]; then
+echo -e "\n${cyanbold}Installing git${normal}"
+echo -e "$ sudo apt update && sudo apt install git\n"
+sudo apt update && sudo apt install git
 fi
+
+# Check for presence of git config
+
+if ! git config --list | grep "init.defaultbranch=main" 1> /dev/null
+then
+git config --global init.defaultbranch main
+fi
+
+# Sync project to working directory with git
+
+echo -e "\n${cyanbold}Sync project with github${normal}"
+
+git fetch &> /dev/null
+
+if [ $? -eq 128 ]; then
+echo "  .git not created yet"
+
+echo -e "\n${cyanbold}git init${normal}"
+git init
+
+echo -e "\n${cyanbold}git remote add origin ${normal}\
+https://github.com\
+/${github_username}\
+/${github_project}.git\
+${normal}"
+git remote add origin "https://github.com\
+/${github_username}\
+/${github_project}.git"
+
+echo -e "\n${cyanbold}git fetch${normal}"
+git fetch
+
+echo -e "\n${cyanbold}git checkout main -f${normal}"
+git checkout main -f
+
+echo -e "\n${cyanbold}git branch --set-upstream-to \
+origin/${github_branch}${normal}"
+git branch --set-upstream-to "origin/${github_branch}"
+
+echo -e "\n${cyanbold}git status${normal}"
+git status
+
+else
+
+git status # &> /dev/null
+
+fi
+
+# TODO: git status check and echo status result if already up-to-date
+
+# TODO: git status check and echo status result & actions here for local behind
+
+# TODO: git status check and echo status result if you need to review git
+
+
 
 ################################################################################
 #
