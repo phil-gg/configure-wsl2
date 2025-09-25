@@ -80,8 +80,6 @@ grdctl --headless rdp set-tls-key ~/.local/share/gnome-remote-desktop/tls.key
 
 
 
-
-
 Unused commands:
 openssl req -new -key ${GRDCERTDIR}/tls.key -out ${GRDCERTDIR}/tls.csr -subj "/C=AU/ST=QLD/L=Locality/O=OrgName/OU=OrgUnit/CN=WSL2-rdp-login"
 sudo -u gnome-remote-desktop winpr-makecert3 -silent -rdp -path ~gnome-remote-desktop rdp-tls
@@ -147,4 +145,58 @@ cat /etc/wsl.conf
 
 
 
+1password section:
 
+
+# 1Password CLI latest version:
+lynx -dump https://app-updates.agilebits.com | grep -C 2 -E "^\s*?1Password CLI\s*?$" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+"
+
+# Note that deb package version doesn't quite match
+apt-cache show 1password-cli | grep "Version:" | grep -oE "[0-9]+\..+$"
+
+
+# 1password Linux latest version:
+
+# Print this
+lynx -dump https://releases.1password.com/linux/stable | grep -oE "Updated\sto.*$"
+
+# Version number only (don't lynx twice, pipe the above into the last grep below)
+lynx -dump https://releases.1password.com/linux/stable | grep -oE "Updated\sto.*$" | grep -oE "[0-9]+\.[0-9\.]+"
+
+
+# 1password repo commands (amd64 arch only)
+
+wget -qO - https://downloads.1password.com/linux/keys/1password.asc | sudo gpg --dearmor --output /usr/share/keyrings/1password-archive-keyring.gpg
+
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/amd64 stable main' | sudo tee /etc/apt/sources.list.d/1password.list
+
+sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22/
+
+wget -qO - https://downloads.1password.com/linux/debian/debsig/1password.pol | sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol
+
+sudo mkdir -p /usr/share/debsig/keyrings/AC2D62742012EA22
+
+wget -qO - https://downloads.1password.com/linux/keys/1password.asc | sudo gpg --dearmor --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+
+sudo apt update
+
+
+# Package details rather than install from repo
+
+echo -e "\n$(apt-cache -f search 1password)\n"
+
+
+# Print packaging architecture
+
+dpkg --print-architecture
+
+
+# 1password - Get the latest amd64 deb package on any arch, not quietly (show progress in console)
+wget -O "1password_\
+$(lynx -dump https://releases.1password.com/linux/stable | grep -oE "Updated\sto.*$" | grep -oE "[0-9]+\.[0-9\.]+")\
+_amd64.deb" https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
+
+# 1password-cli - Get the latest amd64 deb package on any arch, not quietly (show progress in console)
+wget -O "1password-cli_\
+$(lynx -dump https://app-updates.agilebits.com | grep -C 2 -E "^\s*?1Password CLI\s*?$" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")\
+_amd64.deb" https://downloads.1password.com/linux/debian/arm64/stable/1password-cli-arm64-latest.deb
