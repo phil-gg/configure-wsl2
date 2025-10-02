@@ -25,11 +25,31 @@ redbold=$(printf '\033[91;1m')
 greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
-pkgarch=$(dpkg --print-architecture)
 
 # Now running `${filename}`
 
 echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
+
+# Make folder(s) if they don't exist
+
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/pkgbuild"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/pkgbuild"
+
+# Navigate to working directory
+
+echo -e "$ cd ~/git/${github_username}/${github_project}/pkgbuild"
+cd "${HOME}/git/${github_username}/${github_project}/pkgbuild" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 101; }
+
+# Check for presence of wget
+
+wgetcheck=$(wget -V 2> /dev/null | head -c 8)
+if [ "${wgetcheck}" != "GNU Wget" ]; then
+echo -e "\n${cyanbold}Installing wget${normal}"
+echo -e "$ sudo apt update && sudo apt install wget\n"
+sudo apt update && sudo apt install wget
+fi
 
 # Network test
 
@@ -54,13 +74,16 @@ fi
 
 # check package architecture
 
-
-
-if [[ "$(pkgarch)" == "amd64" || "$(pkgarch)" == "arm64" ]];
+pkgarch=$(dpkg --print-architecture)
+echo -e "\n${cyanbold}Checking package architecture${normal}"
+echo -e "  dpkg --print-architecture"
+echo -e "  ${pkgarch}"
+if [[ "${pkgarch}" == "amd64" || "${pkgarch}" == "arm64" ]];
 then
-  echo -e "${greenbold}1password is available for this arch${normal}"
+echo -e "${greenbold}  1password is available for this arch${normal}"
 else
-  echo -e "${redbold}Unsupported architecture. Exiting...${normal}"; exit 101
+echo -e "${redbold}  Unsupported architecture. Exiting...${normal}"
+exit 103
 fi
 
 
