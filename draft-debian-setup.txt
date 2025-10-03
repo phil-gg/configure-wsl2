@@ -200,3 +200,23 @@ _amd64.deb" https://downloads.1password.com/linux/debian/amd64/stable/1password-
 wget -O "1password-cli_\
 $(lynx -dump https://app-updates.agilebits.com | grep -C 2 -E "^\s*?1Password CLI\s*?$" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")\
 _amd64.deb" https://downloads.1password.com/linux/debian/arm64/stable/1password-cli-arm64-latest.deb
+
+
+# ###### #
+# locale #
+# ###### #
+
+echo "\
+# This file lists locales that you wish to have built. You can find a list
+# of valid supported locales at /usr/share/i18n/SUPPORTED, and you can add
+# user defined locales to /usr/local/share/i18n/SUPPORTED. If you change
+# this file, you need to rerun locale-gen.
+
+Phil.UTF-8 UTF-8
+en_GB.UTF-8 UTF-8
+en_AU.UTF-8 UTF-8
+en_US.UTF-8 UTF-8
+C.UTF-8 UTF-8
+" | sudo tee /etc/locale.gen
+
+sudo locale-gen
