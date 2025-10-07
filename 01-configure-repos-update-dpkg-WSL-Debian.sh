@@ -18,7 +18,7 @@
 github_username="phil-gg"
 github_project="configure-wsl2"
 github_branch="main"
-filename="01-configure-1p-WSL-Debian.sh"
+filename="01-configure-repos-update-dpkg-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')

@@ -11,7 +11,7 @@
 
 sudo apt install wget gpg
 
-mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+mkdir -p ~/.gnupg && chmod 644 ~/.gnupg
 
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 
