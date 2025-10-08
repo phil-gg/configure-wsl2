@@ -47,7 +47,7 @@
     ```
     pwsh.exe -Command Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss"
     ```
-    _In WSL CLI, keep just '{GUID}' for your WSL installation:_
+    _In WSL CLI only (i.e. run in Debian), keep just '{GUID}' for your WSL installation:_
     ```
     pwsh.exe -Command Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss" | grep -o -e "{[^}]*}"
     ```
@@ -66,6 +66,20 @@
 
 3. Configure Debian
 
+    _Manage dependency on wget_
+    ```
+echo "if [ \"\$(wget -V 2> /dev/null | head -c 8)\" != \"GNU Wget\" ]; \\
+then \
+echo -e \"\n\$(printf '\033[96;1m')Installing wget\$(printf '\033[0m')\" \\
+&& echo -e \"\$ sudo apt update && sudo apt -y install wget\n\" \\
+&& sudo apt update && sudo apt -y install wget \\
+&& echo -e \"\n\$(printf '\033[92;1m')wget successfully installed\
+\$(printf '\033[0m')\n\"; \\
+else \\
+echo -e \"\n\$(printf '\033[92;1m')wget already installed\
+\$(printf '\033[0m')\n\"; \\
+fi" | bash
+    ```
     _Configure repos & update packages_
     ```
     wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-dpkg-WSL-Debian.sh | bash
