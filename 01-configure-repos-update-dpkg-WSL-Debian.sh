@@ -35,8 +35,8 @@ echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
 wgetcheck=$(wget -V 2> /dev/null | head -c 8)
 if [ "${wgetcheck}" != "GNU Wget" ]; then
 echo -e "\n${cyanbold}Installing wget${normal}"
-echo -e "$ sudo apt update && sudo apt install wget\n"
-sudo apt update && sudo apt install wget
+echo -e "$ sudo apt update && sudo apt -y install wget\n"
+sudo apt update && sudo apt -y install wget
 fi
 
 # Network test
@@ -62,11 +62,11 @@ fi
 
 # Check for presence of gpg
 
-wgetcheck=$(gpg --version | head -c 11)
+wgetcheck=$(gpg --version 2> /dev/null | head -c 11)
 if [ "${wgetcheck}" != "gpg (GnuPG)" ]; then
 echo -e "\n${cyanbold}Installing gpg${normal}"
-echo -e "$ sudo apt update && sudo apt install gpg\n"
-sudo apt update && sudo apt install gpg
+echo -e "$ sudo apt update && sudo apt -y install gpg\n"
+sudo apt update && sudo apt -y install gpg
 fi
 
 # general system update
@@ -75,12 +75,12 @@ echo -e "\n${cyanbold}Check for and apply package updates${normal}"
 echo -e "$ sudo apt update && sudo apt upgrade\n"
 sudo apt update && sudo apt upgrade
 
-# keep dpkg tidy
+# keep apt tidy
 
-echo -e "\n${cyanbold}Make autoremove work properly${normal}"
+echo -e "\n${cyanbold}Make apt autoremove work properly${normal}"
 echo -e "$ sudo apt-mark minimize-manual -y\n"
 sudo apt-mark minimize-manual -y
-echo -e "\n${cyanbold}Clean up packages${normal}"
+echo -e "\n${cyanbold}Clean up apt packages${normal}"
 echo -e "$ sudo apt autoremove --purge\n"
 sudo apt autoremove --purge
 
@@ -106,13 +106,15 @@ fi
 
 
 
+
+
 # Check for presence of lynx
 
 lynxcheck=$(lynx -version  2> /dev/null | head -c 4)
 if [ "${lynxcheck}" != "Lynx" ]; then
 echo -e "\n${cyanbold}Installing lynx${normal}"
-echo -e "$ sudo apt update && sudo apt install lynx\n"
-sudo apt update && sudo apt install lynx
+echo -e "$ sudo apt update && sudo apt -y install lynx\n"
+sudo apt update && sudo apt -y install lynx
 # mark that packages have changed
 pkgchanges=1
 fi
@@ -131,11 +133,9 @@ echo -e "> ${longversion1p}"
 if [[ "${pkgarch}" == "amd64" ]]
 then
 
-echo -e "amd64" # placeholder
-
 # Install 1password deb repo (on amd64 arch only)
 
-
+echo -e "amd64" # placeholder
 
 
 
@@ -242,9 +242,9 @@ fi
 #
 ################################################################################
 
-# 
+# tidy up apt again if package changes have occurred
 
-if [[ "${pkgchanges}" == 1 ]]
+if [[ "${pkgchanges}" -eq 1 ]]
 then
 echo -e "\n${bluebold}Packages have changed - clean up again${normal}"
 echo -e "\n${cyanbold}Make autoremove work properly${normal}"
@@ -257,7 +257,8 @@ fi
 
 # Log this latest `Config` operation and display runtime
 
-echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
->> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
 echo -e "\n${bluebold}${filename} run at${normal}"
 echo -e "> ${runtime}\n"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
+>> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
