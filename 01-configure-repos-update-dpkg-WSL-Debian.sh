@@ -60,6 +60,34 @@ else
 echo "${greenbold}> Online${normal}"
 fi
 
+# Check for presence of gpg
+
+wgetcheck=$(gpg --version | head -c 11)
+if [ "${wgetcheck}" != "gpg (GnuPG)" ]; then
+echo -e "\n${cyanbold}Installing gpg${normal}"
+echo -e "$ sudo apt update && sudo apt install gpg\n"
+sudo apt update && sudo apt install gpg
+fi
+
+# general system update
+
+echo -e "\n${cyanbold}Check for and apply package updates${normal}"
+echo -e "$ sudo apt update && sudo apt upgrade\n"
+sudo apt update && sudo apt upgrade
+
+# keep dpkg tidy
+
+echo -e "\n${cyanbold}Make autoremove work properly${normal}"
+echo -e "$ sudo apt-mark minimize-manual -y\n"
+sudo apt-mark minimize-manual -y
+echo -e "\n${cyanbold}Clean up packages${normal}"
+echo -e "$ sudo apt autoremove --purge\n"
+sudo apt autoremove --purge
+
+# run tidy again if this variable is changed to 1
+
+pkgchanges=0
+
 # check package architecture
 
 pkgarch=$(dpkg --print-architecture)
@@ -73,6 +101,54 @@ else
 echo -e "${redbold}> Unsupported architecture, exiting${normal}\n"
 exit 102
 fi
+
+# Install mozilla deb repo (on any arch)
+
+
+
+# Check for presence of lynx
+
+lynxcheck=$(lynx -version  2> /dev/null | head -c 4)
+if [ "${lynxcheck}" != "Lynx" ]; then
+echo -e "\n${cyanbold}Installing lynx${normal}"
+echo -e "$ sudo apt update && sudo apt install lynx\n"
+sudo apt update && sudo apt install lynx
+# mark that packages have changed
+pkgchanges=1
+fi
+
+# Get latest 1password versions
+
+echo -e "\n${cyanbold}Latest status message for 1password linux stable${normal}"
+longversion1p=$(lynx -dump https://releases.1password.com/linux/stable \
+| grep -oE "Updated\sto.*$")
+shortversion1p=$(echo -e "${longversion1p}" | grep -oE "[0-9]+\.[0-9\.]+")
+echo -e "> ${longversion1p}"
+
+# ################## #
+# ON AMD64 ARCH ONLY #
+# ################## #
+if [[ "${pkgarch}" == "amd64" ]]
+then
+
+echo -e "amd64" # placeholder
+
+# Install 1password deb repo (on amd64 arch only)
+
+
+
+
+
+# ###################### #
+# END AMD64 ONLY SECTION #
+# ###################### #
+fi
+
+# ################## #
+# ON ARM64 ARCH ONLY #
+# ################## #
+if [[ "${pkgarch}" == "arm64" ]]
+then
 
 # Explicitly install 1password dependencies
 
@@ -122,16 +198,8 @@ libudev1 \
 xdg-utils \
 libappindicator3-1
 
-
-# ################## #
-# ON AMD64 ARCH ONLY #
-# ################## #
-
-# Manage keys and repos
-
-# ################## #
-# ON ARM64 ARCH ONLY #
-# ################## #
+# mark that packages have changed
+pkgchanges=1
 
 # Make folder(s) if they don't exist
 
@@ -146,32 +214,23 @@ cd "${HOME}/git/${github_username}/${github_project}/pkgbuild" 2> /dev/null \
 || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 103; }
 
-# Check for presence of lynx
-
-lynxcheck=$(lynx -version  2> /dev/null | head -c 4)
-if [ "${lynxcheck}" != "Lynx" ]; then
-echo -e "\n${cyanbold}Installing lynx${normal}"
-echo -e "$ sudo apt update && sudo apt install lynx\n"
-sudo apt update && sudo apt install lynx
-fi
-
-# Get latest 1password versions
-
-longversion1p=$(lynx -dump https://releases.1password.com/linux/stable \
-| grep -oE "Updated\sto.*$")
-shortversion1p=$(echo -e "${longversion1p}" | grep -oE "[0-9]+\.[0-9\.]+")
-
-echo -e "\n${cyanbold}Latest status message for 1password linux stable${normal}"
-echo -e "> ${longversion1p}"
-
 # get latest 1password amd64 deb package
 
 echo -e "\n${cyanbold}Get latest 1password amd64 deb package${normal}"
 echo -e "$ wget -O 1password_${shortversion1p}_amd64.deb \
 https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb"
-# echo -e "\n"
-# wget -O "1password_${shortversion1p}_amd64.deb" \
-# https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
+echo -e "\n"
+wget -O "1password_${shortversion1p}_amd64.deb" \
+https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
+
+# TO-DO: Complete manual deb package build here
+
+# ###################### #
+# END ARM64 ONLY SECTION #
+# ###################### #
+fi
+
+
 
 
 
@@ -182,6 +241,19 @@ https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb"
 #   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
 #
 ################################################################################
+
+# 
+
+if [[ "${pkgchanges}" == 1 ]]
+then
+echo -e "\n${bluebold}Packages have changed - clean up again${normal}"
+echo -e "\n${cyanbold}Make autoremove work properly${normal}"
+echo -e "$ sudo apt-mark minimize-manual -y\n"
+sudo apt-mark minimize-manual -y
+echo -e "\n${cyanbold}Clean up packages${normal}"
+echo -e "$ sudo apt autoremove --purge\n"
+sudo apt autoremove --purge
+fi
 
 # Log this latest `Config` operation and display runtime
 
