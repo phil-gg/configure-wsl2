@@ -66,21 +66,13 @@
 
 3. Configure Debian
 
-    _Update Debian_
+    _Configure repos & update packages_
     ```
-    sudo apt update && sudo apt upgrade
+    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-dpkg-WSL-Debian.sh | bash
     ```
-    _Install wget_
+    _Configure git (same script also updates git)_
     ```
-    sudo apt install wget
-    ```
-    _Configure git_
-    ```
-    wget -qO - https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-git-WSL-Debian.sh | bash
-    ```
-    _Update git (subsequent uses of 'configure-wsl2' only)_
-    ```
-    cd ~/git/phil-gg/configure-wsl2/ && ./02-update-git-WSL-Debian.sh
+    work in progress
     ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
