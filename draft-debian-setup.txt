@@ -1,10 +1,42 @@
-3. Update and configure Debian, by cloning this repo into `~/git/phil-gg/configure-wsl2`, and running shell script:
-    ```
-    sudo apt update && sudo apt upgrade
-    ```
-    ```
-    sudo apt install git
-    ```
+# Keys from here (check SHA256)
+https://lists.debian.org/debian-devel-announce/2025/04/msg00001.html
+
+# key check commands
+
+gpg --no-default-keyring  --with-colons --import-options show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc | awk -F':' '$1=="fpr"{print $10}'
+
+
+# Debian trixie stable repository
+Types: deb deb-src
+URIs: https://deb.debian.org/debian
+Suites: trixie
+Components: contrib main non-free-firmware non-free
+Architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+# Debian trixie updates repository
+Types: deb deb-src
+URIs: https://deb.debian.org/debian
+Suites: trixie-updates
+Components: contrib main non-free-firmware non-free
+Architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+
+
+
+# Mozilla apt package repository
+Types: deb
+URIs: https://packages.mozilla.org/apt
+Suites: mozilla
+Components: main
+Architectures: amd64 arm64
+Signed-By: /usr/share/keyrings/mozilla-archive-keyring.asc
+
+
+
+
+
+
 ...More to go here...
 
 # Firefox section:
