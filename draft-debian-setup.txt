@@ -1,43 +1,86 @@
+# don't forget locale and keyboard config
+
+# once keys and repo config are updated, try to enforce debsig policy for all repositories
+https://www.google.com/search?q=add+debsig+policy+for+debian+repositories
+https://www.google.com/search?q=if+I+have+signed-by+in+my+list+file+do+I+need+to+add+a+debsig-verify+policy%3F
+
 # Keys from here (check SHA256)
 https://lists.debian.org/debian-devel-announce/2025/04/msg00001.html
+
+Fingerprints from here:
+https://ftp-master.debian.org/keys.html
+
 
 # key check commands
 
 gpg --no-default-keyring  --with-colons --import-options show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc | awk -F':' '$1=="fpr"{print $10}'
 
+echo "\
+for key_file in /usr/share/keyrings/*; do
+    if [ -f \"\$key_file\" ]; then
+        echo \"Importing key: \$key_file\"
+        gpg --import \"\$key_file\"
+    fi
+done" | bash
 
-# Debian trixie stable repository
-Types: deb deb-src
-URIs: https://deb.debian.org/debian
-Suites: trixie
+Signed-By: /usr/share/keyrings/trixie-archive-keyring.asc
+Signed-By: /usr/share/keyrings/trixie-security-keyring.asc
+Signed-By: /usr/share/keyrings/trixie-release-keyring.asc
+
+
+# Config to save at /etc/apt/sources.list.d/trixie-debian.sources
+# This replaces /etc/apt/sources.list
+# debian repo available types: deb deb-src
+# trixie available suites: trixie trixie-updates trixie-proposed-updates trixie-backports trixie-backports-sloppy
+# - backports are testing (forky) packages, rebuilt for stable (trixie), that don't exceed release version for forky
+# - backports-sloppy are are testing (forky) packages , rebuilt for stable (trixie), with higher version numbers that would break an upgrade to forky
+# - install from backports-sloppy with "sudo apt install -t trixie-backports-sloppy packagename"
+# trixie available components: contrib main non-free-firmware non-free
+# trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Types: deb
+URIs: https://deb.debian.org/debian/
+Suites: trixie trixie-updates trixie-proposed-updates trixie-backports trixie-backports-sloppy
 Components: contrib main non-free-firmware non-free
-Architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 
-# Debian trixie updates repository
-Types: deb deb-src
-URIs: https://deb.debian.org/debian
-Suites: trixie-updates
-Components: contrib main non-free-firmware non-free
-Architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 
+# Config to save at /etc/apt/sources.list.d/trixie-security.sources
+# This replaces /etc/apt/sources.list
+# debian repo available types: deb deb-src
+# trixie available components: contrib main non-free-firmware non-free
+# trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Types: deb
+URIs: https://security.debian.org/debian-security/
+Suites: trixie-security
+Components: contrib main non-free-firmware non-free
+Architectures: ${pkgarch}
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 
 
 # Mozilla apt package repository
+# Mozilla available architectures: amd64 arm64
 Types: deb
 URIs: https://packages.mozilla.org/apt
 Suites: mozilla
 Components: main
-Architectures: amd64 arm64
+Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/mozilla-archive-keyring.asc
 
 
-
-
+# 1password apt package repository
+# 1password available architectures: amd64 only as at Oct-2025
+Types: deb
+URIs: https://downloads.1password.com/linux/debian/amd64
+Suites: stable
+Components: main
+Architectures: amd64
+Architectures: amd64
+Signed-By: /usr/share/keyrings/1password-archive-keyring.asc
 
 
 ...More to go here...
+
 
 # Firefox section:
 

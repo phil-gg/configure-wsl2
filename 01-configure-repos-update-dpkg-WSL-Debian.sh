@@ -78,6 +78,68 @@ echo -e "$ sudo apt update && sudo apt -y install debsigs\n"
 sudo apt update && sudo apt -y install debsigs
 fi
 
+# check package architecture
+
+pkgarch=$(dpkg --print-architecture)
+echo -e "\n${cyanbold}Checking package architecture${normal}"
+echo -e "$ dpkg --print-architecture"
+echo -e "> ${pkgarch}"
+if [[ "${pkgarch}" == "amd64" || "${pkgarch}" == "arm64" ]]; then
+echo -e "${greenbold}> 1password is available for this arch${normal}"
+else
+echo -e "${redbold}> Unsupported architecture, exiting${normal}\n"
+exit 102
+fi
+
+# TO-DO: Package key installation here
+
+# modernise deb package config files
+
+if [[ -f /etc/apt/sources.list ]]; then
+echo -e "$ sudo rm /etc/apt/sources.list"
+sudo rm /etc/apt/sources.list
+fi
+
+if [[ ! -f /etc/apt/sources.list.d/trixie-debian.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/trixie-debian.sources"
+echo -e "\
+# Config to save at /etc/apt/sources.list.d/trixie-debian.sources
+# This replaces /etc/apt/sources.list
+# debian repo available types: deb deb-src
+# trixie available suites: trixie trixie-updates trixie-proposed-updates trixie-backports trixie-backports-sloppy
+# - backports are testing (forky) packages, rebuilt for stable (trixie), that don't exceed release version for forky
+# - backports-sloppy are are testing (forky) packages , rebuilt for stable (trixie), with higher version numbers that would break an upgrade to forky
+# - install from backports-sloppy with \"sudo apt install -t trixie-backports-sloppy packagename\"
+# trixie available components: contrib main non-free-firmware non-free
+# trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Types: deb
+URIs: https://deb.debian.org/debian/
+Suites: trixie trixie-updates trixie-proposed-updates trixie-backports trixie-backports-sloppy
+Components: contrib main non-free-firmware non-free
+Architectures: ${pkgarch}
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg\
+" | sudo tee /etc/apt/sources.list.d/trixie-debian.sources 1> /dev/null
+fi
+
+if [[ ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/trixie-security.sources"
+echo -e "\
+# Config to save at /etc/apt/sources.list.d/trixie-security.sources
+# This replaces /etc/apt/sources.list
+# debian repo available types: deb deb-src
+# trixie available components: contrib main non-free-firmware non-free
+# trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
+Types: deb
+URIs: https://security.debian.org/debian-security/
+Suites: trixie-security
+Components: contrib main non-free-firmware non-free
+Architectures: ${pkgarch}
+Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+" | sudo tee /etc/apt/sources.list.d/trixie-security.sources 1> /dev/null
+fi
+
+# TO-DO: Configure debsig policy here
+
 # general system update
 
 echo -e "\n${cyanbold}Check for and apply package updates${normal}"
@@ -96,19 +158,6 @@ sudo apt autoremove --purge
 # run tidy again if this variable is changed to 1
 
 pkgchanges=0
-
-# check package architecture
-
-pkgarch=$(dpkg --print-architecture)
-echo -e "\n${cyanbold}Checking package architecture${normal}"
-echo -e "$ dpkg --print-architecture"
-echo -e "> ${pkgarch}"
-if [[ "${pkgarch}" == "amd64" || "${pkgarch}" == "arm64" ]]; then
-echo -e "${greenbold}> 1password is available for this arch${normal}"
-else
-echo -e "${redbold}> Unsupported architecture, exiting${normal}\n"
-exit 102
-fi
 
 # Install mozilla deb repo (on any arch)
 
