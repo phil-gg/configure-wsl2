@@ -325,9 +325,29 @@ if [[ "${pkgarch}" == "amd64" ]]; then
 # Install 1password deb repo (on amd64 arch only)
 if [[ "${installedversion1p}" == '(none)' \
 || "${installedver1pcli}" == '(none)' ]]; then
-echo -e "\n${cyanbold}Installing 1passwords${normal}"
-echo -e "> sudo apt update && sudo apt install 1password 1password-cli\n"
+echo -e "\n${cyanbold}Installing 1password${normal}"
+echo -e "$ sudo apt update && sudo apt install 1password 1password-cli\n"
 sudo apt update && sudo apt install 1password 1password-cli
+
+# Configure 1password-cli
+echo -e "\n${cyanbold}Configure 1password-cli${normal}\n"
+echo -e "\
+> sign-in address = my.1password.com
+>  email  address = p… .c…@gmail.com
+>   For secret key:
+>    Open https://my.1password.com/apps
+>    …and click ‘Sign in manually’ button
+> Next enter master password
+> Finally enter TOTP from another 1password instance
+> This script will then run ‘eval \$(op signin)’ for you
+
+$ op account list"
+eval $(op account add)
+echo -e "$ eval \$(op signin)\n"
+eval $(op signin)
+echo -e "\n$ op account list\n"
+op account list
+
 fi
 
 # ###################### #
