@@ -309,7 +309,7 @@ shortver1pcli=$(lynx -dump https://app-updates.agilebits.com | grep -C 2 -E \
 "^\s*?1Password CLI\s*?$" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
 echo -e "> ${shortver1pcli}"
 
-echo -e "\n${cyanbold}Installed dpkg versions${normal}"
+echo -e "\n${cyanbold}Installed 1password debian package versions${normal}"
 installedversion1p=$(apt-cache policy 1password | grep Installed | \
 awk -F ': ' '{print $2}')
 installedver1pcli=$(apt-cache policy 1password-cli | grep Installed | \
@@ -340,7 +340,7 @@ echo -e "\
 > Next enter master password
 > Finally enter TOTP from another 1password instance
 > This script will then run ‘eval \$(op signin)’ for you\n
-$ op account list"\n
+$ op account list\n"
 eval $(op account add)
 echo -e "\n$ eval \$(op signin)\n"
 eval $(op signin)
