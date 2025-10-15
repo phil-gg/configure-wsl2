@@ -13,7 +13,12 @@ https://ftp-master.debian.org/keys.html
 
 # key check commands
 
-gpg --no-default-keyring  --with-colons --import-options show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc | awk -F':' '$1=="fpr"{print $10}'
+gpg --no-default-keyring --with-colons --import-options show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc | awk -F':' '$1=="fpr"{print $10}'
+
+gpg --no-default-keyring --with-colons --import-options show-only --import /usr/share/keyrings/1password-archive-keyring.asc | awk -F':' '$1=="fpr"{print $10}'
+gpg --no-default-keyring --with-colons --import-options show-only --import /usr/share/keyrings/1password-archive-keyring.gpg | awk -F':' '$1=="fpr"{print $10}'
+
+
 
 echo "\
 for key_file in /usr/share/keyrings/*; do
@@ -295,3 +300,5 @@ C.UTF-8 UTF-8
 " | sudo tee /etc/locale.gen
 
 sudo locale-gen
+
+apt-cache policy 1password | grep Installed | awk -F ': ' '{print $2}'
