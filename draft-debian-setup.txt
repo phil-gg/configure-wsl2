@@ -5,6 +5,9 @@ Next steps:
 (3) locale config
 (4) keyboard config
 
+(5/6) nested gnome on wslg setup
+(5/6) install and configure git
+
 # once keys and repo config are updated, try to enforce debsig policy for all repositories
 https://www.google.com/search?q=add+debsig+policy+for+debian+repositories
 https://www.google.com/search?q=if+I+have+signed-by+in+my+list+file+do+I+need+to+add+a+debsig-verify+policy%3F
@@ -95,7 +98,7 @@ IM_CONFIG_PHASE=1 \
 QT_ACCESSIBILITY=1 \
 QT_IM_MODULE=ibus \
 XDG_CURRENT_DESKTOP=default:GNOME \
-XDG_DATA_DIRS=/usr/share/default:$XDG_DATA_DIRS \
+XDG_DATA_DIRS=/usr/share/default:$(XDG_DATA_DIRS) \
 XDG_SESSION_TYPE=wayland \
 XMODIFIERS=@im=ibus \
 MUTTER_DEBUG_DUMMY_MODE_SPECS=2368x1480 \

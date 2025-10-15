@@ -323,11 +323,13 @@ echo -e "> ${installedver1pcli} = 1password-cli"
 if [[ "${pkgarch}" == "amd64" ]]; then
 
 # Install 1password deb repo (on amd64 arch only)
-if [[ "${installedversion1p}" == '(none)' \
-|| "${installedver1pcli}" == '(none)' ]]; then
+if [[ $(echo "${installedversion1p}" | head -c 1) != \
+      $(echo "${shortversion1p}" | head -c 1) \
+   || $(echo "${installedver1pcli}" | head -c 1) != \
+      $(echo "${shortver1pcli}" | head -c 1) ]]; then
 echo -e "\n${cyanbold}Installing 1password${normal}"
-echo -e "$ sudo apt update && sudo apt install 1password 1password-cli\n"
-sudo apt update && sudo apt install 1password 1password-cli
+echo -e "$ sudo apt update && sudo apt -y install 1password 1password-cli\n"
+sudo apt update && sudo apt -y install 1password 1password-cli
 
 # Configure 1password-cli
 echo -e "\n${cyanbold}Configure 1password-cli${normal}\n"
