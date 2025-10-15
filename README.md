@@ -96,10 +96,10 @@ TO-DO: Document with firefox example
 ## Graphical option #2: Run gnome-shell nested in a wslg window
 
 > [!NOTE]  
->   - Application windows can sometimes be slow to open in the nested gnome session
->   - No fullscreen, with window resolution set by launch script
->   - Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)
->   - Use this graphical session in RDP set-up step for `gnome-control-center` steps not yet moved to CLI / script
+>   - _Application windows can sometimes be slow to open in the nested gnome session_
+>   - _No fullscreen, with window resolution set by launch script_
+>   - _Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)_
+>   - _Use this graphical session in RDP set-up step for_ `gnome-control-center` _steps not yet moved to CLI / script_
 
 TO-DO: Document config
 
