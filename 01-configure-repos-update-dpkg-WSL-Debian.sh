@@ -339,11 +339,10 @@ echo -e "\
 >    …and click ‘Sign in manually’ button
 > Next enter master password
 > Finally enter TOTP from another 1password instance
-> This script will then run ‘eval \$(op signin)’ for you
-
-$ op account list"
+> This script will then run ‘eval \$(op signin)’ for you\n
+$ op account list"\n
 eval $(op account add)
-echo -e "$ eval \$(op signin)\n"
+echo -e "\n$ eval \$(op signin)\n"
 eval $(op signin)
 echo -e "\n$ op account list\n"
 op account list
