@@ -454,8 +454,8 @@ installedversion1p=$(apt-cache policy 1password | grep Installed | \
 awk -F ': ' '{print $2}')
 installedver1pcli=$(apt-cache policy 1password-cli | grep Installed | \
 awk -F ': ' '{print $2}')
-echo -e "> ${installedversion1p} = 1password"
-echo -e "> ${installedver1pcli} = 1password-cli"
+echo -e "> ${installedversion1p:=${bluebold}(none)${normal}} = 1password"
+echo -e "> ${installedver1pcli:=${bluebold}(none)${normal}} = 1password-cli"
 
 # ################## #
 # ON AMD64 ARCH ONLY #
