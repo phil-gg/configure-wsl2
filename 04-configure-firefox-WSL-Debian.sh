@@ -86,6 +86,7 @@ RUN THIS NEXT:
 
 eval \$(op account add --signin)
 "
+exit 103
 else
 echo -e "${greenbold}> Account(s) registered in 1password-cli${normal}\n"
 op account list
@@ -100,9 +101,9 @@ RUN THIS NEXT:
 
 eval \$(op signin)
 "
+exit 104
 else
 echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
-exit 103
 fi
 
 fi
