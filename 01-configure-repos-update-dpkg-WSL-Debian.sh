@@ -362,9 +362,9 @@ firefoxcheck=$(firefox-devedition --version 2> /dev/null | head -c 15)
 if [[ "${firefoxcheck}" != "Mozilla Firefox" ]]; then
 
 echo -e "\n${cyanbold}Install firefox-devedition${normal}"
-echo -e "$ sudo apt-get update && sudo apt-get install firefox-devedition \
+echo -e "$ sudo apt update && sudo apt -y install firefox-devedition \
 firefox-devedition-l10n-en-gb libpci3 libegl1\n"
-sudo apt-get update && sudo apt-get install firefox-devedition \
+sudo apt update && sudo apt -y install firefox-devedition \
 firefox-devedition-l10n-en-gb libpci3 libegl1
 
 echo -e "\n${redbold}Restart needed to prevent firefox errors about \
@@ -500,7 +500,7 @@ Oct-2025 )${normal}"
 echo -e "${cyanbold}( https://downloads.1password.com/linux/debian/amd64/stable\
 /1password-latest.deb )${normal}"
 echo -e "
-sudo apt install \\
+sudo apt -y install \\
 curl \\
 gnupg2 \\
 libasound2 \\
@@ -520,7 +520,7 @@ libudev1 \\
 xdg-utils \\
 libappindicator3-1\
 \n"
-sudo apt install \
+sudo apt -y install \
 curl \
 gnupg2 \
 libasound2 \
