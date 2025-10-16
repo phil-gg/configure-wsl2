@@ -468,8 +468,9 @@ echo -e "\n${cyanbold}Checking if 1password is upgradable (requires sudo)\
 ${normal}"
 fi
 
-opguidpkgcheck=$(dpkg -s 1password | grep "Package: 1password")
-opclidpkgcheck=$(dpkg -s 1password-cli | grep "Package: 1password-cli")
+opguidpkgcheck=$(dpkg -s 1password 2> /dev/null | grep "Package: 1password")
+opclidpkgcheck=$(dpkg -s 1password-cli 2> /dev/null \
+| grep "Package: 1password-cli")
 opupdatecheck=$(sudo apt-get update 1> /dev/null && apt list --upgradable 2>&1 \
 | grep -vE "Use with caution in scripts|Listing" | grep -o "1password" \
 | head -c 9)
