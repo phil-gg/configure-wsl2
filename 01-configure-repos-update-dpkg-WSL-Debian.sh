@@ -93,16 +93,124 @@ fi
 
 # Check for presence of lynx
 
-lynxcheck=$(lynx -version  2> /dev/null | head -c 4)
+lynxcheck=$(lynx -version 2> /dev/null | head -c 4)
 if [[ "${lynxcheck}" != "Lynx" ]]; then
 echo -e "\n${cyanbold}Installing lynx${normal}"
 echo -e "$ sudo apt update && sudo apt -y install lynx\n"
 sudo apt update && sudo apt -y install lynx
 fi
 
+# Get debian package keys
+
+if [[ ! -f /usr/share/keyrings/trixie-debian-archive-keyring.asc
+   || ! -f /usr/share/keyrings/trixie-security-archive-keyring.asc
+   || ! -f /usr/share/keyrings/trixie-release-keyring.asc ]]; then
+echo -e "\n${cyanbold}Downloading debian signing keys${normal}"
+fi
+
+if [[ ! -f /usr/share/keyrings/trixie-debian-archive-keyring.asc ]]; then
+echo -e "$ \
+wget -qO- https://ftp-master.debian.org/keys/archive-key-13.asc | \
+sudo tee /usr/share/keyrings/trixie-debian-archive-keyring.asc 1> /dev/null"
+wget -qO- https://ftp-master.debian.org/keys/archive-key-13.asc | \
+sudo tee /usr/share/keyrings/trixie-debian-archive-keyring.asc 1> /dev/null
+fi
+
+if [[ ! -f /usr/share/keyrings/trixie-security-archive-keyring.asc ]]; then
+echo -e "$ \
+wget -qO- https://ftp-master.debian.org/keys/archive-key-13-security.asc | \
+sudo tee /usr/share/keyrings/trixie-security-archive-keyring.asc 1> /dev/null"
+wget -qO- https://ftp-master.debian.org/keys/archive-key-13-security.asc | \
+sudo tee /usr/share/keyrings/trixie-security-archive-keyring.asc 1> /dev/null
+fi
+
+if [[ ! -f /usr/share/keyrings/trixie-release-keyring.asc ]]; then
+echo -e "$ \
+wget -qO- https://ftp-master.debian.org/keys/release-13.asc | \
+sudo tee /usr/share/keyrings/trixie-release-keyring.asc 1> /dev/null"
+wget -qO- https://ftp-master.debian.org/keys/release-13.asc | \
+sudo tee /usr/share/keyrings/trixie-release-keyring.asc 1> /dev/null
+fi
+
 # Check debian package keys
 
-# TO-DO: Package key installation here
+echo -e "\n${cyanbold}Checking debian signing keys${normal}"
+
+expectedsha256trixiearchive="6f1d277429dd7ffedcc6f8688a7ad9a458859b1139ffa026\
+d1eeaadcbffb0da7"
+expectedsha256trixiesecurity="844c07d242db37f283afab9d5531270a0550841e90f9f1a9\
+c3bd599722b808b7"
+expectedsha256trixierelease="4d097bb93f83d731f475c5b92a0c2fcf108cfce1d4932792\
+fca72d00b48d198b"
+
+expectedkeytrixiearchive="04B54C3CDCA79751B16BC6B5225629DF75B188BD"
+expectedkeytrixiesecurity="5E04A1E3223A19A20706E20F9904613D4CCE68C6"
+expectedkeytrixierelease="41587F7DB8C774BCCF131416762F67A0B2C39DE4"
+
+actualsha256trixiearchive=$(sha256sum /usr/share/keyrings/trixie-debian-\
+archive-keyring.asc 2> /dev/null | grep -oE "[0-9a-f]{64}")
+actualsha256trixiesecurity=$(sha256sum /usr/share/keyrings/trixie-security-\
+archive-keyring.asc 2> /dev/null | grep -oE "[0-9a-f]{64}")
+actualsha256trixierelease=$(sha256sum /usr/share/keyrings/trixie-release-\
+keyring.asc 2> /dev/null | grep -oE "[0-9a-f]{64}")
+
+actualkeytrixiearchive=$(gpg --no-default-keyring --with-colons \
+--import-options show-only --import /usr/share/keyrings/trixie-debian-archive\
+-keyring.asc 2> /dev/null | awk -F':' '$1=="fpr"{print $10}' | head -c 40)
+actualkeytrixiesecurity=$(gpg --no-default-keyring --with-colons \
+--import-options show-only --import /usr/share/keyrings/trixie-security-archive\
+-keyring.asc 2> /dev/null | awk -F':' '$1=="fpr"{print $10}' | head -c 40)
+actualkeytrixierelease=$(gpg --no-default-keyring --with-colons \
+--import-options show-only --import /usr/share/keyrings/trixie-release\
+-keyring.asc 2> /dev/null | awk -F':' '$1=="fpr"{print $10}' | head -c 40)
+
+echo -e "\n 🔑 /usr/share/keyrings/trixie-debian-archive-keyring.asc"
+echo -e " 🔤 ${expectedsha256trixiearchive}"
+if [[ "${expectedsha256trixiearchive}" == "${actualsha256trixiearchive}" ]];
+then
+echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+fi
+echo -e " 🔐 ${expectedkeytrixiearchive}"
+if [[ "${expectedkeytrixiearchive}" == "${actualkeytrixiearchive}" ]];
+then
+echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+fi
+
+echo -e "\n 🔑 /usr/share/keyrings/trixie-security-archive-keyring.asc"
+echo -e " 🔤 ${expectedsha256trixiesecurity}"
+if [[ "${expectedsha256trixiesecurity}" == "${actualsha256trixiesecurity}" ]];
+then
+echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+fi
+echo -e " 🔐 ${expectedkeytrixiesecurity}"
+if [[ "${expectedkeytrixiesecurity}" == "${actualkeytrixiesecurity}" ]];
+then
+echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+fi
+
+echo -e "\n 🔑 /usr/share/keyrings/trixie-release-keyring.asc"
+echo -e " 🔤 ${expectedsha256trixierelease}"
+if [[ "${expectedsha256trixierelease}" == "${actualsha256trixierelease}" ]];
+then
+echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+fi
+echo -e " 🔐 ${expectedkeytrixierelease}"
+if [[ "${expectedkeytrixierelease}" == "${actualkeytrixierelease}" ]];
+then
+echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
+else
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+fi
 
 # Add mozilla package key (on any arch)
 
@@ -178,8 +286,13 @@ fi
 
 # modernise deb package config files
 
-if [[ -f /etc/apt/sources.list ]]; then
+if [[ -f /etc/apt/sources.list
+   || ! -f /etc/apt/sources.list.d/trixie-debian.sources
+   || ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
 echo -e "\n${cyanbold}Updating package sources to deb822 format${normal}"
+fi
+
+if [[ -f /etc/apt/sources.list ]]; then
 echo -e "$ sudo rm /etc/apt/sources.list"
 sudo rm /etc/apt/sources.list
 fi
@@ -207,7 +320,7 @@ Suites: trixie trixie-updates trixie-proposed-updates trixie-backports \
 trixie-backports-sloppy
 Components: contrib main non-free-firmware non-free
 Architectures: ${pkgarch}
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg\
+Signed-By: /usr/share/keyrings/trixie-debian-archive-keyring.asc\
 " | sudo tee /etc/apt/sources.list.d/trixie-debian.sources 1> /dev/null
 fi
 
@@ -225,7 +338,7 @@ URIs: https://security.debian.org/debian-security/
 Suites: trixie-security
 Components: contrib main non-free-firmware non-free
 Architectures: ${pkgarch}
-Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
+Signed-By: /usr/share/keyrings/trixie-security-archive-keyring.asc
 " | sudo tee /etc/apt/sources.list.d/trixie-security.sources 1> /dev/null
 fi
 
@@ -265,7 +378,8 @@ fi
 
 if [[ "${pkgarch}" == "amd64" ]]; then
 if [[ ! -f /etc/apt/sources.list.d/1password.list ]]; then
-echo -e "\n${bluebold}  Create /etc/apt/sources.list.d/1password.list${normal}"
+echo -e "\n${bluebold}  Create /etc/apt/sources.list.d/1password.list\
+${normal}\n"
 
 # Can't use this new format until built-in 1password config updates
 : ' deb822 CONFIG
@@ -290,9 +404,35 @@ sudo tee /etc/apt/sources.list.d/1password.list
 fi
 fi
 
-# Configure debsig policy for all repos
+# Configure debsig policy for repos that support it
+# (currently only 1Password so can't be turned on globally)
 
-# TO-DO: Configure debsig policy here
+onepname="1Password"
+onepid=$(echo "${actual1passwordKey}" | tail -c 16)
+
+if [[ ! -f "/etc/debsig/policies/${onepid}/${onepname}.pol"
+   || ! -f "/usr/share/debsig/keyrings/${onepid}/debsig.gpg" ]]; then
+echo -e "\n${bluebold}  Set debsig policy for ${onepname}${normal}\n"
+echo -e "\n> Create /usr/share/debsig/keyrings/${onepid}/debsig.gpg\n"
+sudo mkdir -p "/etc/debsig/policies/${onepid}"
+echo -e "\
+<?xml version=\"1.0\"?>
+<!DOCTYPE Policy SYSTEM \"https://www.debian.org/debsig/1.0/policy.dtd\">
+<Policy xmlns=\"https://www.debian.org/debsig/1.0/\">
+    <Origin Name=\"${onepname}\" id=\"${onepid}\"/>
+    <Selection>
+        <Required Type=\"origin\" File=\"debsig.gpg\" id=\"${onepid}\"/>
+    </Selection>
+    <Verification MinOptional=\"0\">
+        <Required Type=\"origin\" File=\"debsig.gpg\" id=\"${onepid}\"/>
+    </Verification>
+</Policy>" \
+| sudo tee "/etc/debsig/policies/${onepid}/${onepname}.pol"
+sudo mkdir -p "/usr/share/debsig/keyrings/${onepid}"
+echo -e "\n> Create usr/share/debsig/keyrings/${onepid}/debsig.gpg"
+sudo cp /usr/share/keyrings/1password-archive-keyring.gpg \
+"/usr/share/debsig/keyrings/${onepid}/debsig.gpg"
+fi
 
 # Get latest 1password versions
 
@@ -322,33 +462,25 @@ echo -e "> ${installedver1pcli} = 1password-cli"
 # ################## #
 if [[ "${pkgarch}" == "amd64" ]]; then
 
-# Install 1password deb repo (on amd64 arch only)
-if [[ $(echo "${installedversion1p}" | head -c 1) != \
-      $(echo "${shortversion1p}" | head -c 1) \
-   || $(echo "${installedver1pcli}" | head -c 1) != \
-      $(echo "${shortver1pcli}" | head -c 1) ]]; then
+# Install 1password
+
+if ! sudo -n true 2> /dev/null; then
+echo -e "\n${cyanbold}Checking if 1password is upgradable (requires sudo)\
+${normal}"
+fi
+
+opguidpkgcheck=$(dpkg -s 1password | grep "Package: 1password")
+opclidpkgcheck=$(dpkg -s 1password-cli | grep "Package: 1password-cli")
+opupdatecheck=$(sudo apt-get update 1> /dev/null && apt list --upgradable 2>&1 \
+| grep -vE "Use with caution in scripts|Listing" | grep -o "1password" \
+| head -c 9)
+
+if [[ "${opupdatecheck}" == "1password"
+   || "${opguidpkgcheck}" != "Package: 1password"
+   || "${opclidpkgcheck}" != "Package: 1password-cli" ]]; then
 echo -e "\n${cyanbold}Installing 1password${normal}"
 echo -e "$ sudo apt update && sudo apt -y install 1password 1password-cli\n"
 sudo apt update && sudo apt -y install 1password 1password-cli
-
-# Configure 1password-cli
-echo -e "\n${cyanbold}Configure 1password-cli${normal}\n"
-echo -e "\
-> sign-in address = my.1password.com
->  email  address = p… .c…@gmail.com
->   For secret key:
->    Open https://my.1password.com/apps
->    …and click ‘Sign in manually’ button
-> Next enter master password
-> Finally enter TOTP from another 1password instance
-> This script will then run ‘eval \$(op signin)’ for you\n
-$ op account list\n"
-eval $(op account add)
-echo -e "\n$ eval \$(op signin)\n"
-eval $(op signin)
-echo -e "\n$ op account list\n"
-op account list
-
 fi
 
 # ###################### #
@@ -436,6 +568,32 @@ https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
 # ###################### #
 # END ARM64 ONLY SECTION #
 # ###################### #
+fi
+
+# Configure 1password-cli
+
+opclicheck=$(op account list | grep -o "1password.com" 2> /dev/null)
+if [[ "${opclicheck}" != "1password.com" ]]; then
+echo -e "\n${cyanbold}Configure 1password-cli${normal}\n"
+echo -e "\
+> sign-in address = my.1password.com
+>  email  address = p… .c…@gmail.com
+>   For secret key:
+>    Open https://my.1password.com/apps
+>    …and click ‘Sign in manually’ button
+> Next enter master password
+> Finally enter TOTP from another 1password instance
+> This script will then run ‘eval \$(op signin)’ for you\n
+$ op account list\n"
+# want the word splitting here
+# shellcheck disable=SC2046
+eval $(op account add)
+echo -e "\n$ eval \$(op signin)\n"
+# want the word splitting here
+# shellcheck disable=SC2046
+eval $(op signin)
+echo -e "\n$ op account list\n"
+op account list
 fi
 
 # general system update
