@@ -96,9 +96,11 @@
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
     Once you have run `01-configure-repos-update-dpkg-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
+
     ```
     firefox-devedition
     ```
+
     ```
     1password
     ```
