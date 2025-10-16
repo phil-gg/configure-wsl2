@@ -95,12 +95,11 @@
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
-    Once you have run `01-configure-repos-update-dpkg-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
+4. Once you have run `01-configure-repos-update-dpkg-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
 
     ```
     firefox-devedition
     ```
-
     ```
     1password
     ```
@@ -113,8 +112,8 @@
 >   - _Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)_
 >   - _Use this graphical session in RDP set-up step for_ `gnome-control-center` _steps not yet moved to CLI / script_
 
-TO-DO: Document config
+`TO-DO: Document config`
 
 ## Graphical option #3: RDP session from Windows host into Debian on WSL
 
-TO-DO: Both actually get it running(!) and document
+`TO-DO: Both actually get it running(!) and document`
