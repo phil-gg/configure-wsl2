@@ -376,8 +376,8 @@ fi
 
 # Install 1password deb repo (on amd64 arch only)
 
-if [[ "${pkgarch}" == "amd64" ]]; then
-if [[ ! -f /etc/apt/sources.list.d/1password.list ]]; then
+if [[ "${pkgarch}" == "amd64" && ! -f /etc/apt/sources.list.d/1password.list ]];
+then
 echo -e "\n${bluebold}  Create /etc/apt/sources.list.d/1password.list\
 ${normal}\n"
 
@@ -401,7 +401,6 @@ echo -e "deb [arch=amd64 \
 signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] \
 https://downloads.1password.com/linux/debian/amd64 stable main" | \
 sudo tee /etc/apt/sources.list.d/1password.list
-fi
 fi
 
 # Configure debsig policy for repos that support it
