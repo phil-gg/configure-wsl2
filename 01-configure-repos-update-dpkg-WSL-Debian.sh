@@ -54,10 +54,10 @@ if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_branch}\
 /${filename} 2> /dev/null
 then
-echo "${redbold}> Offline${normal}"
+echo -e "${redbold}> Offline${normal}"
 exit 101
 else
-echo "${greenbold}> Online${normal}"
+echo -e "${greenbold}> Online${normal}"
 fi
 
 # check package architecture
@@ -368,9 +368,9 @@ sudo apt update && sudo apt -y install firefox-devedition \
 firefox-devedition-l10n-en-gb libpci3 libegl1
 
 echo -e "\n${redbold}Restart needed to prevent firefox errors about \
-org.a11y.Bus${normal}"
-echo "please run:"
-echo "wsl.exe --shutdown"
+org.a11y.Bus${normal}
+Please run:
+wsl.exe --shutdown"
 
 fi
 
@@ -569,29 +569,6 @@ https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
 # ###################### #
 fi
 
-# Configure 1password-cli
-
-opclicheck=$(op account list | grep -o "1password.com" 2> /dev/null)
-if [[ "${opclicheck}" != "1password.com" ]]; then
-echo -e "\n${cyanbold}Configure 1password-cli${normal}\n"
-echo -e "\
-> sign-in address = my.1password.com
->  email  address = p… .c…@gmail.com
->   For secret key:
->    Open https://my.1password.com/apps
->    …and click ‘Sign in manually’ button
-> Next enter master password
-> Finally enter TOTP from another 1password instance
-
-$ eval \$(op signin)
-"
-# want the word splitting here
-# shellcheck disable=SC2046
-eval $(op signin)
-echo -e "\n$ op account list\n"
-op account list
-fi
-
 # general system update
 
 echo -e "\n${cyanbold}Check for and apply package updates${normal}"
@@ -614,6 +591,46 @@ echo -e "> ${runtime}\n"
 mkdir -p "${HOME}/git/${github_username}/${github_project}"
 echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
 >> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
+
+# Configure 1password-cli
+
+echo -e "${cyanbold}Checking whether account registered in 1password-cli\
+${normal}"
+opclicheck1=$(op account list | grep -o "1password.com" 2> /dev/null)
+if [[ "${opclicheck1}" != "1password.com" ]]; then
+echo -e "${redbold}> No accounts registered in 1password-cli${normal}
+> sign-in address = my.1password.com
+>  email  address = p… .c…@gmail.com
+>   For secret key:
+>    Open https://my.1password.com/apps
+>    …and click ‘Sign in manually’ button
+> Next enter master password
+> Finally enter TOTP from another 1password instance
+
+RUN THIS NEXT:
+
+eval \$(op account add --signin)
+"
+else
+echo -e "${greenbold}> Account(s) registered in 1password-cli${normal}\n"
+op account list
+echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
+
+opclicheck2=$(op vault list 2>&1 | grep -o ERROR)
+
+if [[ "${opclicheck2}" == "ERROR" ]]; then
+echo -e "${redbold}> Not logged into 1password-cli${normal}
+
+RUN THIS NEXT:
+
+eval \$(op signin)
+"
+else
+echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
+exit 106
+fi
+
+fi
 
 ################################################################################
 #
