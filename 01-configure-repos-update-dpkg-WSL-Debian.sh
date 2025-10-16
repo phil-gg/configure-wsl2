@@ -413,7 +413,7 @@ onepid=$(echo "${actual1passwordKey}" | tail -c 16)
 if [[ ! -f "/etc/debsig/policies/${onepid}/${onepname}.pol"
    || ! -f "/usr/share/debsig/keyrings/${onepid}/debsig.gpg" ]]; then
 echo -e "\n${bluebold}  Set debsig policy for ${onepname}${normal}\n"
-echo -e "\n> Create /usr/share/debsig/keyrings/${onepid}/debsig.gpg\n"
+echo -e "> Create /usr/share/debsig/keyrings/${onepid}/debsig.gpg\n"
 sudo mkdir -p "/etc/debsig/policies/${onepid}"
 echo -e "\
 <?xml version=\"1.0\"?>
@@ -584,7 +584,7 @@ echo -e "\
 > Next enter master password
 > Finally enter TOTP from another 1password instance
 > This script will then run ‘eval \$(op signin)’ for you\n
-$ op account list\n"
+$ op account add\n"
 # want the word splitting here
 # shellcheck disable=SC2046
 eval $(op account add)
