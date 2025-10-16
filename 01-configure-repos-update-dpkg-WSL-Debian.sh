@@ -584,7 +584,7 @@ echo -e "\
 > Next enter master password
 > Finally enter TOTP from another 1password instance
 
-$ eval $(op signin)
+$ eval \$(op signin)
 "
 # want the word splitting here
 # shellcheck disable=SC2046
