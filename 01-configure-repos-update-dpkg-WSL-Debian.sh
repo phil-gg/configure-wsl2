@@ -573,8 +573,8 @@ fi
 # general system update
 
 echo -e "\n${cyanbold}Check for and apply package updates${normal}"
-echo -e "$ sudo apt update && sudo apt upgrade\n"
-sudo apt update && sudo apt upgrade
+echo -e "$ sudo apt update && sudo apt upgrade -y\n"
+sudo apt update && sudo apt upgrade -y
 
 # keep apt tidy
 
