@@ -583,11 +583,11 @@ echo -e "\
 >    …and click ‘Sign in manually’ button
 > Next enter master password
 > Finally enter TOTP from another 1password instance
-> This script will then run ‘eval \$(op signin)’ for you\n
-$ op account add\n"
-# want the word splitting here
-# shellcheck disable=SC2046
-eval $(op account add)
+> This script will then run ‘eval \$(op signin)’ for you
+
+$ op account add --address my.1password.com
+"
+op account add --address my.1password.com
 echo -e "\n$ eval \$(op signin)\n"
 # want the word splitting here
 # shellcheck disable=SC2046
