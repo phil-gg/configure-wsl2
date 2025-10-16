@@ -23,9 +23,9 @@
     ```
     wsl.exe --list --verbose
     ```
-    _Unregister or uninstall a Linux distribution:_
+    _Unregister or uninstall a Linux distribution (Debian example):_
     ```
-    wsl.exe --unregister <DistributionName>
+    wsl.exe --unregister Debian
     ```
     _Install Debian on WSL:_
     ```
@@ -50,6 +50,10 @@
     _In WSL CLI only (i.e. run in Debian), keep just '{GUID}' for your WSL installation:_
     ```
     pwsh.exe -Command Get-ItemProperty "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Lxss" | grep -o -e "{[^}]*}"
+    ```
+    _Shutdown instance from WSL CLI (e.g. to update Windows Terminal config and relaunch):_
+    ```
+    wsl.exe --shutdown
     ```
     _Command to launch WSL distro in Windows Terminal_
     ```
