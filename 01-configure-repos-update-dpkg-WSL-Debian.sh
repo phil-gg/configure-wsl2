@@ -586,6 +586,12 @@ echo -e "\n${cyanbold}Clean up apt packages${normal}"
 echo -e "$ sudo apt autoremove --purge\n"
 sudo apt autoremove --purge
 
+# keep wsl2 up-to-date
+
+echo -e "\n${cyanbold}Keep WSL2 updated${normal}"
+echo -e "$ wsl.exe --update\n"
+wsl.exe --update
+
 # Log this latest `Config` operation and display runtime
 
 echo -e "\n${bluebold}${filename} run at${normal}"
