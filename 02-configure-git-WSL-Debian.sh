@@ -111,14 +111,11 @@ echo -e "\n${cyanbold}git branch --set-upstream-to \
 origin/${github_branch}${normal}"
 git branch --set-upstream-to "origin/${github_branch}"
 
-echo -e "\n${cyanbold}git status${normal}"
-git status
-
-else
-
-git status # &> /dev/null
-
 fi
+
+echo -e "\n${cyanbold}git status${normal}"
+suatus=$(git status)
+echo -e ${status}
 
 # TODO-1: git pull if silenced status check says it is needed
 # TODO-2: git push if silenced status check says it is needed
