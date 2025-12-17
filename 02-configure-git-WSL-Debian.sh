@@ -45,7 +45,7 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 # Network test
 
 echo -e "\n${bluebold}Testing network connectivity${normal}"
-echo -e "  Test file https://raw.githubusercontent.com\
+echo -e "$ wget -q --spider https://raw.githubusercontent.com\
 /${github_username}\
 /${github_project}\
 /${github_branch}\
@@ -57,10 +57,10 @@ if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_branch}\
 /${filename} 2> /dev/null
 then
-echo "${redbold}  Offline${normal}"
+echo "${redbold}> Offline${normal}"
 exit 102
 else
-echo "${greenbold}  Online${normal}"
+echo "${greenbold}> Online${normal}"
 fi
 
 # Check for presence of git
@@ -68,13 +68,14 @@ fi
 gitcheck=$(git -v  2> /dev/null | cut -c1-3)
 if [ "${gitcheck}" != "git" ]; then
 echo -e "\n${cyanbold}Installing git${normal}"
-echo -e "$ sudo apt update && sudo apt install git\n"
-sudo apt update && sudo apt install git
+echo -e "$ sudo apt update && sudo apt -y install git\n"
+sudo apt update && sudo apt -y install git
 fi
 
 # Check for presence of git config
 
-if ! git config --list | grep "init.defaultbranch=main" 1> /dev/null
+configcheck=$(git config --list 2> /dev/null | grep "init.defaultbranch=main")
+if [ "${configcheck}" != "init.defaultbranch=main" ];
 then
 git config --global init.defaultbranch main
 fi
@@ -86,8 +87,8 @@ echo -e "\n${cyanbold}Sync project with github${normal}"
 git fetch &> /dev/null
 
 if [ $? -eq 128 ]; then
-echo "  .git not created yet"
 
+echo "> .git not created yet"
 echo -e "\n${cyanbold}git init${normal}"
 git init
 
