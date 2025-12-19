@@ -65,17 +65,26 @@ fi
 
 # Check for presence of git
 
-gitcheck=$(git -v  2> /dev/null | cut -c1-3)
+gitcheck=$(git -v  2> /dev/null | head -c3)
 if [ "${gitcheck}" != "git" ]; then
 echo -e "\n${cyanbold}Installing git${normal}"
 echo -e "$ sudo apt update && sudo apt -y install git\n"
 sudo apt update && sudo apt -y install git
 fi
 
+# Check for presence of gh
+
+ghcheck=$(gh --version 2> /dev/null | head -c2)
+if [ "${ghcheck}" != "gh" ]; then
+echo -e "\n${cyanbold}Installing gh${normal}"
+echo -e "$ sudo apt update && sudo apt -y install gh\n"
+sudo apt update && sudo apt -y install gh
+fi
+
 # Check for presence of git config
 
-configcheck=$(git config --list 2> /dev/null | grep "init.defaultbranch=main")
-if [ "${configcheck}" != "init.defaultbranch=main" ];
+maincheck=$(git config --list 2> /dev/null | grep "init.defaultbranch=main")
+if [ "${maincheck}" != "init.defaultbranch=main" ];
 then
 git config --global init.defaultbranch main
 fi
@@ -114,8 +123,8 @@ git branch --set-upstream-to "origin/${github_branch}"
 fi
 
 echo -e "\n${cyanbold}git status${normal}"
-suatus=$(git status)
-echo -e ${status}
+status=$(git status)
+echo -e "${status}"
 
 # TODO-1: git pull if silenced status check says it is needed
 # TODO-2: git push if silenced status check says it is needed
@@ -133,6 +142,8 @@ echo -e ${status}
 
 # Log this latest `Config` operation and display runtime
 
-echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
 echo -e "\n${bluebold}${filename} run at${normal}"
-echo -e "  ${runtime}\n"
+echo -e "> ${runtime}\n"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
+>> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
