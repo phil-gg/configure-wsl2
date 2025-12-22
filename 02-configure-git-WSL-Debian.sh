@@ -76,7 +76,22 @@ fi
 
 # Set sensitive variables
 
-#  TO-DO: Add variables
+# TO-DO: Add some visible feedback to this section
+
+GH_TOKEN=$(op read "op://\
+sgsub5ksyk2khnrzflt4pyziru/\
+z7x5d5r2hdnytyuulwq57lsixa/\
+ucz4cqku2w7ctc3yseteme2boe")
+
+GH_EMAIL=$(op read "op://\
+sgsub5ksyk2khnrzflt4pyziru/\
+z7x5d5r2hdnytyuulwq57lsixa/\
+4w3e6rvo5yag5muvhg3tm5oofi")
+
+GH_USERN=$(op read "op://\
+sgsub5ksyk2khnrzflt4pyziru/\
+z7x5d5r2hdnytyuulwq57lsixa/\
+username")
 
 # Network test
 
@@ -128,17 +143,19 @@ fi
 
 # Check for presence of git config
 
-maincheck=$(git config --list 2> /dev/null | grep "init.defaultbranch=main")
-if [ "${maincheck}" != "init.defaultbranch=main" ];
+branchcheck=$(git config --global init.defaultbranch)
+branchvalue="main"
+if [ "${branchcheck}" != "${branchvalue}" ];
 then
-echo -e "\n$ git config --global init.defaultbranch main"
-git config --global init.defaultbranch main
+echo -e "\n$ git config --global init.defaultbranch ${branchvalue}"
+git config --global init.defaultbranch ${branchvalue}
 fi
 
 # TO-DO: more config here
 # git config --global user.name "John Doe"
 # git config --global user.email johndoe@example.com
-# authorise git with gh
+# echo ${GH_TOKEN} | gh auth login --with-token --hostname github.com && gh auth setup-git
+# git config --list | grep -oF "/usr/bin/gh" | sort -u
 
 # Sync project to working directory with git
 
