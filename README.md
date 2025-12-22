@@ -90,7 +90,7 @@
     ```
     _Configure git (same script also updates git)_
     ```
-    work in progress
+    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/02-configure-git-WSL-Debian.sh | bash
     ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
