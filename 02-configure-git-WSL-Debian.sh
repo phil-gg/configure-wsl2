@@ -164,7 +164,7 @@ git remote add origin "https://github.com\
 echo -e "$ git fetch\n"
 git fetch
 
-echo -e "$ git checkout main -f\n"
+echo -e "\n$ git checkout main -f\n"
 git checkout main -f
 
 echo -e "\n$ git branch --set-upstream-to origin/${github_branch}\n"
@@ -176,9 +176,9 @@ echo -e "\n$ git status\n"
 status=$(git status)
 echo -e "${status}"
 
-# TODO-1: git pull if silenced status check says it is needed
-# TODO-2: git push if silenced status check says it is needed
-# TODO-3: print visible git status output once pull and/or push don
+# TODO-1: git pull if status check says it is needed
+# TODO-2: git push if status check says it is needed
+# TODO-3: print visible git status output once pull and/or push done
 
 
 
