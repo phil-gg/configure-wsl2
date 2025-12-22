@@ -28,7 +28,7 @@ bluebold=$(printf '\033[94;1m')
 
 # Now running `${filename}`
 
-echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
+echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Check for presence of wget
 
@@ -449,6 +449,13 @@ shortver1pcli=$(lynx -dump https://app-updates.agilebits.com | grep -C 2 -E \
 "^\s*?1Password CLI\s*?$" | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
 echo -e "> ${shortver1pcli}"
 
+# ################## #
+# ON AMD64 ARCH ONLY #
+# ################## #
+if [[ "${pkgarch}" == "amd64" ]]; then
+
+# debian packages available on amd64 only
+
 echo -e "\n${cyanbold}Installed 1password debian package versions${normal}"
 installedversion1p=$(apt-cache policy 1password | grep Installed | \
 awk -F ': ' '{print $2}')
@@ -456,11 +463,6 @@ installedver1pcli=$(apt-cache policy 1password-cli | grep Installed | \
 awk -F ': ' '{print $2}')
 echo -e "> ${installedversion1p:=${bluebold}(none)${normal}} = 1password"
 echo -e "> ${installedver1pcli:=${bluebold}(none)${normal}} = 1password-cli"
-
-# ################## #
-# ON AMD64 ARCH ONLY #
-# ################## #
-if [[ "${pkgarch}" == "amd64" ]]; then
 
 # Install 1password
 
@@ -493,6 +495,8 @@ fi
 # ON ARM64 ARCH ONLY #
 # ################## #
 if [[ "${pkgarch}" == "arm64" ]]; then
+
+# TO-DO: 1password & 1password-cli versions without looking at deb packages
 
 # Explicitly install 1password dependencies
 
@@ -565,6 +569,7 @@ wget -O "1password_${shortversion1p}_amd64.deb" \
 https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
 
 # TO-DO: Complete manual deb package build here
+# OR: Don't even make pkgbuild folder; instead sig-check & install tarball
 
 # ###################### #
 # END ARM64 ONLY SECTION #
@@ -613,8 +618,10 @@ RUN THIS NEXT:
 
 eval \$(op account add --signin)
 "
+exit 106
 else
 echo -e "${greenbold}> Account(s) registered in 1password-cli${normal}\n"
+echo -e "$ op account list\n"
 op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
@@ -627,9 +634,9 @@ RUN THIS NEXT:
 
 eval \$(op signin)
 "
+exit 107
 else
 echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
-exit 106
 fi
 
 fi
