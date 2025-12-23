@@ -244,16 +244,17 @@ git status
 # Log this latest `Config` operation and display runtime
 
 echo -e "\n${bluebold}${filename} run at${normal}"
-echo -e "> ${runtime}\n"
+echo -e "> ${runtime}"
 mkdir -p "${HOME}/git/${github_username}/${github_project}"
 echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
 >> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
 
 # If git is up-to-date, end the script here (no sync actions needed)
+FILES_DIFF=$(git status --porcelain)
 # shellcheck disable=SC1083
-REMOTE_DIFF=$(git rev-list HEAD..@{u} --count)
-if [[ -z "${STATUS}" ]] && [[ "${REMOTE_DIFF}" -eq 0 ]]; then
-echo -e "\n${greenbold}> Everything is up to date, exiting${normal}\n"
+COMMIT_DIFF=$(git rev-list HEAD..@{u} --count)
+if [[ -z "${FILES_DIFF}" ]] && [[ "${COMMIT_DIFF}" -eq 0 ]]; then
+echo -e "${greenbold}> Everything is up to date, exiting${normal}\n"
 exit 0
 fi
 
