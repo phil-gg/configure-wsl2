@@ -76,22 +76,29 @@ fi
 
 # Set sensitive variables
 
-# TO-DO: Add some visible feedback to this section
+echo -e "\n${cyanbold}Read secrets from 1password-cli${normal}"
 
 GH_TOKEN=$(op read "op://\
 sgsub5ksyk2khnrzflt4pyziru/\
 z7x5d5r2hdnytyuulwq57lsixa/\
 ucz4cqku2w7ctc3yseteme2boe")
 
+echo -e "\n> GH_TOKEN=$(echo ${GH_TOKEN} | head -c8)…\
+$(echo ${GH_TOKEN} | tail -c5)"
+
 GH_EMAIL=$(op read "op://\
 sgsub5ksyk2khnrzflt4pyziru/\
 z7x5d5r2hdnytyuulwq57lsixa/\
 4w3e6rvo5yag5muvhg3tm5oofi")
 
+echo -e "\n> GH_EMAIL=$(echo ${GH_EMAIL})"
+
 GH_USERN=$(op read "op://\
 sgsub5ksyk2khnrzflt4pyziru/\
 z7x5d5r2hdnytyuulwq57lsixa/\
 username")
+
+echo -e "\n> GH_USERN=$(echo ${GH_USERN})"
 
 # Network test
 
@@ -143,6 +150,8 @@ fi
 
 # Check for presence of git config
 
+echo -e "\n${cyanbold}git config checks${normal}"
+
 branchcheck=$(git config --global init.defaultbranch)
 branchvalue="main"
 if [ "${branchcheck}" != "${branchvalue}" ];
@@ -151,11 +160,32 @@ echo -e "\n$ git config --global init.defaultbranch ${branchvalue}"
 git config --global init.defaultbranch ${branchvalue}
 fi
 
-# TO-DO: more config here
-# git config --global user.name "John Doe"
-# git config --global user.email johndoe@example.com
-# echo ${GH_TOKEN} | gh auth login --with-token --hostname github.com && gh auth setup-git
-# git config --list | grep -oF "/usr/bin/gh" | sort -u
+emailcheck=$(git config --global user.email)
+if [ "${emailcheck}" != "${GH_EMAIL}" ];
+then
+echo -e "\n$ git config --global user.email ${GH_EMAIL}"
+git config --global user.email ${GH_EMAIL}
+fi
+
+userncheck=$(git config --global user.name)
+if [ "${userncheck}" != "${GH_USERN}" ];
+then
+echo -e "\n$ git config --global user.name ${GH_USERN}"
+git config --global user.name ${GH_USERN}
+fi
+
+authcheck=$(git config --list | grep -oF "/usr/bin/gh" | sort -u)
+authvalue="/usr/bin/gh"
+if [ "${authcheck}" != "${authvalue}" ];
+then
+echo -e "\n$ echo \${GH_TOKEN} | gh auth login --with-token --hostname \
+github.com && gh auth setup-git"
+echo ${GH_TOKEN} | gh auth login --with-token --hostname github.com && \
+gh auth setup-git
+fi
+
+echo -e "\n$ git config --list\n"
+git config --list
 
 # Sync project to working directory with git
 
@@ -191,9 +221,18 @@ fi
 
 echo -e "\n$ git status\n"
 status=$(git status)
-echo -e "${status}"
+echo "${status}"
 
-# TODO-1: git pull if status check says it is needed
+# git pull if status check says it is needed
+
+pullcheck=$(echo "${status}" | grep -oF "use \"git pull\"")
+pullvalue="use \"git pull\""
+if [ "${pullcheck}" = "${pullvalue}" ];
+then
+echo -e "\n$ git pull"
+git pull
+fi
+
 # TODO-2: git push if status check says it is needed
 # TODO-3: print visible git status output once pull and/or push done
 
