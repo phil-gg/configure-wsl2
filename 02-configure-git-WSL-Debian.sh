@@ -199,9 +199,9 @@ echo -e "\n${redbold}> Failed to authenticate GitHub CLI, exiting${normal}\n"
 exit 105
 fi
 
-# Sync present working directory to project remote with git
+# Connect with GitHub and check status
 
-echo -e "\n${cyanbold}Sync project with github${normal}"
+echo -e "\n${cyanbold}Connect with GitHub and check status${normal}"
 
 # Clone if no .git folder
 if [ ! -d ".git" ]; then
@@ -250,12 +250,16 @@ echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
 >> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
 
 # If git is up-to-date, end the script here (no sync actions needed)
-
+# shellcheck disable=SC1083
 REMOTE_DIFF=$(git rev-list HEAD..@{u} --count)
 if [[ -z "${STATUS}" ]] && [[ "${REMOTE_DIFF}" -eq 0 ]]; then
 echo -e "\n${greenbold}> Everything is up to date, exiting${normal}\n"
 exit 0
 fi
+
+# Sync present working directory to project remote with git
+
+echo -e "\n${cyanbold}Sync project with github${normal}"
 
 # Add wholly new (untracked) files
 # The porcelain check '??' identifies untracked files
@@ -275,12 +279,12 @@ echo -e "\n> Modified, uncommitted files detected"
 # Create commit message
 FILE_COUNT=$(echo "$STATUS" | wc -l)
 if [ "${FILE_COUNT}" -gt 3 ]; then
-COMMIT_MESSAGE="Update "${FILE_COUNT}" files"
+COMMIT_MESSAGE="Update ${FILE_COUNT} files"
 else
 COMMIT_MESSAGE="$(echo "${STATUS}" | tr '\n' '' | xargs)"
 fi
 
-echo -e "\n> COMMIT_MESSAGE=\""${COMMIT_MESSAGE}"\""
+echo -e "\n> COMMIT_MESSAGE=\"${COMMIT_MESSAGE}\""
 
 echo -e "\n$ git commit -a -m \"\${COMMIT_MESSAGE}\"\n"
 git commit -a -m "${COMMIT_MESSAGE}"
@@ -306,6 +310,10 @@ echo -e "\n> Push local changes to remote"
 echo -e "\n$ git push\n"
 git push
 fi
+
+# If you have made it here, and not exited above, you need status one last time
+echo -e "\n$ git status\n"
+git status
 
 
 
