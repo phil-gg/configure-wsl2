@@ -67,6 +67,14 @@
     ```
     wsl.exe --manage Debian --set-sparse true --allow-unsafe
     ```
+    _Windows files are available in Linux at:_
+    ```
+    /mnt/c/
+    ```
+    _Linux files are available in Windows at:_
+    ```
+    \\wsl.localhost\Debian
+    ```
 
 3. Configure Debian
 

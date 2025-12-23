@@ -217,7 +217,7 @@ if [ ! -d ".git" ]; then
 echo -e "> .git not created yet"
 
 # Clone only works with empty directory: can't have e.g. config-runs.log here
-rm -rf "${HOME}/git/${github_username}/${github_project}"
+find "${HOME}/git/${github_username}/${github_project}" -mindepth 1 -delete
 
 # final dot prevents a duplicate ${github_project} folder
 # clone replaced remote add, which 
