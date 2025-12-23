@@ -83,7 +83,8 @@ sgsub5ksyk2khnrzflt4pyziru/\
 z7x5d5r2hdnytyuulwq57lsixa/\
 ucz4cqku2w7ctc3yseteme2boe")
 
-echo -e "\n> GH_TOKEN=$(echo ${GH_TOKEN} | head -c8)…\
+echo -e "\n> GH_TOKEN=$(echo \
+${GH_TOKEN} | head -c8)…\
 $(echo ${GH_TOKEN} | tail -c5)"
 
 GH_EMAIL=$(op read "op://\
@@ -191,7 +192,8 @@ git config --list
 
 echo -e "\n${cyanbold}Sync project with github${normal}"
 
-git fetch &> /dev/null
+echo -e "\n$ git fetch --porcelain\n"
+git fetch --porcelain
 
 if [ $? -eq 128 ]; then
 
