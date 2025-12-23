@@ -92,6 +92,13 @@
     ```
     wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/02-configure-git-WSL-Debian.sh | bash
     ```
+    _Now scripts can be run locally_
+    ```
+    cd ~/git/phil-gg/configure-wsl2 && cat 01-configure-repos-update-dpkg-WSL-Debian.sh | bash
+    ```
+    ```
+    cd ~/git/phil-gg/configure-wsl2 && cat 02-configure-git-WSL-Debian.sh | bash
+    ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
