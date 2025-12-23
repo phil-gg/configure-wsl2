@@ -315,6 +315,7 @@ fi
 # If you have made it here, and not exited above, you need status one last time
 echo -e "\n$ git status\n"
 git status
+echo -e "\n${greenbold}> Sync complete${normal}\n"
 
 
 
