@@ -127,7 +127,7 @@ echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 # Make folder(s) if they don't exist
 
 echo -e "$ mkdir -p ~/git/${github_username}/${github_project}"
-mkdir -p "${HOME}/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/"
 
 # Navigate to working directory
 
