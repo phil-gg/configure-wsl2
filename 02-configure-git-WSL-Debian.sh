@@ -216,6 +216,9 @@ echo -e "\n${cyanbold}Connect with GitHub and check status${normal}"
 if [ ! -d ".git" ]; then
 echo -e "> .git not created yet"
 
+# Clone only works with empty directory: can't have e.g. config-runs.log here
+rm -rf "${HOME}/git/${github_username}/${github_project}"
+
 # final dot prevents a duplicate ${github_project} folder
 # clone replaced remote add, which 
 echo -e "\n$ git clone \
