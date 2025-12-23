@@ -267,16 +267,6 @@ git add .
 STATUS=$(git status -b --porcelain)
 fi
 
-# Pull where necessary
-# Rebase puts any local changes on top of the remote changes (where possible)
-if [[ "${STATUS}" == *"behind"* ]]; then
-echo -e "\n> Pull changes from remote"
-echo -e "\n$ git pull --rebase\n"
-git pull --rebase
-# Refresh STATUS so the commit message reflects the pulled state
-STATUS=$(git status -b --porcelain)
-fi
-
 # Commit modifications if the repository is dirty
 if ! git diff --quiet || ! git diff --cached --quiet; then
 
@@ -298,6 +288,16 @@ git commit -a -m "${COMMIT_MESSAGE}"
 # Refresh STATUS so the commit message reflects the committed state
 STATUS=$(git status -b --porcelain)
 
+fi
+
+# Pull where necessary
+# Rebase puts any local changes on top of the remote changes (where possible)
+if [[ "${STATUS}" == *"behind"* ]]; then
+echo -e "\n> Pull changes from remote"
+echo -e "\n$ git pull --rebase\n"
+git pull --rebase
+# Refresh STATUS so the commit message reflects the pulled state
+STATUS=$(git status -b --porcelain)
 fi
 
 # Push where necessary
