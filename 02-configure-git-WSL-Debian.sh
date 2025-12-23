@@ -42,10 +42,10 @@ if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_branch}\
 /${filename} 2> /dev/null
 then
-echo "${redbold}> Offline${normal}\n"
+echo -e "${redbold}> Offline${normal}\n"
 exit 101
 else
-echo "${greenbold}> Online${normal}"
+echo -e "${greenbold}> Online${normal}"
 fi
 
 # Ensure 1password-cli can set sensitive variables
@@ -205,7 +205,7 @@ echo -e "\n${cyanbold}Sync project with github${normal}"
 
 # Clone if no .git folder
 if [ ! -d ".git" ]; then
-echo -e "> .git not created yet\n"
+echo -e "> .git not created yet"
 
 # final dot prevents a duplicate ${github_project} folder
 # clone replaced remote add, which 
@@ -227,50 +227,85 @@ git reset --hard "origin/${github_branch}"
 
 fi
 
-echo -e "\n$ git fetch --porcelain\n"
-git fetch --porcelain
-
-if [ $? -eq 128 ]; then
-
-echo -e "> .git not created yet\n"
-echo -e "$ git init\n"
-git init
-
-echo -e "\n$ git remote add origin \
-https://github.com\
-/${github_username}\
-/${github_project}.git\n"
-git remote add origin "https://github.com\
-/${github_username}\
-/${github_project}.git"
-
-echo -e "\n$ git fetch --porcelain\n"
-git fetch --porcelain
-
-echo -e "\n$ git checkout main -f\n"
-git checkout main -f
-
-echo -e "\n$ git branch --set-upstream-to origin/${github_branch}\n"
-git branch --set-upstream-to "origin/${github_branch}"
-
+# First connect and get remote updates (if .git existed)
+echo -e "\n$ git fetch -v\n"
+git fetch -v
+# shellcheck disable=SC2181
+if [ $? -ne 0 ]; then
+echo -e "\n${redbold}> Failed to fetch project from GitHub, exiting${normal}\n"
+exit 106
 fi
 
+# Show git status, and put porcelain status into a variable
 echo -e "\n$ git status\n"
 STATUS=$(git status --porcelain)
 git status
 
-# git pull if status check says it is needed
+# Log this latest `Config` operation and display runtime
 
-pullcheck=$(echo "${STATUS}" | grep -oF "use \"git pull\"")
-pullvalue="use \"git pull\""
-if [ "${pullcheck}" = "${pullvalue}" ];
-then
-echo -e "\n$ git pull"
-git pull
+echo -e "\n${bluebold}${filename} run at${normal}"
+echo -e "> ${runtime}\n"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
+>> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
+
+# If git is up-to-date, end the script here (no sync actions needed)
+
+REMOTE_DIFF=$(git rev-list HEAD..@{u} --count)
+if [[ -z "${STATUS}" ]] && [[ "${REMOTE_DIFF}" -eq 0 ]]; then
+echo -e "\n${greenbold}> Everything is up to date, exiting${normal}\n"
+exit 0
 fi
 
-# TODO-2: git push if status check says it is needed
-# TODO-3: print visible git status output once pull and/or push done
+# Add wholly new (untracked) files
+# The porcelain check '??' identifies untracked files
+if [[ "${STATUS}" == *"??"* ]]; then
+echo -e "\n> New untracked files detected"
+echo -e "\n$ git add .\n"
+git add .
+# Refresh STATUS so the commit message reflects the added state
+STATUS=$(git status --porcelain)
+fi
+
+# Pull where necessary
+# Rebase puts any local changes on top of the remote changes (where possible)
+if [[ "${STATUS}" == *"behind"* ]]; then
+echo -e "\n> Pull changes from remote"
+echo -e "\n$ git pull --rebase\n"
+git pull --rebase
+# Refresh STATUS so the commit message reflects the added state
+STATUS=$(git status --porcelain)
+fi
+
+# Commit modifications if the repository is dirty
+if ! git diff --quiet || ! git diff --cached --quiet; then
+
+echo -e "\n> Modified, uncommitted files detected"
+
+# Create commit message
+FILE_COUNT=$(echo "$STATUS" | wc -l)
+if [ "${FILE_COUNT}" -gt 3 ]; then
+COMMIT_MESSAGE="Update "${FILE_COUNT}" files"
+else
+COMMIT_MESSAGE="$(echo "${STATUS}" | tr '\n' '' | xargs)"
+fi
+
+echo -e "\n> COMMIT_MESSAGE=\""${COMMIT_MESSAGE}"\""
+
+echo -e "\n$ git commit -a -m \"\${COMMIT_MESSAGE}\"\n"
+git commit -a -m "${COMMIT_MESSAGE}"
+
+# Refresh STATUS so the commit message reflects the added state
+STATUS=$(git status --porcelain)
+
+fi
+
+# Push where necessary
+if [[ "${STATUS}" == *"ahead"* ]]; then
+echo -e "\n> Push local changes to remote"
+echo -e "\n$ git push\n"
+git push
+fi
 
 
 
@@ -282,10 +317,3 @@ fi
 #
 ################################################################################
 
-# Log this latest `Config` operation and display runtime
-
-echo -e "\n${bluebold}${filename} run at${normal}"
-echo -e "> ${runtime}\n"
-mkdir -p "${HOME}/git/${github_username}/${github_project}"
-echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
->> "${HOME}/git/${github_username}/${github_project}/config-runs.log"

@@ -54,7 +54,7 @@ if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_branch}\
 /${filename} 2> /dev/null
 then
-echo -e "${redbold}> Offline${normal}"
+echo -e "${redbold}> Offline${normal}\n"
 exit 101
 else
 echo -e "${greenbold}> Online${normal}"
@@ -170,14 +170,16 @@ if [[ "${expectedsha256trixiearchive}" == "${actualsha256trixiearchive}" ]];
 then
 echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}\n"
+exit 103
 fi
 echo -e " 🔐 ${expectedkeytrixiearchive}"
 if [[ "${expectedkeytrixiearchive}" == "${actualkeytrixiearchive}" ]];
 then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
+exit 104
 fi
 
 echo -e "\n 🔑 /usr/share/keyrings/trixie-security-archive-keyring.asc"
@@ -186,14 +188,16 @@ if [[ "${expectedsha256trixiesecurity}" == "${actualsha256trixiesecurity}" ]];
 then
 echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}\n"
+exit 105
 fi
 echo -e " 🔐 ${expectedkeytrixiesecurity}"
 if [[ "${expectedkeytrixiesecurity}" == "${actualkeytrixiesecurity}" ]];
 then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
+exit 106
 fi
 
 echo -e "\n 🔑 /usr/share/keyrings/trixie-release-keyring.asc"
@@ -202,14 +206,16 @@ if [[ "${expectedsha256trixierelease}" == "${actualsha256trixierelease}" ]];
 then
 echo -e "${greenbold} ✅ The SHA256 hash matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected SHA256 hash${normal}\n"
+exit 107
 fi
 echo -e " 🔐 ${expectedkeytrixierelease}"
 if [[ "${expectedkeytrixierelease}" == "${actualkeytrixierelease}" ]];
 then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
-echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}"
+echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
+exit 108
 fi
 
 # Add mozilla package key (on any arch)
@@ -240,7 +246,7 @@ if [[ "${actualMozillaKey}" == "${expectedMozillaKey}" ]]; then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
 echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
-exit 103
+exit 109
 fi
 
 fi
@@ -279,7 +285,7 @@ if [[ "${actual1passwordKey}" == "${expected1passwordKey}" ]]; then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
 echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
-exit 104
+exit 110
 fi
 fi
 fi
@@ -370,6 +376,7 @@ firefox-devedition-l10n-en-gb libpci3 libegl1
 echo -e "\n${redbold}Restart needed to prevent firefox errors about \
 org.a11y.Bus${normal}
 Please run:
+
 wsl.exe --shutdown"
 
 fi
@@ -557,7 +564,7 @@ mkdir -p "${HOME}/git/${github_username}/${github_project}/pkgbuild"
 echo -e "$ cd ~/git/${github_username}/${github_project}/pkgbuild"
 cd "${HOME}/git/${github_username}/${github_project}/pkgbuild" 2> /dev/null \
 || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
-; exit 105; }
+; exit 111; }
 
 # get latest 1password amd64 deb package
 
@@ -618,7 +625,7 @@ RUN THIS NEXT:
 
 eval \$(op account add --signin)
 "
-exit 106
+exit 112
 else
 echo -e "${greenbold}> Account(s) registered in 1password-cli${normal}\n"
 echo -e "$ op account list\n"
@@ -634,7 +641,7 @@ RUN THIS NEXT:
 
 eval \$(op signin)
 "
-exit 107
+exit 113
 else
 echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
 fi
