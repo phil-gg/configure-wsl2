@@ -32,8 +32,7 @@ echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Check for presence of wget
 
-wgetcheck=$(wget -V 2> /dev/null | head -c 8)
-if [[ "${wgetcheck}" != "GNU Wget" ]]; then
+if ! command -v wget &> /dev/null; then
 echo -e "\n${cyanbold}Installing wget${normal}"
 echo -e "$ sudo apt update && sudo apt -y install wget\n"
 sudo apt update && sudo apt -y install wget
@@ -75,8 +74,7 @@ fi
 
 # Check for presence of gpg
 
-wgetcheck=$(gpg --version 2> /dev/null | head -c 11)
-if [[ "${wgetcheck}" != "gpg (GnuPG)" ]]; then
+if ! command -v gpg &> /dev/null; then
 echo -e "\n${cyanbold}Installing gpg${normal}"
 echo -e "$ sudo apt update && sudo apt -y install gpg\n"
 sudo apt update && sudo apt -y install gpg
@@ -84,8 +82,7 @@ fi
 
 # check for presence of debsig-verify
 
-debsigcheck=$(debsig-verify --version 2> /dev/null | head -c 6)
-if [[ "${debsigcheck}" != "Debsig" ]]; then
+if ! command -v debsig-verify &> /dev/null; then
 echo -e "\n${cyanbold}Installing debsigs${normal}"
 echo -e "$ sudo apt update && sudo apt -y install debsigs\n"
 sudo apt update && sudo apt -y install debsigs
@@ -93,8 +90,7 @@ fi
 
 # Check for presence of lynx
 
-lynxcheck=$(lynx -version 2> /dev/null | head -c 4)
-if [[ "${lynxcheck}" != "Lynx" ]]; then
+if ! command -v lynx &> /dev/null; then
 echo -e "\n${cyanbold}Installing lynx${normal}"
 echo -e "$ sudo apt update && sudo apt -y install lynx\n"
 sudo apt update && sudo apt -y install lynx
@@ -364,8 +360,7 @@ Signed-By: /usr/share/keyrings/mozilla-archive-keyring.asc\
 " | sudo tee /etc/apt/sources.list.d/mozilla.sources
 fi
 
-firefoxcheck=$(firefox-devedition --version 2> /dev/null | head -c 15)
-if [[ "${firefoxcheck}" != "Mozilla Firefox" ]]; then
+if ! command -v firefox-devedition &> /dev/null; then
 
 echo -e "\n${cyanbold}Install firefox-devedition${normal}"
 echo -e "$ sudo apt update && sudo apt -y install firefox-devedition \
@@ -632,9 +627,7 @@ echo -e "$ op account list\n"
 op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
-opclicheck2=$(op vault list 2>&1 | grep -o ERROR)
-
-if [[ "${opclicheck2}" == "ERROR" ]]; then
+if ! op account get &> /dev/null; then
 echo -e "${redbold}> Not logged into 1password-cli${normal}
 
 RUN THIS NEXT:

@@ -77,9 +77,7 @@ echo -e "$ op account list\n"
 op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
-opclicheck2=$(op vault list 2>&1 | grep -o ERROR)
-
-if [[ "${opclicheck2}" == "ERROR" ]]; then
+if ! op account get &> /dev/null; then
 echo -e "${redbold}> Not logged into 1password-cli${normal}
 
 RUN THIS NEXT:
@@ -140,13 +138,24 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 # Check for presence of git & gh
 
-gitcheck=$(git -v  2> /dev/null | head -c3)
-ghcheck=$(gh --version 2> /dev/null | head -c2)
-if [[ "${gitcheck}" != "git" || "${ghcheck}" != "gh" ]]; then
+if ! command -v git &> /dev/null \
+|| ! command -v gh &> /dev/null; then
 echo -e "\n${cyanbold}Installing git and/or gh${normal}"
 # include man-db so that e.g. "git config --help" works
-echo -e "$ sudo apt update && sudo apt -y install git-all gh man-db\n"
-sudo apt update && sudo apt -y install git-all gh man-db
+echo -e "$ sudo apt update && sudo apt -y install \
+git \
+git-doc \
+git-gui \
+gitk \
+gh \
+man-db\n"
+sudo apt update && sudo apt -y install \
+git \
+git-doc \
+git-gui \
+gitk \
+gh \
+man-db
 fi
 
 # Check for presence of git config
