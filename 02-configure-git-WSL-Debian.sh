@@ -238,7 +238,7 @@ fi
 
 # Show git status, and put porcelain status into a variable
 echo -e "\n$ git status\n"
-STATUS=$(git status --porcelain)
+STATUS=$(git status -b --porcelain)
 git status
 
 # Log this latest `Config` operation and display runtime
@@ -264,7 +264,7 @@ echo -e "\n> New untracked files detected"
 echo -e "\n$ git add .\n"
 git add .
 # Refresh STATUS so the commit message reflects the added state
-STATUS=$(git status --porcelain)
+STATUS=$(git status -b --porcelain)
 fi
 
 # Pull where necessary
@@ -273,8 +273,8 @@ if [[ "${STATUS}" == *"behind"* ]]; then
 echo -e "\n> Pull changes from remote"
 echo -e "\n$ git pull --rebase\n"
 git pull --rebase
-# Refresh STATUS so the commit message reflects the added state
-STATUS=$(git status --porcelain)
+# Refresh STATUS so the commit message reflects the pulled state
+STATUS=$(git status -b --porcelain)
 fi
 
 # Commit modifications if the repository is dirty
@@ -295,8 +295,8 @@ echo -e "\n> COMMIT_MESSAGE=\""${COMMIT_MESSAGE}"\""
 echo -e "\n$ git commit -a -m \"\${COMMIT_MESSAGE}\"\n"
 git commit -a -m "${COMMIT_MESSAGE}"
 
-# Refresh STATUS so the commit message reflects the added state
-STATUS=$(git status --porcelain)
+# Refresh STATUS so the commit message reflects the committed state
+STATUS=$(git status -b --porcelain)
 
 fi
 
