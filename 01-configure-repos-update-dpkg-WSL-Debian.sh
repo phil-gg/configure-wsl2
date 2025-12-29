@@ -486,6 +486,8 @@ if [[ "${opupdatecheck}" == "1password"
 echo -e "\n${cyanbold}Installing 1password${normal}"
 echo -e "$ sudo apt update && sudo apt -y install 1password 1password-cli\n"
 sudo apt update && sudo apt -y install 1password 1password-cli
+else
+echo -e "${greenbold}> 1password & 1password-cli are up-to-date${normal}"
 fi
 
 # ###################### #
