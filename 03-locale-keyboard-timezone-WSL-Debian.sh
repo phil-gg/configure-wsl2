@@ -185,9 +185,9 @@ echo -e "\n${cyanbold}Configure keyboard layout${normal}"
 echo -e "\n$ localectl list-keymaps | grep -i UK\n"
 localectl list-keymaps | grep -i UK
 
-if [[ ! localectl status | grep -i "keymap: uk"
-   || ! localectl status | grep -i "layout: gb"
-   || ! localectl status | grep -i "model: extd" ]]; then
+if ! localectl status | grep -q -i "keymap: uk" || \
+   ! localectl status | grep -q -i "layout: gb" || \
+   ! localectl status | grep -q -i "model: extd"; then
 echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
 sudo localectl set-x11-keymap gb extd
 fi
