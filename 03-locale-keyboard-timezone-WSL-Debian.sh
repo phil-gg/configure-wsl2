@@ -77,6 +77,64 @@ Please run:\n
 wsl.exe --shutdown"
 fi
 
+# Test locale if no changes made this run
+if [[ "${changes_made}" == "0" ]]; then
+
+# Check for presence of python3
+if ! command -v python3 &> /dev/null; then
+echo -e "\n${cyanbold}Installing python3${normal}"
+echo -e "$ sudo apt update && sudo apt -y install python3\n"
+sudo apt update && sudo apt -y install python3
+fi
+
+echo -e "\n${cyanbold}Testing locale configuration${normal}"
+echo -e "$ locale\n"
+locale
+
+echo -e "\n$ localectl status\n"
+localectl status
+
+echo -e "\n$ date\n"
+date
+
+echo -e "\n$ locale -k LC_NUMERIC\n"
+locale -k LC_NUMERIC
+
+echo -e "\n$ awk 'BEGIN { printf \"%'\"'\"'.4f\\\n\", 1234567.89 }'"
+awk 'BEGIN { printf "%'"'"'.4f\n", 1234567.89 }'
+echo -e "\n${greenbold}> DESIRED OUTPUT:
+1 234 567.8900${normal}"
+
+echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(1234567.891, grouping=True))\""
+python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(1234567.891, grouping=True))"
+echo -e "\n${greenbold}> DESIRED OUTPUT:
+ + $ 1 234 567.89${normal}"
+
+echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(1234567.891, grouping=True, international=True))\""
+python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(1234567.891, grouping=True, international=True))"
+echo -e "\n${greenbold}> DESIRED OUTPUT:
+ + AUD 1 234 567.89${normal}"
+
+echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(-1234567.891, grouping=True))\""
+python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(-1234567.891, grouping=True))"
+echo -e "\n${greenbold}> DESIRED OUTPUT:
+ - $ 1 234 567.89${normal}"
+
+echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(-1234567.891, grouping=True, international=True))\""
+python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
+print(locale.currency(-1234567.891, grouping=True, international=True))"
+echo -e "\n${greenbold}> DESIRED OUTPUT:
+ - AUD 1 234 567.89${normal}"
+
+fi
+
 # Keyboard configuration
 
 
