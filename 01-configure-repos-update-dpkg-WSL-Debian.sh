@@ -289,6 +289,8 @@ fi
 # modernise deb package config files
 
 if [[ -f /etc/apt/sources.list
+   || ! -f /etc/apt/preferences.d/99administrator-prefs
+   || ! -f /etc/apt/sources.list.d/sid-debian.sources
    || ! -f /etc/apt/sources.list.d/trixie-debian.sources
    || ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
 echo -e "\n${cyanbold}Updating package sources to deb822 format${normal}"
@@ -297,6 +299,90 @@ fi
 if [[ -f /etc/apt/sources.list ]]; then
 echo -e "$ sudo rm /etc/apt/sources.list"
 sudo rm /etc/apt/sources.list
+fi
+
+if [[ ! -f /etc/apt/preferences.d/99administrator-prefs ]]; then
+echo -e "> Create /etc/apt/preferences.d/99administrator-prefs"
+echo -e "\
+Explanation: This file is /etc/apt/preferences.d/99administrator-prefs
+Explanation: https://manpages.debian.org/trixie/apt/apt_preferences.5.en.html
+Explanation: Never downgrade unless the priority of an available version \
+exceeds 1000
+Explanation: Install the highest priority version
+Explanation: If 2+ versions have the same priority, install the most recent \
+one (i.e., the one with the higher version number)
+Explanation: https://salsa.debian.org/debian/package-cycle/-/blob/master/\
+package-cycle.svg
+Explanation: Target release priority is 990
+Explanation: Trixie/Stable is here at 980 just less than target release priority
+Package: *
+Pin: release o=Debian, n=trixie-security
+Pin-Priority: 980
+
+Explanation: Trixie/Stable is here at 980 just less than target release priority
+Package: *
+Pin: release o=Debian, n=trixie
+Pin-Priority: 980
+
+Explanation: Trixie/Stable is here at 980 just less than target release priority
+Package: *
+Pin: release o=Debian, n=trixie-updates
+Pin-Priority: 980
+
+Explanation: Trixie/Stable is here at 980 just less than target release priority
+Package: *
+Pin: release o=Debian, n=trixie-proposed-updates
+Pin-Priority: 980
+
+Explanation: Prioritise 1password repo just less than Trixie/Stable
+Package: *
+Pin: origin \"downloads.1password.com\"
+Pin-Priority: 970
+
+Explanation: Prioritise mozilla repo just less than Trixie/Stable
+Package: *
+Pin: origin \"packages.mozilla.org\"
+Pin-Priority: 970
+
+Explanation: Add any more third-party repos just above here
+Explanation: trixie-backports is here at 510 just more than default priority
+Package: *
+Pin: release o=Debian, n=trixie-backports
+Pin-Priority: 510
+
+Explanation: Default (with no pin or target release) priority is 500
+Explanation: Nothing configured here with priority between default & installed
+Explanation: Installed packages have priority 100
+Explanation: Stable backports sloppy is here at 90 for selected packages only
+Explanation: *NOTE* Remove all sloppy packages before distribution upgrade
+Package: *
+Pin: release o=Debian, n=trixie-backports-sloppy
+Pin-Priority: 90
+
+Explanation: Sid/Unstable is here at 90 for selected packages only
+Package: *
+Pin: release o=Debian, n=sid
+Pin-Priority: 90
+" | sudo tee /etc/apt/preferences.d/99administrator-prefs 1> /dev/null
+fi
+
+if [[ ! -f /etc/apt/sources.list.d/sid-debian.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/sid-debian.sources"
+echo -e "\
+# Config to save at /etc/apt/sources.list.d/sid-debian.sources
+# This replaces /etc/apt/sources.list
+# debian repo available types: deb deb-src
+# available suites: sid
+# available components: main contrib non-free-firmware non-free
+# available architectures: amd64 arm64 armhf i386 loong64 ppc64el riscv64 \
+s390x
+Types: deb
+URIs: https://deb.debian.org/debian/
+Suites: sid
+Components: main contrib non-free-firmware non-free
+Architectures: ${pkgarch}
+Signed-By: /usr/share/keyrings/trixie-debian-archive-keyring.asc\
+" | sudo tee /etc/apt/sources.list.d/sid-debian.sources 1> /dev/null
 fi
 
 if [[ ! -f /etc/apt/sources.list.d/trixie-debian.sources ]]; then
@@ -313,14 +399,14 @@ don't exceed release version for forky
 #  …but with higher version numbers that would break an upgrade to forky
 # - example: install from backports-sloppy with \"sudo apt install -t \
 trixie-backports-sloppy packagename\"
-# trixie available components: contrib main non-free-firmware non-free
+# trixie available components: main contrib non-free-firmware non-free
 # trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 \
 s390x
 Types: deb
 URIs: https://deb.debian.org/debian/
 Suites: trixie trixie-updates trixie-proposed-updates trixie-backports \
 trixie-backports-sloppy
-Components: contrib main non-free-firmware non-free
+Components: main contrib non-free-firmware non-free
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/trixie-debian-archive-keyring.asc\
 " | sudo tee /etc/apt/sources.list.d/trixie-debian.sources 1> /dev/null
@@ -332,13 +418,13 @@ echo -e "\
 # Config to save at /etc/apt/sources.list.d/trixie-security.sources
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
-# trixie available components: contrib main non-free-firmware non-free
+# trixie available components: main contrib non-free-firmware non-free
 # trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 \
 s390x
 Types: deb
 URIs: https://security.debian.org/debian-security/
 Suites: trixie-security
-Components: contrib main non-free-firmware non-free
+Components: main contrib non-free-firmware non-free
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/trixie-security-archive-keyring.asc
 " | sudo tee /etc/apt/sources.list.d/trixie-security.sources 1> /dev/null
