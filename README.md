@@ -111,7 +111,7 @@
     cat 02-configure-git-WSL-Debian.sh | bash
     ```
     ```
-    cat 03-locale-keyboard-timezone-WSL-Debian.sh | bash
+    cat 03-keyboard-timezone-locale-WSL-Debian.sh | bash
     ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window

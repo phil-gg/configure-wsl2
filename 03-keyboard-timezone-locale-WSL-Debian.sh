@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ################################################################################
-# Configure Locale Keyboard & Timezone on WSL Debian in an idempotent manner.
+# Configure Keyboard Timezone & Locale on WSL Debian in an idempotent manner.
 #
 # See `#term-Idempotency` definition at:
 # https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html
@@ -18,7 +18,7 @@
 github_username="phil-gg"
 github_project="configure-wsl2"
 github_branch="main"
-filename="03-locale-keyboard-timezone-WSL-Debian.sh"
+filename="03-keyboard-timezone-locale-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')
@@ -37,6 +37,100 @@ echo -e "$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
 ; exit 101; }
+
+# Keyboard configuration
+
+# This sets up /etc/default/keyboard as per:
+# https://manpages.debian.org/trixie/keyboard-configuration/keyboard.5.en.html
+# Note more customisation available with KMAP variable & loadkeys
+
+if ! dpkg -l keyboard-configuration | grep -q "ii" || \
+   ! dpkg -l console-setup | grep -q "ii"; then
+
+echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
+echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration 
+\console-setup\n"
+sudo apt update
+echo "\
+keyboard-configuration keyboard-configuration/layoutcode string gb
+keyboard-configuration keyboard-configuration/modelcode string pc105
+keyboard-configuration keyboard-configuration/variantcode string extd
+keyboard-configuration keyboard-configuration/xkb-keymap string gb
+" | sudo debconf-set-selections
+sudo apt -y install keyboard-configuration console-setup
+
+echo -e "\n$ sudo setupcon"
+sudo setupcon
+echo -e "$ localectl status\n"
+localectl status
+fi
+
+# Work around keymaps packaging issue as documented here:
+# https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
+
+if ! localectl list-keymaps &> /dev/null; then
+
+echo -e "\n${cyanbold}Installing keymaps${normal}"
+kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
+grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
+
+echo -e "$ sudo mkdir -p /usr/share/keymaps"
+sudo mkdir -p /usr/share/keymaps
+
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+
+echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 102; }
+
+echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
+v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
+wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
+kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
+
+echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
+tar -xf "kbd-${kbd_version}.tar.xz"
+
+echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
+# shellcheck disable=SC2086
+sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
+
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 103; }
+
+echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
+rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
+
+fi
+
+echo -e "\n${cyanbold}Configure keyboard layout${normal}"
+
+echo -e "\n$ localectl list-keymaps | grep -i UK\n"
+localectl list-keymaps | grep -i UK
+
+if ! localectl status | grep -q -i "keymap: uk" || \
+   ! localectl status | grep -q -i "layout: gb" || \
+   ! localectl status | grep -q -i "model: extd"; then
+echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
+sudo localectl set-x11-keymap gb extd
+fi
+
+echo -e "\n$ localectl status\n"
+localectl status
+
+# Timezone configuration
+
+echo -e "\n${cyanbold}Configure timezone${normal}"
+if ! timedatectl status | grep -q -i "Australia/Brisbane"; then
+echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\""
+sudo timedatectl set-timezone "Australia/Brisbane"
+fi
+echo -e "\n$ timedatectl status\n"
+timedatectl status
 
 # Locale configuration
 
@@ -136,74 +230,6 @@ echo -e "${greenbold}> DESIRED OUTPUT:
  - AUD 1 234 567.89${normal}"
 
 fi
-
-# Keyboard configuration
-
-if ! localectl list-keymaps &> /dev/null; then
-
-# Work around keymaps packaging issue as documented here:
-# https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
-
-echo -e "\n${cyanbold}Installing keymaps${normal}"
-kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
-grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
-
-echo -e "$ sudo mkdir -p /usr/share/keymaps"
-sudo mkdir -p /usr/share/keymaps
-
-echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
-mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
-
-echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
-cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-; exit 102; }
-
-echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
-v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
-wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
-kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
-
-echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
-tar -xf "kbd-${kbd_version}.tar.xz"
-
-echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
-# shellcheck disable=SC2086
-sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
-
-echo -e "$ cd ~/git/${github_username}/${github_project}"
-cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-; exit 103; }
-
-echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
-rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
-
-fi
-
-echo -e "\n${cyanbold}Configure keyboard layout${normal}"
-echo -e "\n$ localectl list-keymaps | grep -i UK\n"
-localectl list-keymaps | grep -i UK
-
-if ! localectl status | grep -q -i "keymap: uk" || \
-   ! localectl status | grep -q -i "layout: gb" || \
-   ! localectl status | grep -q -i "model: extd"; then
-echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
-sudo localectl set-x11-keymap gb extd
-fi
-
-echo -e "\n$ localectl status\n"
-localectl status
-
-# Timezone configuration
-
-echo -e "\n${cyanbold}Configure timezone${normal}"
-if ! timedatectl status | grep -q -i "Australia/Brisbane"; then
-echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\""
-sudo timedatectl set-timezone "Australia/Brisbane"
-fi
-echo -e "\n$ timedatectl status\n"
-timedatectl status
 
 # Log this latest `Config` operation and display runtime
 
