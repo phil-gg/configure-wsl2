@@ -57,12 +57,14 @@ keyboard-configuration keyboard-configuration/modelcode string pc105
 keyboard-configuration keyboard-configuration/variantcode string extd
 keyboard-configuration keyboard-configuration/xkb-keymap string gb
 " | sudo debconf-set-selections
-sudo apt -y install keyboard-configuration console-setup
+sudo DEBIAN_FRONTEND=noninteractive apt -y install keyboard-configuration \
+console-setup
 
 echo -e "\n$ sudo setupcon"
 sudo setupcon
 echo -e "$ localectl status\n"
 localectl status
+
 fi
 
 # Work around keymaps packaging issue as documented here:
