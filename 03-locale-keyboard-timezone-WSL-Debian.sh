@@ -141,19 +141,20 @@ fi
 
 if ! localectl list-keymaps &> /dev/null; then
 
+echo -e "\n${cyanbold}Installing keymaps${normal}"
 kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
 grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
 
-echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+echo -e "\n$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
 mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
 
-echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+echo -e "\n$ cd ~/git/${github_username}/${github_project}/tmp"
 cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
 || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
 ; exit 102; }
 
-echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
-v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz"
+echo -e "\n$ wget https://github.com/legionus/kbd/releases/download/\
+v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
 wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
 kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
 
@@ -161,7 +162,8 @@ echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
 tar -xf "kbd-${kbd_version}.tar.xz"
 
 echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
-sudo cp -Rp "kbd-${kbd_version}/data/keymaps/*" /usr/share/keymaps/
+# shellcheck disable=SC2086
+sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
 
 echo -e "$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
@@ -169,7 +171,7 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 ; exit 103; }
 
 echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
-rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
+# rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
 
 fi
 
