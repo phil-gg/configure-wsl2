@@ -141,6 +141,9 @@ fi
 
 if ! localectl list-keymaps &> /dev/null; then
 
+# Work around keymaps packaging issue as documented here:
+# https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
+
 echo -e "\n${cyanbold}Installing keymaps${normal}"
 kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
 grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
@@ -178,10 +181,29 @@ rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
 
 fi
 
-echo -e "\n$ localectl list-keymaps | grep -i UK"
+echo -e "\n${cyanbold}Configure keyboard layout${normal}"
+echo -e "\n$ localectl list-keymaps | grep -i UK\n"
 localectl list-keymaps | grep -i UK
 
+if [[ ! localectl status | grep -i "keymap: uk"
+   || ! localectl status | grep -i "layout: gb"
+   || ! localectl status | grep -i "model: extd" ]]; then
+echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
+sudo localectl set-x11-keymap gb extd
+fi
 
+echo -e "\n$ localectl status"
+localectl status
+
+# Timezone configuration
+
+echo -e "\n${cyanbold}Configure timezone${normal}"
+if [[ ! timedatectl status | grep -i "Australia/Brisbane" ]]; then
+echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\"\n"
+sudo timedatectl set-timezone "Australia/Brisbane"
+fi
+echo -e "\n$ timedatectl status\n"
+timedatectl status
 
 # Log this latest `Config` operation and display runtime
 
