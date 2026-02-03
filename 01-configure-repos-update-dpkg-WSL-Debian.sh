@@ -378,6 +378,8 @@ echo -e "\
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
 # available suites: sid
+# - Sid/Unstable has low pin priority set in apt preferences
+# - Install from sid with \"sudo apt install packagename/sid\"
 # available components: main contrib non-free-firmware non-free
 # available architectures: amd64 arm64 armhf i386 loong64 ppc64el riscv64 \
 s390x
@@ -396,17 +398,17 @@ echo -e "\
 # Config to save at /etc/apt/sources.list.d/trixie-debian.sources
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
-# trixie available suites: trixie trixie-updates trixie-proposed-updates \
+# available suites: trixie trixie-updates trixie-proposed-updates \
 trixie-backports trixie-backports-sloppy
 # - backports are testing (forky) packages, rebuilt for stable (trixie), that \
-don't exceed release version for forky
+don't exceed release version for testing (forky)
 # - backports-sloppy are testing (forky) packages, rebuilt for stable (trixie),
 #  …but with higher version numbers that would break an upgrade to forky
-# - example: install from backports-sloppy with \"sudo apt install -t \
-trixie-backports-sloppy packagename\"
-# trixie available components: main contrib non-free-firmware non-free
-# trixie available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 \
-s390x
+# - trixie-backports-sloppy has low pin priority set in apt preferences
+# - Install from backports-sloppy with \"sudo apt install packagename/trixie-\
+backports-sloppy\"
+# available components: main contrib non-free-firmware non-free
+# available architectures: amd64 arm64 armel armhf i386 ppc64el riscv64 s390x
 Types: deb
 URIs: https://deb.debian.org/debian/
 Suites: trixie trixie-updates trixie-proposed-updates trixie-backports \
