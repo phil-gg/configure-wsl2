@@ -178,8 +178,8 @@ rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
 
 fi
 
-echo -e "\n$ localectl list-keymaps"
-localectl list-keymaps
+echo -e "\n$ localectl list-keymaps | grep -i UK"
+localectl list-keymaps | grep -i UK
 
 
 
