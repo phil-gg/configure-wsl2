@@ -199,7 +199,7 @@ localectl status
 
 echo -e "\n${cyanbold}Configure timezone${normal}"
 if ! timedatectl status | grep -q -i "Australia/Brisbane"; then
-echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\"\n"
+echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\""
 sudo timedatectl set-timezone "Australia/Brisbane"
 fi
 echo -e "\n$ timedatectl status\n"
