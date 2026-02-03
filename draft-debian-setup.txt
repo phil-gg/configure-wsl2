@@ -1,38 +1,32 @@
-Next steps:
+Next step:
 
-(3) locale config
-(4) keyboard config
-
-(5/6) nested gnome on wslg setup
-(5/6) install and configure git
+Nested kde-plasma in gamescope on wslg setup
 
 
 
-sudo apt install \
-gnome-core \
-evince- \
-papers \
-alacritty \
-gnome-terminal- \
-gnome-console- \
-ptyxis \
-totem \
-showtime \
-firefox-esr- \
-firefox- \
-epiphany-browser \
-gnome-shell-extension-appindicator \
-gnome-shell-extension-prefs \
-libayatana-appindicator3-1  \
-seahorse \
-gnome-remote-desktop \
-freerdp3-wayland
+sudo apt install -y /
+gnome-core /
+evince- /
+papers /
+alacritty /
+gnome-terminal- /
+gnome-console- /
+ptyxis /
+totem /
+showtime /
+firefox-esr- /
+firefox- /
+chromium /
+epiphany-browser /
+seahorse
 
 # https://gist.github.com/tdcosta100
 # https://gist.github.com/onomatopellan/c5220c0efddaff69aaff77cca80b7b8e?permalink_comment_id=5680043#gistcomment-5680043
 # https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/administering_rhel_by_using_the_gnome_desktop_environment/remotely-accessing-the-desktop#connecting-to-a-remote-desktop-session-on-a-headless-server-for-a-single-user
 # https://discourse.gnome.org/t/with-ssh-only-access-how-do-you-configure-headless-gnome-remote-desktop/24998
 # https://std.rocks/gnulinux_rdp_remotedesktop.html
+
+sudo apt install gnome-remote-desktop freerdp3-wayland
 
 mkdir -p ~/.local/share/gnome-remote-desktop
 
@@ -48,8 +42,6 @@ openssl x509 -req -days 100000 -signkey ${GRDCERTDIR}/tls.key -in ${GRDCERTDIR}/
 
 grdctl --headless rdp set-tls-key ~/.local/share/gnome-remote-desktop/tls.key
 
-
-
 Unused commands:
 openssl req -new -key ${GRDCERTDIR}/tls.key -out ${GRDCERTDIR}/tls.csr -subj "/C=AU/ST=QLD/L=Locality/O=OrgName/OU=OrgUnit/CN=WSL2-rdp-login"
 sudo -u gnome-remote-desktop winpr-makecert3 -silent -rdp -path ~gnome-remote-desktop rdp-tls
@@ -64,20 +56,23 @@ IM_CONFIG_PHASE=1 \
 QT_ACCESSIBILITY=1 \
 QT_IM_MODULE=ibus \
 XDG_CURRENT_DESKTOP=default:GNOME \
-XDG_DATA_DIRS=/usr/share/default:$(XDG_DATA_DIRS) \
+XDG_DATA_DIRS=/usr/share/default:$XDG_DATA_DIRS \
 XDG_SESSION_TYPE=wayland \
 XMODIFIERS=@im=ibus \
 MUTTER_DEBUG_DUMMY_MODE_SPECS=2368x1480 \
 gnome-session
 
-
 D3F3JM6D24303H7:3389
-
 
 Try again from scratch (no mucking about with polkit this time)
 Enable only remote desktop and not screensharing (and not both)
 
 If grd fails, try xrdp
+
+command for Windows username:
+WIN_USERNAME="$(powershell.exe -NoProfile -NonInteractive -Command "\$Env:UserName")"
+install net-tools, then:
+WIN_IP="$(route -n | grep "^0\.0\.0\.0" | awk '{print $2}')"
 
 # https://avivarma1.medium.com/setting-up-debian-on-wsl2-with-systemd-fb4831dd7b82
 
@@ -113,24 +108,134 @@ EOF
 
 cat /etc/wsl.conf
 
+Gone remote desktop:
+https://discourse.gnome.org/t/with-ssh-only-access-how-do-you-configure-headless-gnome-remote-desktop/24998/25
+https://wiki.archlinux.org/title/Linux_console/Keyboard_configuration
+
+KDE rather than GNOME route:
+
+To load KDE nested, try:
+dbus-run-session startplasma-wayland
+https://www.reddit.com/r/kde/comments/1koedbi/is_it_possible_to_start_a_nested_plasma_desktop/
+
+KDE install command:
+
+sudo apt install -y \
+dolphin \
+kdialog \
+keditbookmarks \
+kfind \
+konqueror \
+konq-plugins \
+imagemagick \
+alacritty \
+kwrite \
+plasma-desktop \
+plasma-desktop-doc \
+plasma-workspace \
+plasma-workspace-doc \
+kwalletmanager  \
+plasma-dataengines-addons \
+plasma-pa \
+kmix- \
+plasma-runners-addons \
+plasma-wallpapers-addons \
+plasma-widgets-addons \
+polkit-kde-agent-1 \
+plasma-nm \
+webext-plasma-browser-integration \
+firefox-esr- \
+chromium \
+systemsettings \
+kdeadmin \
+kdegames \
+kajongg \
+kdegraphics \
+kdegraphics-thumbnailers \
+svgpart \
+kdemultimedia \
+ffmpegthumbs \
+kasts \
+kde-spectacle
+
+For GPU acceleration of WSL2, need these environment variables:
+GALLIUM_DRIVER=d3d12 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA glxinfo -B
+export GALLIUM_DRIVER=d3d12
+export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+
+echo -e "vgem\n" | sudo tee /etc/modules-load.d/vgem.conf
+cat /etc/modules-load.d/vgem.conf
+wsl.exe --shutdown
+lsmod
+export GALLIUM_DRIVER=d3d12
+export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+glxinfo -B
+
+See more detail here:
+https://gist.github.com/lzlrd/0d9b757d2122f551794fd00c7f0752d6
+
+Sunshine server and moonlight client:
+https://docs.lizardbyte.dev/projects/sunshine/latest/
+https://github.com/LizardByte/Sunshine?tab=readme-ov-file#sunshine
+https://github.com/moonlight-stream/moonlight-qt?tab=readme-ov-file#moonlight-pc
+...with a forced EDID to set monitor and resolution
 
 
-# ###### #
-# locale #
-# ###### #
 
-echo "\
-# This file lists locales that you wish to have built. You can find a list
-# of valid supported locales at /usr/share/i18n/SUPPORTED, and you can add
-# user defined locales to /usr/local/share/i18n/SUPPORTED. If you change
-# this file, you need to rerun locale-gen.
+...or maybe use gamescope instead:
 
-Phil.UTF-8 UTF-8
-en_GB.UTF-8 UTF-8
-en_AU.UTF-8 UTF-8
-en_US.UTF-8 UTF-8
-C.UTF-8 UTF-8
-" | sudo tee /etc/locale.gen
+(1) Add unstable repo with Pin-Priority favouring Stable > Testing > Unstable
+https://jaqque.sbih.org/kplug/apt-pinning.html
+DONE
 
-sudo locale-gen
+(2) Install Unstable gamescope but with dependencies from Stable:
+sudo apt install gamescope/sid
+CONFIRMED WORKING
+
+(3) Run KDE plasma nested in gamescope
+
+https://gist.github.com/davidedmundson/8e1732b2c8b539fd3e6ab41a65bcab74
+https://gist.github.com/lucsoft/40c929537e083f1984d4dedd393eae80
+
+https://github.com/ValveSoftware/gamescope/issues/1755
+https://gist.github.com/fishman/048ae2de25b208443e74a2978671164f
+
+Need KDE without:
+"Wayland to X recording bridge" "Xwayland video bridge"
+sudo apt purge xwaylandvideobridge
+
+
+
+https://stackoverflow.com/questions/69550071/how-to-create-a-linux-gui-app-short-cut-for-wsl2-on-windows10
+https://github.com/barrett101/Intune-Desktop-Shortcut-with-embedded-icon-in-script
+
+
+
+Overall, this project is to build two bash scripts with the below functionality:
+
+Bash script `falkon-captive-portal.sh`, which on Debian Trixie, with a KDE desktop environment, performs the following:
+
+(1) Checks for everything needed for use later in the script with `if ! command -v ${exampletool} &> /dev/null; then ...`
+(2) Establish a chroot or similar as a temporary package building environment that is cleared up at the end of the script
+(3) Get the latest tagged version of Falkon as per https://invent.kde.org/network/falkon/-/tags
+(4) Apply patches to Falkon as follows:
+  (4.1) Make the address bar always read only
+  (4.2) Hard-code that this Falkon browser variant opens all new tabs to http://networkcheck.kde.org/ (note not https, and note the URL may be redirected later - e.g. in a captive portal scenario - and you can see that occur in the read-only address bar, but no UI interaction with the address bar is possible any more)
+  (4.3) In Falkon settings, make the element where you would otherwise be able to change the homepage(s), read-only.
+(5) Rename the package / application from 'falkon' to 'captiveportalonly'
+(6) Build and debian package 'captiveportalonly', so that it is as similar as possible to https://packages.debian.org/trixie/falkon#pdeps.  Make sure we build only with Debian stable (Trixie) package dependencies.  Please remove libsvtav1enc0 as a recommended package for 'captiveportalonly'.
+(7) Clean up, so that the only thing left from script operation, is `captiveportalonly.deb` in `$HOME`.
+
+Bash script `captive-portal-systemd-service.sh`, that configureas a systemd service that runs every time any network connection changes.  This will execute logic along the lines of the following:
+
+`portaltest=$(lynx -dump http://networkcheck.kde.org | cut -c 1- | grep -o "OK")`
+`if [[ "$portaltest" != "OK" ]]; then captiveportalonly fi`
+
+i.e. run the captiveportalonly app if lynx cannot get OK from the KDE network check web page.
+
+All outputs will be published to https://github.com/phil-gg/captiveportalonly under an MIT0 licence.
+
+Separately (out of scope for this project), I will be configuring networking on the machine for lynx and 'captiveportalonly' to use the raw network connection(s) on the machine and the DHCP provided DNS server, while everything else on the machine must use a VPN tunnel.  I will put these further developments into https://github.com/phil-gg/captiveportalonly at some unspecified later date.
+
+I note that Arc’s average developer rate is USD 60-100+ per hour.  For this initial project, if your rate was USD 60, my budget for all build and test for the above scope, extends to 3 hours.  If you charge more per hour, you would need to be correspondingly quicker to be in budget.
 
