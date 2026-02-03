@@ -192,13 +192,13 @@ echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
 sudo localectl set-x11-keymap gb extd
 fi
 
-echo -e "\n$ localectl status"
+echo -e "\n$ localectl status\n"
 localectl status
 
 # Timezone configuration
 
 echo -e "\n${cyanbold}Configure timezone${normal}"
-if [[ ! timedatectl status | grep -i "Australia/Brisbane" ]]; then
+if ! timedatectl status | grep -q -i "Australia/Brisbane"; then
 echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\"\n"
 sudo timedatectl set-timezone "Australia/Brisbane"
 fi
