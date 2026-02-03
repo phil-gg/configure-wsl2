@@ -40,7 +40,7 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 # Locale configuration
 
-if [[ -f /usr/share/i18n/locales/en_AU@phil ]]; then
+if [[ ! -f /usr/share/i18n/locales/en_AU@phil ]]; then
 echo -e "\n${cyanbold}Installing custom locale${normal}"
 echo -e "$ sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil"
 sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil
@@ -72,10 +72,9 @@ if [[ "${changes_made}" == "1" ]]; then
 echo -e "\n${cyanbold}Running locale-gen${normal}"
 echo -e "$ sudo locale-gen"
 sudo locale-gen
-echo -e "\n${redbold}Locale updated but restart required${normal}"
 echo -e "\n${redbold}Locale updated but restart required${normal}\n
 Please run:\n
-wsl.exe --shutdown\n"
+wsl.exe --shutdown"
 fi
 
 # Keyboard configuration
