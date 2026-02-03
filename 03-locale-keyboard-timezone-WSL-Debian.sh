@@ -25,6 +25,7 @@ redbold=$(printf '\033[91;1m')
 greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
+changes_made="0"
 
 # Now running `${filename}`
 
@@ -37,13 +38,47 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
 ; exit 101; }
 
+# Locale configuration
+
 if [[ -f /usr/share/i18n/locales/en_AU@phil ]]; then
 echo -e "\n${cyanbold}Installing custom locale${normal}"
 echo -e "$ sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil"
 sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil
+changes_made="1"
 fi
 
+if ! cmp -s usr/share/i18n/SUPPORTED /usr/share/i18n/SUPPORTED; then
+echo -e "\n${cyanbold}Updating SUPPORTED locales${normal}"
+echo -e "$ sudo cp -f usr/share/i18n/SUPPORTED /usr/share/i18n/SUPPORTED"
+sudo cp -f usr/share/i18n/SUPPORTED /usr/share/i18n/SUPPORTED
+changes_made="1"
+fi
 
+if ! cmp -s etc/locale.gen /etc/locale.gen; then
+echo -e "\n${cyanbold}Updating /etc/locale.gen${normal}"
+echo -e "$ sudo cp -f etc/locale.gen /etc/locale.gen"
+sudo cp -f etc/locale.gen /etc/locale.gen
+changes_made="1"
+fi
+
+if ! cmp -s etc/locale.conf /etc/locale.conf; then
+echo -e "\n${cyanbold}Updating /etc/locale.conf${normal}"
+echo -e "$ sudo cp -f etc/locale.conf /etc/locale.conf"
+sudo cp -f etc/locale.conf /etc/locale.conf
+changes_made="1"
+fi
+
+if [[ "${changes_made}" == "1" ]]; then
+echo -e "\n${cyanbold}Running locale-gen${normal}"
+echo -e "$ sudo locale-gen"
+sudo locale-gen
+echo -e "\n${redbold}Locale updated but restart required${normal}"
+echo -e "\n${redbold}Locale updated but restart required${normal}\n
+Please run:\n
+wsl.exe --shutdown\n"
+fi
+
+# Keyboard configuration
 
 
 
