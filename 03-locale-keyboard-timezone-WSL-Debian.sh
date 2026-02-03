@@ -145,8 +145,8 @@ echo -e "\n${cyanbold}Installing keymaps${normal}"
 kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
 grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
 
-echo -e "$ mkdir -p /usr/share/keymaps"
-mkdir -p /usr/share/keymaps
+echo -e "$ sudo mkdir -p /usr/share/keymaps"
+sudo mkdir -p /usr/share/keymaps
 
 echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
 mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
