@@ -94,43 +94,45 @@ locale
 echo -e "\n$ localectl status\n"
 localectl status
 
-echo -e "\n$ date\n"
-date
-
 echo -e "\n$ locale -k LC_NUMERIC\n"
 locale -k LC_NUMERIC
 
+echo -e "\n$ date"
+date
+echo -e "${greenbold}> DESIRED OUTPUT:
+DDD-DD-MMM-YYYY HH:MM:SS TZ${normal}"
+
 echo -e "\n$ awk 'BEGIN { printf \"%'\"'\"'.4f\\\n\", 1234567.89 }'"
 awk 'BEGIN { printf "%'"'"'.4f\n", 1234567.89 }'
-echo -e "\n${greenbold}> DESIRED OUTPUT:
+echo -e "${greenbold}> DESIRED OUTPUT:
 1 234 567.8900${normal}"
 
 echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(1234567.891, grouping=True))\""
 python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(1234567.891, grouping=True))"
-echo -e "\n${greenbold}> DESIRED OUTPUT:
+echo -e "${greenbold}> DESIRED OUTPUT:
  + $ 1 234 567.89${normal}"
 
 echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(1234567.891, grouping=True, international=True))\""
 python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(1234567.891, grouping=True, international=True))"
-echo -e "\n${greenbold}> DESIRED OUTPUT:
+echo -e "${greenbold}> DESIRED OUTPUT:
  + AUD 1 234 567.89${normal}"
 
 echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(-1234567.891, grouping=True))\""
 python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(-1234567.891, grouping=True))"
-echo -e "\n${greenbold}> DESIRED OUTPUT:
+echo -e "${greenbold}> DESIRED OUTPUT:
  - $ 1 234 567.89${normal}"
 
 echo -e "\n$ python3 -c \"import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(-1234567.891, grouping=True, international=True))\""
 python3 -c "import locale; locale.setlocale(locale.LC_ALL, ''); \
 print(locale.currency(-1234567.891, grouping=True, international=True))"
-echo -e "\n${greenbold}> DESIRED OUTPUT:
+echo -e "${greenbold}> DESIRED OUTPUT:
  - AUD 1 234 567.89${normal}"
 
 fi
