@@ -363,6 +363,11 @@ Explanation: Sid/Unstable is here at 90 for selected packages only
 Package: *
 Pin: release o=Debian, n=sid
 Pin-Priority: 90
+
+Explanation: This package behaves badly on WSL2 - prevent installation
+Package: xwaylandvideobridge
+Pin: version *
+Pin-Priority: -1
 " | sudo tee /etc/apt/preferences.d/99administrator-prefs 1> /dev/null
 fi
 
