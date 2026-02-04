@@ -215,9 +215,6 @@ echo -e "\n${cyanbold}Testing locale configuration${normal}"
 echo -e "$ locale\n"
 locale
 
-echo -e "\n$ localectl status\n"
-localectl status
-
 echo -e "\n$ locale -k LC_NUMERIC\n"
 locale -k LC_NUMERIC
 
