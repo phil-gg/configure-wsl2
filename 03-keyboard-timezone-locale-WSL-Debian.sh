@@ -44,10 +44,10 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 # https://manpages.debian.org/trixie/keyboard-configuration/keyboard.5.en.html
 # Note more customisation available with KMAP variable & loadkeys
 
-if ! dpkg -l keyboard-configuration 2> /dev/null/ | grep -q "ii" || \
-   ! dpkg -l console-setup 2> /dev/null/ | grep -q "ii"; then
+if ! dpkg -l keyboard-configuration 2> /dev/null | grep -q "ii" || \
+   ! dpkg -l console-setup 2> /dev/null | grep -q "ii"; then
 
-echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
+echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}\n"
 echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration 
 \console-setup
  "
@@ -123,24 +123,24 @@ fi
 
 echo -e "\n${cyanbold}Configure keyboard layout${normal}"
 
-echo -e "\n$ localectl list-keymaps | grep -i UK\n"
+echo -e "$ localectl list-keymaps | grep -i UK\n"
 localectl list-keymaps | grep -i UK
 
 if ! localectl status | grep -q -i "keymap: uk" || \
    ! localectl status | grep -q -i "layout: gb" || \
    ! localectl status | grep -q -i "model: extd"; then
-echo -e "\n$ sudo localectl set-x11-keymap gb extd\n"
+echo -e "\n$ sudo localectl set-x11-keymap gb extd"
 sudo localectl set-x11-keymap gb extd
 fi
 
-echo -e "\n$ localectl status\n"
+echo -e "$ localectl status\n"
 localectl status
 
 # Timezone configuration
 
 echo -e "\n${cyanbold}Configure timezone${normal}"
 if ! timedatectl status | grep -q -i "Australia/Brisbane"; then
-echo -e "\n$ sudo timedatectl set-timezone \"Australia/Brisbane\""
+echo -e "$ sudo timedatectl set-timezone \"Australia/Brisbane\""
 sudo timedatectl set-timezone "Australia/Brisbane"
 fi
 echo -e "\n$ timedatectl status\n"
