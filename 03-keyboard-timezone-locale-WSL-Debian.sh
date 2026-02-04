@@ -48,8 +48,8 @@ if ! dpkg -l keyboard-configuration 2> /dev/null | grep -q "ii" || \
    ! dpkg -l console-setup 2> /dev/null | grep -q "ii"; then
 
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
-echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration 
-\console-setup\n\n"
+echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration \
+console-setup\n"
 sudo apt update
 echo "\
 keyboard-configuration  keyboard-configuration/layoutcode    string  gb
@@ -121,7 +121,6 @@ rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
 fi
 
 echo -e "\n${cyanbold}Configure keyboard layout${normal}"
-
 echo -e "$ localectl list-keymaps | grep -i UK\n"
 localectl list-keymaps | grep -i UK
 
@@ -130,6 +129,8 @@ if ! localectl status | grep -q -i "keymap: uk" || \
    ! localectl status | grep -q -i "model: extd"; then
 echo -e "\n$ sudo localectl set-x11-keymap gb extd"
 sudo localectl set-x11-keymap gb extd
+else
+echo -e ""
 fi
 
 echo -e "$ localectl status\n"
