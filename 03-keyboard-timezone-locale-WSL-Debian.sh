@@ -178,20 +178,21 @@ fi
 
 if [[ "${changes_made}" == "1" ]]; then
 echo -e "\n${cyanbold}Running locale-gen${normal}"
-echo -e "$ sudo locale-gen"
+echo -e "$ sudo locale-gen\n"
 sudo locale-gen
-echo -e "$ locale -a\n"
+echo -e "\n$ locale -a\n"
 locale -a
-echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales"
+echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales\n"
 echo -e "\
-locales  locales/default_environment_locale  select  en_US.UTF-8
+locales  locales/default_environment_locale  select  en_AU@phil
 locales  locales/locales_to_be_generated  multiselect  $(cat etc/locale.gen | \
 tail -n +6 | sed ':a;N;$!ba;s/\n/, /g')
 " | sudo debconf-set-selections
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 echo -e "\n${redbold}Locale updated but restart required${normal}\n
 Please run:\n
-wsl.exe --shutdown"
+wsl.exe --shutdown\n
+Afterwards, you can re-run this script to see locale test results"
 fi
 
 # Test locale if no changes made this run
