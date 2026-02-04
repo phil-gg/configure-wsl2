@@ -47,10 +47,9 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 if ! dpkg -l keyboard-configuration 2> /dev/null | grep -q "ii" || \
    ! dpkg -l console-setup 2> /dev/null | grep -q "ii"; then
 
-echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}\n"
+echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration 
-\console-setup
- "
+\console-setup\n\n"
 sudo apt update
 echo "\
 keyboard-configuration  keyboard-configuration/layoutcode    string  gb
