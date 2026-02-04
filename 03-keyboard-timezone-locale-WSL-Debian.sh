@@ -51,7 +51,7 @@ echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration \
 console-setup\n"
 sudo apt update
-echo "\
+echo -e "\
 keyboard-configuration  keyboard-configuration/layoutcode    string  gb
 keyboard-configuration  keyboard-configuration/modelcode     string  pc105
 keyboard-configuration  keyboard-configuration/variantcode   string  extd
@@ -131,9 +131,10 @@ localectl list-keymaps | grep -i UK
 
 if ! localectl status | grep -q -i "keymap: uk" || \
    ! localectl status | grep -q -i "layout: gb" || \
-   ! localectl status | grep -q -i "model: extd"; then
+   ! localectl status | grep -q -i "model: pc105" || \
+   ! localectl status | grep -q -i "variant: extd"; then
 echo -e "\n$ sudo localectl set-x11-keymap gb extd"
-sudo localectl set-x11-keymap gb extd
+sudo localectl set-x11-keymap gb pc105 extd
 else
 echo -e ""
 fi
