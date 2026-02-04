@@ -57,9 +57,7 @@ keyboard-configuration  keyboard-configuration/modelcode     string  pc105
 keyboard-configuration  keyboard-configuration/variantcode   string  extd
 keyboard-configuration  keyboard-configuration/xkb-keymap    string  gb
 console-setup   console-setup/charmap       select  UTF-8
-console-setup   console-setup/codeset       select  Guess optimal character set
-console-setup   console-setup/codesetcode   string  guess
-console-setup   console-setup/fontface      select  Do not change the boot/kernel font
+console-setup   console-setup/codesetcode   string  Lat15
 tzdata          tzdata/Areas                select  Australia
 tzdata          tzdata/Zones/Australia      select  Brisbane
 tzdata          tzdata/Zones/Etc            select  UTC
@@ -71,7 +69,14 @@ echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
 echo -e "$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup
-echo -e "$ sudo setupcon"
+echo -e "$ sudo sed -i '/^FONTFACE=/c\FONTFACE=""' /etc/default/console-setup"
+sudo sed -i '/^FONTFACE=/c\FONTFACE=""' /etc/default/console-setup
+echo -e "$ sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup"
+sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup
+echo -e "$ cat /etc/default/console-setup\n"
+cat /etc/default/console-setup
+
+echo -e "\n$ sudo setupcon"
 sudo setupcon
 echo -e "$ localectl status\n"
 localectl status
