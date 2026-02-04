@@ -44,23 +44,35 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 # https://manpages.debian.org/trixie/keyboard-configuration/keyboard.5.en.html
 # Note more customisation available with KMAP variable & loadkeys
 
-if ! dpkg -l keyboard-configuration | grep -q "ii" || \
-   ! dpkg -l console-setup | grep -q "ii"; then
+if ! dpkg -l keyboard-configuration 2> /dev/null/ | grep -q "ii" || \
+   ! dpkg -l console-setup 2> /dev/null/ | grep -q "ii"; then
 
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration 
-\console-setup\n"
+\console-setup
+ "
 sudo apt update
 echo "\
-keyboard-configuration keyboard-configuration/layoutcode string gb
-keyboard-configuration keyboard-configuration/modelcode string pc105
-keyboard-configuration keyboard-configuration/variantcode string extd
-keyboard-configuration keyboard-configuration/xkb-keymap string gb
+keyboard-configuration  keyboard-configuration/layoutcode    string  gb
+keyboard-configuration  keyboard-configuration/modelcode     string  pc105
+keyboard-configuration  keyboard-configuration/variantcode   string  extd
+keyboard-configuration  keyboard-configuration/xkb-keymap    string  gb
+console-setup   console-setup/charmap       select  UTF-8
+console-setup   console-setup/codeset       select  Guess optimal character set
+console-setup   console-setup/codesetcode   string  guess
+console-setup   console-setup/fontface      select  Do not change the boot/kernel font
+tzdata          tzdata/Areas                select  Australia
+tzdata          tzdata/Zones/Australia      select  Brisbane
+tzdata          tzdata/Zones/Etc            select  UTC
 " | sudo debconf-set-selections
 sudo DEBIAN_FRONTEND=noninteractive apt -y install keyboard-configuration \
 console-setup
 
-echo -e "\n$ sudo setupcon"
+echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
+sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
+echo -e "$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup"
+sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup
+echo -e "$ sudo setupcon"
 sudo setupcon
 echo -e "$ localectl status\n"
 localectl status
