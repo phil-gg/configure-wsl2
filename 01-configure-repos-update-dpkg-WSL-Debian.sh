@@ -30,12 +30,24 @@ bluebold=$(printf '\033[94;1m')
 
 echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
-# Check for presence of wget
+# Check for presence of wget gpg debsigs & lynx
+# Before network test, because network test uses wget
 
-if ! command -v wget &> /dev/null; then
-echo -e "\n${cyanbold}Installing wget${normal}"
-echo -e "$ sudo apt update && sudo apt -y install wget\n"
-sudo apt update && sudo apt -y install wget
+PACKAGES="\
+wget \
+gpg \
+debsigs \
+lynx"
+
+DPKG_OUTPUT=$(dpkg -l wget ${PACKAGES})
+START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
+DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
+NON_II_CODES=$(echo "${DPKG_TAIL}" | awk '!/^ii/ {print substr($0, 1, 2)}')
+
+if [ -n "${NON_II_CODES}" ]; then
+echo -e "\n${cyanbold}Installing packages${normal}"
+echo -e "$ sudo apt update && sudo apt install -y ${PACKAGES}"
+sudo apt update && sudo apt install -y ${PACKAGES}
 fi
 
 # Network test
@@ -70,30 +82,6 @@ echo -e "${greenbold}> 1password is available for this arch${normal}"
 else
 echo -e "${redbold}> Unsupported architecture, exiting${normal}\n"
 exit 102
-fi
-
-# Check for presence of gpg
-
-if ! command -v gpg &> /dev/null; then
-echo -e "\n${cyanbold}Installing gpg${normal}"
-echo -e "$ sudo apt update && sudo apt -y install gpg\n"
-sudo apt update && sudo apt -y install gpg
-fi
-
-# check for presence of debsig-verify
-
-if ! command -v debsig-verify &> /dev/null; then
-echo -e "\n${cyanbold}Installing debsigs${normal}"
-echo -e "$ sudo apt update && sudo apt -y install debsigs\n"
-sudo apt update && sudo apt -y install debsigs
-fi
-
-# Check for presence of lynx
-
-if ! command -v lynx &> /dev/null; then
-echo -e "\n${cyanbold}Installing lynx${normal}"
-echo -e "$ sudo apt update && sudo apt -y install lynx\n"
-sudo apt update && sudo apt -y install lynx
 fi
 
 # Get debian package keys
@@ -728,12 +716,9 @@ op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
 if ! op account get &> /dev/null; then
-echo -e "${redbold}> Not logged into 1password-cli${normal}
-
-RUN THIS NEXT:
-
-eval \$(op signin)
-"
+echo -e "${redbold}> Not logged into 1password-cli${normal}\n
+RUN THIS NEXT:\n
+eval \$(op signin)\n"
 exit 113
 else
 echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
