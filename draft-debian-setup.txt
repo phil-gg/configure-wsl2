@@ -1,11 +1,33 @@
 #!/bin/bash
 
-# Packages for {wslg > gamescope > kde-plasma} nested desktop environment
+# 04-wslg-weston-kde-plasma-nested-de
+# Configure a {wslg > weston > kde-plasma} nested desktop environment
+# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg
+
+
+
+# Kernel module vgem required as DRM buffer for d3d12 driver
+
+# Load vgem on every future boot
+echo -e "vgem\n" &> /dev/null | sudo tee /etc/modules-load.d/vgem.conf
+
+# Load vgem now
+sudo modprobe vgem
+
+# Show loaded vgem (and related) kernel modules
+echo -e "$(lsmod | head -n 1)\n$(lsmod | grep "vgem")"
+
+
+ls -l /dev/dri/card*
+
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+glxinfo -B
+
+# Packages for {wslg > weston > kde-plasma} nested desktop environment
 
 sudo apt update && sudo apt install -y \
-gamescope/sid \
-libavif16/sid \
-seatd \
+weston \
 mesa-utils \
 plasma-workspace \
 kde-cli-tools \
@@ -23,6 +45,84 @@ fonts-noto-color-emoji \
 khelpcenter \
 kinfocenter \
 kwin-wayland
+
+# Set up virtual screen on Weston, in the background (final ampersand)
+
+weston --socket=weston > /dev/null 2>&1 &
+
+ls /run/user/$(id -u)/weston
+
+# End weston session
+# pkill -f "weston --socket=weston"
+
+
+WAYLAND_DISPLAY=weston \
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+dbus-run-session startplasma-wayland > /dev/null 2>&1 &
+
+
+# ~/.config/weston.ini
+
+[core]
+# https://manpages.debian.org/trixie/weston/weston.ini.5.en.html
+# Enables support for X11 applications
+# xwayland=true
+# Use the Kiosk shell to force the nested app to fill the screen
+shell=kiosk-shell.so
+# force wayland backend
+backend=wayland
+# disable screen blanking
+idle-time=0
+
+[libinput]
+# Enables tap to click on touchpad devices
+enable-tap=true
+# Enables tap and drag on touchpad devices
+tap-and-drag=true
+# disable other devices while typing on keyboard
+disable-while-typing=false
+# clicking both left and right buttons together simulates middle click
+middle-button-emulation=false
+# enable touchscreen calibrator interface
+touchscreen_calibrator=false
+
+[shell]
+# set background color to opaque black
+background-color=0xff000000
+# Enables screen locking (Boolean)
+locking=false
+# Opening new windows animation
+animation=none
+# Closing windows animation
+close-animation=none
+# Effect used by desktop-shell when starting up
+startup-animation=none
+# Effect used with focused vs unfocused windows
+focus-animation=dim-layer
+# Weston quits when the Ctrl-Alt-Backspace key combination is pressed
+allow-zap=true
+# Modifier key for bindings - see https://manpages.debian.org/trixie/weston/weston-bindings.7.en.html
+binding-modifier=alt
+# Set the cursor theme
+# cursor-theme=
+# Set the cursor size
+cursor-size=48
+
+[keyboard]
+keymap_model=pc105
+keymap_layout=gb
+keymap_variant=extd
+
+
+
+
+
+# Add google dot white cursor
+https://github.com/ful1e5/Google_Cursor/releases/latest
+
+
+
 
 # Packages to build ananicy-cpp
 
@@ -102,14 +202,15 @@ systemctl status ananicy-cpp
 export XDG_RUNTIME_DIR=/run/user/$(id -u)  && \
 # Configure mesa
 export GALLIUM_DRIVER=d3d12 && \
-export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA && \
+export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+export VK_DRIVER_FILES=/usr/share/vulkan/icd.d/lvp_icd.json && \
 # Direct session to display through WSLg
 export WAYLAND_DISPLAY=wayland-0 && \
 # Within kde-plasma, use Wayland rather than an X-Server
 export QT_QPA_PLATFORM=wayland && \
 # Run kde-plasma with a parent dbus session bus
 # Run kde-plasma within gamescope as virtual display we can configure
-dbus-run-session gamescope -w 2400 -h 1600 -r 121 -f -- startplasma-wayland
+dbus-run-session gamescope -f -w 2400 -h 1600 -r 120.000191 --framerate-limit 120 --backend wayland --expose-wayland -- startplasma-wayland
 
 
 
