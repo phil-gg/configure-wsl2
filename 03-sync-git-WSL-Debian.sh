@@ -26,6 +26,10 @@ greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
 
+# Now running `${filename}`
+
+echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
+
 # Network test
 
 echo -e "\n${bluebold}Testing network connectivity${normal}"
