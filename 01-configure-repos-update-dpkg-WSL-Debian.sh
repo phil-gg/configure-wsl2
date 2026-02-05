@@ -364,8 +364,13 @@ Package: *
 Pin: release o=Debian, n=sid
 Pin-Priority: 90
 
-Explanation: This package behaves badly on WSL2 - prevent installation
+Explanation: Prevent installation on WSL2
 Package: xwaylandvideobridge
+Pin: version *
+Pin-Priority: -1
+
+Explanation: Prevent installation on WSL2
+Package: zutty
 Pin: version *
 Pin-Priority: -1
 " | sudo tee /etc/apt/preferences.d/99administrator-prefs 1> /dev/null
@@ -646,13 +651,13 @@ libappindicator3-1
 # Make folder(s) if they don't exist
 
 echo -e "\n${cyanbold}Build our own deb package for arm64 arch${normal}"
-echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/pkgbuild"
-mkdir -p "${HOME}/git/${github_username}/${github_project}/pkgbuild"
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
 
 # Navigate to working directory
 
-echo -e "$ cd ~/git/${github_username}/${github_project}/pkgbuild"
-cd "${HOME}/git/${github_username}/${github_project}/pkgbuild" 2> /dev/null \
+echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
 || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 111; }
 
@@ -666,7 +671,7 @@ wget -O "1password_${shortversion1p}_amd64.deb" \
 https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
 
 # TO-DO: Complete manual deb package build here
-# OR: Don't even make pkgbuild folder; instead sig-check & install tarball
+# OR: Don't even make tmp folder; instead sig-check & install tarball
 
 # ###################### #
 # END ARM64 ONLY SECTION #

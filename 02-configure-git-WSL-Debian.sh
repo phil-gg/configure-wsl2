@@ -220,7 +220,7 @@ echo -e "> .git not created yet"
 find "${HOME}/git/${github_username}/${github_project}" -mindepth 1 -delete
 
 # final dot prevents a duplicate ${github_project} folder
-# clone replaced remote add, which 
+# clone replaced remote add
 echo -e "\n$ git clone \
 \"https://github.com\
 /${github_username}\

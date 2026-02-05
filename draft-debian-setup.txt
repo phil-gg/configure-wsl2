@@ -1,6 +1,120 @@
-Next step:
+#!/bin/bash
 
-Nested kde-plasma in gamescope on wslg setup
+# Packages for {wslg > gamescope > kde-plasma} nested desktop environment
+
+sudo apt update && sudo apt install -y \
+gamescope/sid \
+libavif16/sid \
+seatd \
+mesa-utils \
+plasma-workspace \
+kde-cli-tools \
+kio-extras \
+kio-fuse \
+ksystemstats \
+plasma-workspace-doc \
+systemsettings \
+plasma-desktop \
+breeze-gtk-theme \
+kde-config-gtk-style \
+fonts-hack \
+fonts-noto \
+fonts-noto-color-emoji \
+khelpcenter \
+kinfocenter \
+kwin-wayland
+
+# Packages to build ananicy-cpp
+
+sudo apt update && sudo apt install -y \
+build-essential \
+cmake \
+libsystemd-dev \
+pkg-config \
+debhelper
+
+# get latest tagged version and corresponding commit
+
+ananicy_version=$(lynx -dump -nonumbers https://gitlab.com/ananicy-cpp/ananicy-\
+cpp/-/tags | grep -oP 'v[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
+echo -e "> ananicy_version=${ananicy_version}"
+
+ananicy_commit=$(lynx -dump -nonumbers https://gitlab.com/ananicy-cpp/ananicy-\
+cpp/-/tags | grep -C 1 -P 'v[0-9]+\.[0-9]+\.[0-9]+' | head -n 3 | tail -n 1 | \
+grep -oP '\b[a-z0-9]{8}\b')
+echo -e "> ananicy_commit=${ananicy_commit}"
+
+# Make folder(s) if they don't exist
+
+echo -e "$ mkdir -p ~/git/ananicy-cpp/ananicy-cpp/${ananicy_version}"
+mkdir -p "${HOME}/git/ananicy-cpp/ananicy-cpp/${ananicy_version}"
+
+# Navigate to working directory
+
+echo -e "$ cd ~/git/ananicy-cpp/ananicy-cpp"
+cd "${HOME}/git/ananicy-cpp/ananicy-cpp" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 101; }
+
+# Clone project
+
+echo -e "$ git clone https://gitlab.com/ananicy-cpp/ananicy-cpp.git ."
+git clone https://gitlab.com/ananicy-cpp/ananicy-cpp.git .
+
+# Checkout the specific commit
+echo -e "Checking out commit: $ananicy_commit"
+git checkout "$ananicy_commit"
+
+# Prepare the build environment
+# ananicy-cpp uses a standard CMake build process
+cd ${ananicy_version}
+mkdir build && cd build
+
+# Compile
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+make -j$(nproc)
+
+# Build the Debian package
+# We use 'cpack' which is integrated with CMake to generate the .deb
+cpack -G DEB
+
+echo "Build complete. Your .deb package is located in:"
+echo "$(pwd)"
+
+# TO-DO: Install deb package
+
+if ! -f /etc/ananicy.d/gamescope.rules; then
+echo '{"name": "gamescope", "nice": -20, "ioclass": "realtime"}' | \
+sudo tee /etc/ananicy.d/gamescope.rules
+fi
+
+sudo systemctl stop ananicy-cpp
+
+sudo systemctl enable --now ananicy-cpp
+
+systemctl status ananicy-cpp
+
+
+
+
+
+# Set dir for user runtime files (sockets, named pipes, temp locks, etc.)
+export XDG_RUNTIME_DIR=/run/user/$(id -u)  && \
+# Configure mesa
+export GALLIUM_DRIVER=d3d12 && \
+export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA && \
+# Direct session to display through WSLg
+export WAYLAND_DISPLAY=wayland-0 && \
+# Within kde-plasma, use Wayland rather than an X-Server
+export QT_QPA_PLATFORM=wayland && \
+# Run kde-plasma with a parent dbus session bus
+# Run kde-plasma within gamescope as virtual display we can configure
+dbus-run-session gamescope -w 2400 -h 1600 -r 121 -f -- startplasma-wayland
+
+
+
+# Symlink from runtime dir tp WSLg Wayland socket
+ln -sf /mnt/wslg/runtime-dir/wayland-0* "$XDG_RUNTIME_DIR/" && \
 
 
 
@@ -165,8 +279,11 @@ export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
 
 echo -e "vgem\n" | sudo tee /etc/modules-load.d/vgem.conf
 cat /etc/modules-load.d/vgem.conf
-wsl.exe --shutdown
-lsmod
+sudo modprobe vgem
+
+lsmod | grep vgem
+ls -l /dev/dri/card*
+
 export GALLIUM_DRIVER=d3d12
 export MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
 glxinfo -B
