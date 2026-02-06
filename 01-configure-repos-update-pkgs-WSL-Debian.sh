@@ -215,28 +215,24 @@ show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc \
 2> /dev/null | awk -F':' '$1=="fpr"{print $10}')
 
 if [[ "${actualMozillaKey}" != "${expectedMozillaKey}" ]]; then
-
 echo -e "\n${cyanbold}Add Mozilla signing key${normal}"
 echo -e "$ wget -qO- https://packages.mozilla.org/apt/repo-signing-key.gpg | \
 sudo tee /usr/share/keyrings/mozilla-archive-keyring.asc 1> /dev/null"
 wget -qO- https://packages.mozilla.org/apt/repo-signing-key.gpg | \
 sudo tee /usr/share/keyrings/mozilla-archive-keyring.asc 1> /dev/null
-
 actualMozillaKey=$(gpg --no-default-keyring --with-colons --import-options \
 show-only --import /usr/share/keyrings/mozilla-archive-keyring.asc \
 2> /dev/null | awk -F':' '$1=="fpr"{print $10}')
+fi
 
-echo -e "\n${bluebold}  Check signing key${normal}"
-echo -e "  > ${expectedMozillaKey} = expected-mozilla-key"
-echo -e "  > ${actualMozillaKey} = actual-mozilla-key"
-
-if [[ "${actualMozillaKey}" == "${expectedMozillaKey}" ]]; then
+echo -e "\n 🔑 /usr/share/keyrings/mozilla-archive-keyring.asc"
+echo -e " 🔐 ${expectedMozillaKey}"
+if [[ "${expectedMozillaKey}" == "${actualMozillaKey}" ]];
+then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
 echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
 exit 109
-fi
-
 fi
 
 # Add 1password package key (on amd64 arch only)
@@ -265,17 +261,18 @@ actual1passwordKey=$(gpg --no-default-keyring --with-colons --import-options \
 show-only --import /usr/share/keyrings/1password-archive-keyring.gpg \
 2> /dev/null | awk -F':' '$1=="fpr"{print $10}')
 
-echo -e "\n${bluebold}  Check signing key${normal}"
-echo -e "  > ${expected1passwordKey} = expected-1password-key"
-echo -e "  > ${actual1passwordKey} = actual-1password-key"
+fi
 
-if [[ "${actual1passwordKey}" == "${expected1passwordKey}" ]]; then
+echo -e "\n 🔑 usr/share/keyrings/1password-archive-keyring.gpg"
+echo -e " 🔐 ${expected1passwordKey}"
+if [[ "${expected1passwordKey}" == "${actual1passwordKey}" ]];
+then
 echo -e "${greenbold} ✅ The key fingerprint matches${normal}"
 else
 echo -e "${redbold} ⚠️ WARNING: unexpected fingerprint${normal}\n"
 exit 110
 fi
-fi
+
 fi
 
 # modernise deb package config files
