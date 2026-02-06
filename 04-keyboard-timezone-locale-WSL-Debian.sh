@@ -18,7 +18,7 @@
 github_username="phil-gg"
 github_project="configure-wsl2"
 github_branch="main"
-filename="03-keyboard-timezone-locale-WSL-Debian.sh"
+filename="04-keyboard-timezone-locale-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')
