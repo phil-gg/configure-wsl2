@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # 04-wslg-weston-kde-plasma-nested-de
-# Configure a {wslg > weston > kde-plasma} nested desktop environment
-# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg
+# Configure a {wslg > weston > kde-plasma} nested desktop environment.
+# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg.
 
 
 
@@ -26,7 +26,30 @@ glxinfo -B
 
 # Packages for {wslg > weston > kde-plasma} nested desktop environment
 
-sudo apt update && sudo apt install -y \
+PACKAGES="\
+weston \
+mesa-utils \
+plasma-workspace \
+kde-cli-tools \
+kio-extras \
+kio-fuse \
+ksystemstats \
+plasma-workspace-doc \
+systemsettings \
+plasma-desktop \
+breeze-gtk-theme \
+kde-config-gtk-style \
+fonts-hack \
+fonts-noto \
+fonts-noto-color-emoji \
+khelpcenter \
+kinfocenter \
+kwin-wayland"
+
+
+
+echo -e "sudo apt update && sudo apt install -y ${PACKAGES}"
+sudo apt update && sudo apt install -y ${PACKAGES}
 weston \
 mesa-utils \
 plasma-workspace \
