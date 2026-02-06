@@ -67,6 +67,15 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 102; }
 
+# Create ~/.config/weston.ini if it does not exist or has changed
+
+if [ ! -f "${HOME}/.config/weston.ini" ] || \
+! cmp -s HOME/.config/weston.ini "${HOME}/.config/weston.ini"; then
+echo -e "\n${cyanbold}Updating ~/.config/weston.ini${normal}"
+echo -e "$ sudo cp -f HOME/.config/weston.ini ~/.config/weston.ini"
+sudo cp -f HOME/.config/weston.ini "${HOME}/.config/weston.ini"
+fi
+
 # Packages for {wslg > weston > kde-plasma} nested desktop environment
 
 PACKAGES="\
@@ -124,9 +133,9 @@ echo -e "echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
 echo -e "$(lsmod | head -n 1)\n$(lsmod | grep vgem)"
 
 echo -e "\n${cyanbold}Show vgem (and related) kernel modules${normal}"
-echo -e "$ ls -l /dev/dri"
+echo -e "$ ls -l /dev/dri\n"
 ls -l /dev/dri
-echo -e "$ ls -l /dev/dri/by-path"
+echo -e "\n$ ls -l /dev/dri/by-path\n"
 ls -l /dev/dri/by-path
 
 echo -e "\n${cyanbold}Show glxinfo using Nvidia graphics through d3d12 driver\
