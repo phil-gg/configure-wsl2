@@ -88,6 +88,7 @@ kio-fuse \
 ksystemstats \
 plasma-workspace-doc \
 systemsettings \
+konsole \
 plasma-desktop \
 breeze-gtk-theme \
 kde-config-gtk-style \
