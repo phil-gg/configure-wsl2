@@ -122,7 +122,7 @@ fi
 
 # Check debian package keys
 
-echo -e "\n${cyanbold}Checking debian signing keys${normal}"
+echo -e "\n${cyanbold}Checking debian package signing keys${normal}"
 
 expectedsha256trixiearchive="6f1d277429dd7ffedcc6f8688a7ad9a458859b1139ffa026\
 d1eeaadcbffb0da7"
