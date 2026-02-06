@@ -32,41 +32,6 @@ bluebold=$(printf '\033[94;1m')
 
 echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
-# Kernel module vgem required as DRM buffer for d3d12 driver
-
-if [ ! -f /etc/modules-load.d/vgem.conf ]; then
-echo -e "\n${cyanbold}Load vgem on every future boot${normal}"
-echo -e "$ echo -e \"vgem\\\n\" &> /dev/null | sudo tee /etc/modules-load.d/\
-vgem.conf"
-echo -e "vgem\n" | sudo tee /etc/modules-load.d/vgem.conf &> /dev/null
-fi
-
-if ! lsmod | grep -q vgem; then
-echo -e "\n${cyanbold}Load vgem now${normal}"
-echo -e "$ sudo modprobe vgem"
-sudo modprobe vgem
-fi
-
-echo -e "\n${cyanbold}Show loaded vgem (and related) kernel modules${normal}"
-echo -e "echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
-echo -e "$(lsmod | head -n 1)\n$(lsmod | grep vgem)"
-
-echo -e "\n${cyanbold}Show vgem (and related) kernel modules${normal}"
-echo -e "$ ls -l /dev/dri"
-ls -l /dev/dri
-echo -e "$ ls -l /dev/dri/by-path"
-ls -l /dev/dri/by-path
-
-echo -e "\n${cyanbold}Show glxinfo using Nvidia graphics through d3d12 driver\
-${normal}"
-echo -e "\
-$ GALLIUM_DRIVER=d3d12 \\\\
-  MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
-  glxinfo -B"
-GALLIUM_DRIVER=d3d12 \
-MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-glxinfo -B
-
 # Network test
 
 echo -e "\n${bluebold}Testing network connectivity${normal}"
@@ -87,6 +52,20 @@ exit 101
 else
 echo -e "${greenbold}> Online${normal}"
 fi
+
+# Make folder(s) if they don't exist
+
+if [ ! -d "${HOME}/git/${github_username}/${github_project}" ]; then
+echo -e "\n$ mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+fi
+
+# Navigate to working directory
+
+echo -e "\n$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 102; }
 
 # Packages for {wslg > weston > kde-plasma} nested desktop environment
 
@@ -124,6 +103,41 @@ echo -e "$ sudo apt update && sudo apt install -y ${PACKAGES}"
 # shellcheck disable=SC2086
 sudo apt update && sudo apt install -y ${PACKAGES}
 fi
+
+# Kernel module vgem required as DRM buffer for d3d12 driver
+
+if [ ! -f /etc/modules-load.d/vgem.conf ]; then
+echo -e "\n${cyanbold}Load vgem on every future boot${normal}"
+echo -e "$ echo -e \"vgem\\\n\" &> /dev/null | sudo tee /etc/modules-load.d/\
+vgem.conf"
+echo -e "vgem\n" | sudo tee /etc/modules-load.d/vgem.conf &> /dev/null
+fi
+
+if ! lsmod | grep -q vgem; then
+echo -e "\n${cyanbold}Load vgem now${normal}"
+echo -e "$ sudo modprobe vgem"
+sudo modprobe vgem
+fi
+
+echo -e "\n${cyanbold}Show loaded vgem (and related) kernel modules${normal}"
+echo -e "echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
+echo -e "$(lsmod | head -n 1)\n$(lsmod | grep vgem)"
+
+echo -e "\n${cyanbold}Show vgem (and related) kernel modules${normal}"
+echo -e "$ ls -l /dev/dri"
+ls -l /dev/dri
+echo -e "$ ls -l /dev/dri/by-path"
+ls -l /dev/dri/by-path
+
+echo -e "\n${cyanbold}Show glxinfo using Nvidia graphics through d3d12 driver\
+${normal}"
+echo -e "\
+$ GALLIUM_DRIVER=d3d12 \\\\
+  MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+  glxinfo -B"
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+glxinfo -B
 
 # TO-DO: More config here
 
