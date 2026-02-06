@@ -31,11 +31,18 @@ changes_made="0"
 
 echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
 
+# Make folder(s) if they don't exist
+
+if [ ! -d "${HOME}/git/${github_username}/${github_project}" ]; then
+echo -e "\n$ mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+fi
+
 # Navigate to working directory
 
-echo -e "$ cd ~/git/${github_username}/${github_project}"
+echo -e "\n$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 101; }
 
 # Keyboard configuration
