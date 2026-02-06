@@ -53,7 +53,7 @@ fi
 
 # Navigate to working directory
 
-echo -e "$ cd ~/git/${github_username}/${github_project}"
+echo -e "\n$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 102; }
