@@ -51,6 +51,13 @@ else
 echo -e "${greenbold}> Online${normal}"
 fi
 
+# Make folder(s) if they don't exist
+
+if [ ! -d "${HOME}/git/${github_username}/${github_project}" ]; then
+echo -e "\n$ mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+fi
+
 # Navigate to working directory
 
 echo -e "\n$ cd ~/git/${github_username}/${github_project}"
