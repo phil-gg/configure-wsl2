@@ -293,9 +293,9 @@ echo -e "$ sudo rm /etc/apt/sources.list"
 sudo rm /etc/apt/sources.list
 fi
 
-if [[ ! -f /etc/apt/preferences.d/99administrator-prefs ]]; then
-echo -e "> Create /etc/apt/preferences.d/99administrator-prefs"
-echo -e "\
+# Set apt pinning administrator preferences
+
+ADMIN_PREFS="\
 Explanation: This file is /etc/apt/preferences.d/99administrator-prefs
 Explanation: https://manpages.debian.org/trixie/apt/apt_preferences.5.en.html
 Explanation: Never downgrade unless the priority of an available version \
@@ -365,7 +365,18 @@ Explanation: Prevent installation on WSL2
 Package: zutty
 Pin: version *
 Pin-Priority: -1
-" | sudo tee /etc/apt/preferences.d/99administrator-prefs 1> /dev/null
+
+Explanation: Prevent installation on WSL2
+Package: tilix
+Pin: version *
+Pin-Priority: -1
+"
+
+if [ ! -f /etc/apt/preferences.d/99administrator-prefs ] || \
+! cmp -s <(echo "${ADMIN_PREFS}") /etc/apt/preferences.d/99administrator-prefs;
+then
+echo "${ADMIN_PREFS}" | sudo tee /etc/apt/preferences.d/\
+99administrator-prefs 1> /dev/null
 fi
 
 if [[ ! -f /etc/apt/sources.list.d/sid-debian.sources ]]; then
