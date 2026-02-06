@@ -82,14 +82,10 @@ op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
 if ! op account get &> /dev/null; then
-echo -e "${redbold}> Not logged into 1password-cli${normal}
-
-RUN THIS NEXT:
-
-eval \$(op signin)
-
-…then re-run this script.
-"
+echo -e "${redbold}> Not logged into 1password-cli${normal}\n
+RUN THIS NEXT:\n
+eval \$(op signin)\n
+…then re-run this script.\n"
 exit 103
 else
 echo -e "${greenbold}> Logged into 1password-cli${normal}"
@@ -135,7 +131,7 @@ fi
 
 echo -e "$ cd ~/git/${github_username}/${github_project}"
 cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}\n"\
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
 ; exit 104; }
 
 # Check for presence of git & gh
