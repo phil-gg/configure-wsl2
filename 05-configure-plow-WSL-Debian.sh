@@ -143,10 +143,47 @@ ${normal}"
 echo -e "\
 $ GALLIUM_DRIVER=d3d12 \\\\
   MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
-  glxinfo -B"
+  glxinfo -B\n"
 GALLIUM_DRIVER=d3d12 \
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
 glxinfo -B
+
+# Set up virtual screen on Weston, in the background (final ampersand)
+
+echo -e "\n${cyanbold}Set up virtual screen on Weston with name weston${normal}"
+echo -e "$ weston --socket=weston > /dev/null 2>&1 &"
+weston --socket=weston > /dev/null 2>&1 &
+echo -e "$ ls /run/user/\$(id -u)/weston"
+ls /run/user/$(id -u)/weston
+
+echo -e "\n${bluebold}Run weston with log output to terminal for \
+troubleshooting${normal}"
+echo -e "${cyanbold}weston --socket=weston${normal}"
+
+echo -e "\n${bluebold}End weston session${normal}"
+echo -e "${cyanbold}pkill -f \"weston --socket=weston\"${normal}"
+
+# Run kde-plasma in weston
+
+echo -e "\n${cyanbold}Run KDE Plasma in weston${normal}"
+echo -e "\
+$ WAYLAND_DISPLAY=weston \
+  GALLIUM_DRIVER=d3d12 \
+  MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+  dbus-run-session startplasma-wayland > /dev/null 2>&1 &"
+WAYLAND_DISPLAY=weston \
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+dbus-run-session startplasma-wayland > /dev/null 2>&1 &
+
+echo -e "\n${bluebold}Run KDE Plasma with log output to (second) terminal \
+(separate from weston)${normal}"
+echo -e "${cyanbold}\
+WAYLAND_DISPLAY=weston \\\\
+GALLIUM_DRIVER=d3d12 \\\\
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+dbus-run-session startplasma-wayland
+${normal}"
 
 # TO-DO: More config here
 
