@@ -41,12 +41,13 @@ lynx"
 
 # shellcheck disable=SC2086
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
+DPKG_ERROR=$?
 START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
 # shellcheck disable=SC2086
 DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
 NON_II_CODES=$(echo "${DPKG_TAIL}" | awk '!/^ii/ {print substr($0, 1, 2)}')
 
-if [ -n "${NON_II_CODES}" ]; then
+if [ -n "${NON_II_CODES}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 echo -e "\n${cyanbold}Installing packages${normal}"
 echo -e "$ sudo apt update && sudo apt install -y ${PACKAGES}"
 # shellcheck disable=SC2086
