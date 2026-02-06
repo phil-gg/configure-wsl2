@@ -52,6 +52,20 @@ else
 echo -e "${greenbold}> Online${normal}"
 fi
 
+# Make folder(s) if they don't exist
+
+if [ ! -d "${HOME}/git/${github_username}/${github_project}" ]; then
+echo -e "\n$ mkdir -p ~/git/${github_username}/${github_project}"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+fi
+
+# Navigate to working directory
+
+echo -e "\n$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 102; }
+
 # Ensure 1password-cli can set sensitive variables
 
 echo -e "\n${cyanbold}Checking whether account registered in 1password-cli\
@@ -95,16 +109,7 @@ fi
 
 # Set sensitive variables
 
-# TO-DO:
-
-# Navigate to working directory
-
-echo -e "$ cd ~/git/${github_username}/${github_project}"
-cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
-; exit 104; }
-
-
+# TO-DO: Do you even need any sensitive variables here?
 
 # Configure firefox
 
