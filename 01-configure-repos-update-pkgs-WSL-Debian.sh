@@ -40,7 +40,7 @@ debsigs \
 lynx"
 
 # shellcheck disable=SC2086
-DPKG_OUTPUT=$(dpkg -l wget ${PACKAGES})
+DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
 START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
 # shellcheck disable=SC2086
 DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
