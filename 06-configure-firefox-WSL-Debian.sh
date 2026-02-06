@@ -13,12 +13,13 @@
 # https://www.shellcheck.net
 ################################################################################
 
-# Set variables
+# Set non-sensitive variables
+# NOTE: Sensitive variables are further below
 
 github_username="phil-gg"
 github_project="configure-wsl2"
 github_branch="main"
-filename="04-configure-firefox-WSL-Debian.sh"
+filename="06-configure-firefox-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')
@@ -28,16 +29,7 @@ bluebold=$(printf '\033[94;1m')
 
 # Now running `${filename}`
 
-echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
-
-# Check for presence of wget
-
-wgetcheck=$(wget -V 2> /dev/null | head -c 8)
-if [[ "${wgetcheck}" != "GNU Wget" ]]; then
-echo -e "\n${cyanbold}Installing wget${normal}"
-echo -e "$ sudo apt update && sudo apt -y install wget\n"
-sudo apt update && sudo apt -y install wget
-fi
+echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Network test
 
@@ -54,25 +46,19 @@ if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_branch}\
 /${filename} 2> /dev/null
 then
-echo -e "${redbold}> Offline${normal}"
+echo -e "${redbold}> Offline${normal}\n"
 exit 101
 else
 echo -e "${greenbold}> Online${normal}"
 fi
 
-# Navigate to working directory
+# Ensure 1password-cli can set sensitive variables
 
-echo -e "$ cd ~/git/${github_username}/${github_project}"
-cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
-; exit 102; }
-
-# Ensure 1password-cli is logged in for secrets
-
-echo -e "${cyanbold}Checking whether account registered in 1password-cli\
+echo -e "\n${cyanbold}Checking whether account registered in 1password-cli\
 ${normal}"
 opclicheck1=$(op account list | grep -o "1password.com" 2> /dev/null)
 if [[ "${opclicheck1}" != "1password.com" ]]; then
+
 echo -e "${redbold}> No accounts registered in 1password-cli${normal}
 > sign-in address = my.1password.com
 >  email  address = p… .c…@gmail.com
@@ -86,39 +72,43 @@ RUN THIS NEXT:
 
 eval \$(op account add --signin)
 "
-exit 103
+exit 102
+
 else
+
 echo -e "${greenbold}> Account(s) registered in 1password-cli${normal}\n"
+echo -e "$ op account list\n"
 op account list
 echo -e "\n${cyanbold}Checking whether logged into 1password-cli${normal}"
 
-opclicheck2=$(op vault list 2>&1 | grep -o ERROR)
-
-if [[ "${opclicheck2}" == "ERROR" ]]; then
-echo -e "${redbold}> Not logged into 1password-cli${normal}
-
-RUN THIS NEXT:
-
-eval \$(op signin)
-"
-exit 104
+if ! op account get &> /dev/null; then
+echo -e "${redbold}> Not logged into 1password-cli${normal}\n
+RUN THIS NEXT:\n
+eval \$(op signin)\n
+…then re-run this script.\n"
+exit 103
 else
-echo -e "${greenbold}> Logged into 1password-cli${normal}\n"
+echo -e "${greenbold}> Logged into 1password-cli${normal}"
 fi
 
 fi
+
+# Set sensitive variables
+
+# TO-DO:
+
+# Navigate to working directory
+
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 104; }
+
+
 
 # Configure firefox
 
 # TO-DO: Configuration here
-
-################################################################################
-#
-# Line wrap ruler
-#
-#   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
-#
-################################################################################
 
 # Log this latest `Config` operation and display runtime
 
@@ -127,4 +117,12 @@ echo -e "> ${runtime}\n"
 mkdir -p "${HOME}/git/${github_username}/${github_project}"
 echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
 >> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
+
+################################################################################
+#
+# Line wrap ruler
+#
+#   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
+#
+################################################################################
 
