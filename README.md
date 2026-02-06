@@ -104,9 +104,13 @@
     ```
     wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-pkgs-WSL-Debian.sh | bash
     ```
-    _Configure git (same script also updates git)_
+    _Configure git_
     ```
     wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/02-configure-git-WSL-Debian.sh | bash
+    ```
+    _Clone / sync git_
+    ```
+    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/03-sync-git-WSL-Debian.sh | bash
     ```
     _Now scripts can be run locally_
     ```
@@ -139,6 +143,7 @@
     ```
     1password
     ```
+    _These apps should also be available from Windows start menu with a _(Debian)_ suffix_
 
 ## Graphical option #2: Run {wslg > weston > kde-plasma} nested desktop environment
 
