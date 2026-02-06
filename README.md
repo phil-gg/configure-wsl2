@@ -1,4 +1,12 @@
-# Instructions for use
+# **Plow** _(\[KDE\] P̳l̳asma o̳n W̳SLg)_
+
+## Introduction
+ - **Plow** _(\[KDE\] P̳l̳asma o̳n W̳SLg)_ is a {wslg > weston > kde-plasma} nested desktop environment.
+ - Plow is strictly just `05-configure-plow-WSL-Debian.sh`; the other files in this repo are my other dotfiles for running Debian on WSL2.
+ - Better developers & maintainers than me have said; _"It would be much better if most derivative distro projects were just a configuration script on top of the parent distro"_; so that is what this project is.
+ - The use case / manifesto for Plow (& Configure WSL dotfiles) is:  _"I am required to work on a Windows laptop at work, but I have local admin for said Windows laptop, and I can use the WSL Windows component.  Let's turn Debian on WSL into the best possible native Windows application window, containing a full, graphical KDE-based Linux environment."_
+
+## Configuration Instructions
 
 1. Install WSL on Windows host
     ```
@@ -94,7 +102,7 @@
     ```
     _Configure repos & update packages_
     ```
-    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-dpkg-WSL-Debian.sh | bash
+    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-pkgs-WSL-Debian.sh | bash
     ```
     _Configure git (same script also updates git)_
     ```
@@ -105,18 +113,25 @@
     cd ~/git/phil-gg/configure-wsl2
     ```
     ```
-    cat 01-configure-repos-update-dpkg-WSL-Debian.sh | bash
+    cat 01-configure-repos-update-pkgs-WSL-Debian.sh | bash
     ```
     ```
     cat 02-configure-git-WSL-Debian.sh | bash
     ```
     ```
-    cat 03-keyboard-timezone-locale-WSL-Debian.sh | bash
+    cat 03-sync-git-WSL-Debian.sh | bash
     ```
+    ```
+    cat 04-keyboard-timezone-locale-WSL-Debian.sh | bash
+    ```
+    ```
+    cat 05-configure-plow-WSL-Debian.sh | bash
+    ```
+    _etc._
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
-4. Once you have run `01-configure-repos-update-dpkg-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
+4. Once you have run `01-configure-repos-update-pkgs-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
 
     ```
     firefox-devedition
@@ -125,16 +140,12 @@
     1password
     ```
 
-## Graphical option #2: Run gnome-shell nested in a wslg window
+## Graphical option #2: Run {wslg > weston > kde-plasma} nested desktop environment
 
 > [!NOTE]  
->   - _Application windows can sometimes be slow to open in the nested gnome session_
->   - _No fullscreen, with window resolution set by launch script_
->   - _Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)_
->   - _Use this graphical session in RDP set-up step for_ `gnome-control-center` _steps not yet moved to CLI / script_
+>   - _Work in progress: `05-configure-plow-WSL-Debian.sh` sets up everything._
+>   - _TO-DO: Plow command in WSL CLI launches the nested desktop environment._
+>   - _TO-DO: Config to make Plow with an app icon show up in Windows start menu._
+>   - _Cursor ghosting a known issue.  TO-DO: Apply invisible cursor theme to remove one of the stacked cursors._
 
 `TO-DO: Document config`
-
-## Graphical option #3: RDP session from Windows host into Debian on WSL
-
-`TO-DO: Both actually get it running(!) and document`
