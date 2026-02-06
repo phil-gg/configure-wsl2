@@ -72,8 +72,8 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 if [ ! -f "${HOME}/.config/weston.ini" ] || \
 ! cmp -s HOME/.config/weston.ini "${HOME}/.config/weston.ini"; then
 echo -e "\n${cyanbold}Updating ~/.config/weston.ini${normal}"
-echo -e "$ sudo cp -f HOME/.config/weston.ini ~/.config/weston.ini"
-sudo cp -f HOME/.config/weston.ini "${HOME}/.config/weston.ini"
+echo -e "$ cp -f HOME/.config/weston.ini ~/.config/weston.ini"
+cp -f HOME/.config/weston.ini "${HOME}/.config/weston.ini"
 fi
 
 # Packages for {wslg > weston > kde-plasma} nested desktop environment
