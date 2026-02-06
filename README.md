@@ -1,4 +1,4 @@
-# **Plow** (\[KDE\] _Pl_asma _o_n _W_SLg)
+# **Plow** _(\[KDE\] P̳l̳asma o̳n W̳SLg)_
 
 ## Configuration Instructions
 
