@@ -51,6 +51,13 @@ else
 echo -e "${greenbold}> Online${normal}"
 fi
 
+# Navigate to working directory
+
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 102; }
+
 # Connect with GitHub and check status
 
 echo -e "\n${cyanbold}Connect with GitHub and check status${normal}"
@@ -59,9 +66,12 @@ echo -e "\n${cyanbold}Connect with GitHub and check status${normal}"
 if [ ! -d ".git" ]; then
 echo -e "> .git not created yet"
 
-# Store config-runs.log contents in a variable
-RUNLOG=$([ -f "${HOME}/git/${github_username}/${github_project}/config-runs.log\
-" ] && cat "${HOME}/git/${github_username}/${github_project}/config-runs.log")
+# Temporarily store config-runs.log up one level
+if [ -f "${HOME}/git/${github_username}/${github_project}/config-runs.log" ];
+then
+mv "${HOME}/git/${github_username}/${github_project}/config-runs.log" \
+"${HOME}/git/${github_username}/config-runs.log"
+fi
 
 # Clone only works with empty directory: can't have e.g. config-runs.log here
 find "${HOME}/git/${github_username}/${github_project}" -mindepth 1 -delete
@@ -74,9 +84,11 @@ echo -e "\n$ git clone \
 /${github_project}.git\" .\n"
 git clone "https://github.com/${github_username}/${github_project}.git" .
 
-# Restore contents of config-runs.log from variable
-[ -n "${RUNLOG}" ] && printf "%s\n" "${RUNLOG}" > "${HOME}/git/\
-${github_username}/${github_project}/config-runs.log"
+# Move config-runs.log back into project folder
+if [ -f "${HOME}/git/${github_username}/config-runs.log" ]; then
+mv "${HOME}/git/${github_username}/config-runs.log" \
+"${HOME}/git/${github_username}/${github_project}/config-runs.log"
+fi
 
 # force move HEAD (current position) to latest commit in main
 # likely redundant as clone already put HEAD at end of default branch
