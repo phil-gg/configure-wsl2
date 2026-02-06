@@ -3,7 +3,7 @@
 ## Introduction
  - **Plow** _(\[KDE\] P̳l̳asma o̳n W̳SLg)_ is a {wslg > weston > kde-plasma} nested desktop environment.
  - Plow is strictly just `05-configure-plow-WSL-Debian.sh`; the rest of the repo is my dotfiles for running Debian on WSL2.
- - Better developers & maintainers than me have said _"It would be much better if most drivative distro projects were just a configuration script on top of the parent distro"_, so that is what this project is.
+ - Better developers & maintainers than me have said _"It would be much better if most derivative distro projects were just a configuration script on top of the parent distro"_, so that is what this project is.
 
 ## Configuration Instructions
 
