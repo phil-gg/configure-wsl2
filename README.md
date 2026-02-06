@@ -94,7 +94,7 @@
     ```
     _Configure repos & update packages_
     ```
-    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-dpkg-WSL-Debian.sh | bash
+    wget -qO- https://raw.githubusercontent.com/phil-gg/configure-wsl2/main/01-configure-repos-update-pkgs-WSL-Debian.sh | bash
     ```
     _Configure git (same script also updates git)_
     ```
@@ -105,18 +105,27 @@
     cd ~/git/phil-gg/configure-wsl2
     ```
     ```
-    cat 01-configure-repos-update-dpkg-WSL-Debian.sh | bash
+    cat 01-configure-repos-update-pkgs-WSL-Debian.sh | bash
     ```
     ```
     cat 02-configure-git-WSL-Debian.sh | bash
     ```
     ```
-    cat 03-keyboard-timezone-locale-WSL-Debian.sh | bash
+    cat 03-sync-git-WSL-Debian.sh | bash
+    ```
+    ```
+    cat 04-keyboard-timezone-locale-WSL-Debian.sh | bash
+    ```
+    ```
+    cat 05-configure-plow-WSL-Debian.sh | bash
+    ```
+    ```
+    cat 06-configure-firefox-WSL-Debian.sh | bash
     ```
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
-4. Once you have run `01-configure-repos-update-dpkg-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
+4. Once you have run `01-configure-repos-update-pkgs-WSL-Debian.sh`, you can run `firefox-devedition` or `1password` by launching from WSL CLI:
 
     ```
     firefox-devedition
