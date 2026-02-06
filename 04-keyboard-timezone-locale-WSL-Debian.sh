@@ -156,7 +156,8 @@ timedatectl status
 
 if [[ ! -f /usr/share/i18n/locales/en_AU@phil ]]; then
 echo -e "\n${cyanbold}Installing custom locale${normal}"
-echo -e "$ sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil"
+echo -e "$ sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/\
+en_AU@phil"
 sudo cp usr/share/i18n/locales/en_AU@phil /usr/share/i18n/locales/en_AU@phil
 changes_made="1"
 fi
@@ -271,3 +272,4 @@ echo -e "  ${runtime}\n"
 #   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
 #
 ################################################################################
+
