@@ -642,9 +642,11 @@ libappindicator3-1
 
 # Make folder(s) if they don't exist
 
+if [ ! -d "${HOME}/git/${github_username}/${github_project}/tmp" ]; then
 echo -e "\n${cyanbold}Build our own deb package for arm64 arch${normal}"
 echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
 mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+fi
 
 # Navigate to working directory
 
