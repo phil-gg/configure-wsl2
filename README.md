@@ -1,4 +1,6 @@
-# Instructions for use
+# **Plow** _(\[KDE\] **Pl**asma **o**n **W**SLg)_
+
+## Configuration Instructions
 
 1. Install WSL on Windows host
     ```
@@ -119,9 +121,7 @@
     ```
     cat 05-configure-plow-WSL-Debian.sh | bash
     ```
-    ```
-    cat 06-configure-firefox-WSL-Debian.sh | bash
-    ```
+    _etc._
 
 ## Graphical option #1: launch GUI linux app directly in a wslg window
 
