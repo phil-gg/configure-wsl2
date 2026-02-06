@@ -2,7 +2,7 @@
 
 ## Introduction
  - **Plow** _(\[KDE\] P̳l̳asma o̳n W̳SLg)_ is a {wslg > weston > kde-plasma} nested desktop environment.
- - Plow is strictly just `05-configure-plow-WSL-Debian.sh`; the rest of the repo is my dotfiles for running Debian on WSL2.
+ - Plow is strictly just `05-configure-plow-WSL-Debian.sh`; the other files in this repo are my other dotfiles for running Debian on WSL2.
  - Better developers & maintainers than me have said _"It would be much better if most derivative distro projects were just a configuration script on top of the parent distro"_, so that is what this project is.
 
 ## Configuration Instructions
@@ -139,16 +139,12 @@
     1password
     ```
 
-## Graphical option #2: Run gnome-shell nested in a wslg window
+## Graphical option #2: Run {wslg > weston > kde-plasma} nested desktop environment
 
 > [!NOTE]  
->   - _Application windows can sometimes be slow to open in the nested gnome session_
->   - _No fullscreen, with window resolution set by launch script_
->   - _Cursor ghosting a known issue (host Windows cursor over guest Gnome cursor)_
->   - _Use this graphical session in RDP set-up step for_ `gnome-control-center` _steps not yet moved to CLI / script_
+>   - _Work in progress: `05-configure-plow-WSL-Debian.sh` sets up everything._
+>   - _TO-DO: Plow command in WSL CLI launches the nested desktop environment._
+>   - _TO-DO: Config to make Plow with an app icon show up in Windows start menu._
+>   - _Cursor ghosting a known issue.  TO-DO: Apply invisible cursor theme to remove one of the stacked cursors._
 
 `TO-DO: Document config`
-
-## Graphical option #3: RDP session from Windows host into Debian on WSL
-
-`TO-DO: Both actually get it running(!) and document`
