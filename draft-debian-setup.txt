@@ -1,90 +1,5 @@
 #!/bin/bash
 
-# 04-wslg-weston-kde-plasma-nested-de
-# Configure a {wslg > weston > kde-plasma} nested desktop environment.
-# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg.
-
-
-
-# Kernel module vgem required as DRM buffer for d3d12 driver
-
-# Load vgem on every future boot
-echo -e "vgem\n" &> /dev/null | sudo tee /etc/modules-load.d/vgem.conf
-
-# Load vgem now
-sudo modprobe vgem
-
-# Show loaded vgem (and related) kernel modules
-echo -e "$(lsmod | head -n 1)\n$(lsmod | grep "vgem")"
-
-
-ls -l /dev/dri/card*
-
-GALLIUM_DRIVER=d3d12 \
-MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-glxinfo -B
-
-# Packages for {wslg > weston > kde-plasma} nested desktop environment
-
-PACKAGES="\
-weston \
-mesa-utils \
-plasma-workspace \
-kde-cli-tools \
-kio-extras \
-kio-fuse \
-ksystemstats \
-plasma-workspace-doc \
-systemsettings \
-plasma-desktop \
-breeze-gtk-theme \
-kde-config-gtk-style \
-fonts-hack \
-fonts-noto \
-fonts-noto-color-emoji \
-khelpcenter \
-kinfocenter \
-kwin-wayland"
-
-
-
-echo -e "sudo apt update && sudo apt install -y ${PACKAGES}"
-sudo apt update && sudo apt install -y ${PACKAGES}
-weston \
-mesa-utils \
-plasma-workspace \
-kde-cli-tools \
-kio-extras \
-kio-fuse \
-ksystemstats \
-plasma-workspace-doc \
-systemsettings \
-plasma-desktop \
-breeze-gtk-theme \
-kde-config-gtk-style \
-fonts-hack \
-fonts-noto \
-fonts-noto-color-emoji \
-khelpcenter \
-kinfocenter \
-kwin-wayland
-
-# Set up virtual screen on Weston, in the background (final ampersand)
-
-weston --socket=weston > /dev/null 2>&1 &
-
-ls /run/user/$(id -u)/weston
-
-# End weston session
-# pkill -f "weston --socket=weston"
-
-
-WAYLAND_DISPLAY=weston \
-GALLIUM_DRIVER=d3d12 \
-MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-dbus-run-session startplasma-wayland > /dev/null 2>&1 &
-
-
 # ~/.config/weston.ini
 
 [core]
@@ -137,12 +52,31 @@ keymap_model=pc105
 keymap_layout=gb
 keymap_variant=extd
 
+# Set up virtual screen on Weston, in the background (final ampersand)
+
+weston --socket=weston > /dev/null 2>&1 &
+
+ls /run/user/$(id -u)/weston
+
+# Run weston with log output to terminal for troubleshooting
+# weston --socket=weston
+# End weston session
+# pkill -f "weston --socket=weston"
+
+# Run kde-plasma in weston
+
+WAYLAND_DISPLAY=weston \
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+dbus-run-session startplasma-wayland > /dev/null 2>&1 &
+
 
 
 
 
 # Add google dot white cursor
 https://github.com/ful1e5/Google_Cursor/releases/latest
+
 
 
 
@@ -217,10 +151,6 @@ sudo systemctl enable --now ananicy-cpp
 
 systemctl status ananicy-cpp
 
-
-
-
-
 # Set dir for user runtime files (sockets, named pipes, temp locks, etc.)
 export XDG_RUNTIME_DIR=/run/user/$(id -u)  && \
 # Configure mesa
@@ -235,10 +165,10 @@ export QT_QPA_PLATFORM=wayland && \
 # Run kde-plasma within gamescope as virtual display we can configure
 dbus-run-session gamescope -f -w 2400 -h 1600 -r 120.000191 --framerate-limit 120 --backend wayland --expose-wayland -- startplasma-wayland
 
-
-
 # Symlink from runtime dir tp WSLg Wayland socket
 ln -sf /mnt/wslg/runtime-dir/wayland-0* "$XDG_RUNTIME_DIR/" && \
+
+
 
 
 
