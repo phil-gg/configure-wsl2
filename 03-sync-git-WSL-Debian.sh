@@ -59,6 +59,10 @@ echo -e "\n${cyanbold}Connect with GitHub and check status${normal}"
 if [ ! -d ".git" ]; then
 echo -e "> .git not created yet"
 
+# Store config-runs.log contents in a variable
+RUNLOG=$([ -f "${HOME}/git/${github_username}/${github_project}/config-runs.log\
+" ] && cat "${HOME}/git/${github_username}/${github_project}/config-runs.log")
+
 # Clone only works with empty directory: can't have e.g. config-runs.log here
 find "${HOME}/git/${github_username}/${github_project}" -mindepth 1 -delete
 
@@ -69,6 +73,10 @@ echo -e "\n$ git clone \
 /${github_username}\
 /${github_project}.git\" .\n"
 git clone "https://github.com/${github_username}/${github_project}.git" .
+
+# Restore contents of config-runs.log from variable
+[ -n "${RUNLOG}" ] && printf "%s\n" "${RUNLOG}" > "${HOME}/git/\
+${github_username}/${github_project}/config-runs.log"
 
 # force move HEAD (current position) to latest commit in main
 # likely redundant as clone already put HEAD at end of default branch
