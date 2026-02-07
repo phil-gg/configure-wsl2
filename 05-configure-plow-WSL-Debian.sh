@@ -159,13 +159,6 @@ weston --socket=weston > /dev/null 2>&1 &
 echo -e "$ ls /run/user/\$(id -u)/weston"
 ls /run/user/$(id -u)/weston
 
-echo -e "\n${bluebold}Run weston with log output to terminal for \
-troubleshooting${normal}"
-echo -e "${cyanbold}weston --socket=weston${normal}"
-
-echo -e "\n${bluebold}End weston session${normal}"
-echo -e "${cyanbold}pkill -f \"weston --socket=weston\"${normal}"
-
 # Run kde-plasma in weston
 
 echo -e "\n${cyanbold}Run KDE Plasma in weston${normal}"
@@ -179,14 +172,20 @@ GALLIUM_DRIVER=d3d12 \
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
 dbus-run-session startplasma-wayland > /dev/null 2>&1 &
 
+echo -e "\n${bluebold}End weston session${normal}"
+echo -e "${cyanbold}pkill -f \"weston --socket=weston\"${normal}"
+
+echo -e "\n${bluebold}Run weston with log output to terminal for \
+troubleshooting${normal}"
+echo -e "${cyanbold}weston --socket=weston${normal}"
+
 echo -e "\n${bluebold}Run KDE Plasma with log output to (second) terminal \
 (separate from weston)${normal}"
 echo -e "${cyanbold}\
 WAYLAND_DISPLAY=weston \\\\
 GALLIUM_DRIVER=d3d12 \\\\
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
-dbus-run-session startplasma-wayland
-${normal}"
+dbus-run-session startplasma-wayland${normal}"
 
 # TO-DO: More config here
 
