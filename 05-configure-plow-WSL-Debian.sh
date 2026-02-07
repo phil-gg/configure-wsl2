@@ -132,7 +132,7 @@ sudo modprobe vgem
 fi
 
 echo -e "\n${cyanbold}Show loaded vgem (and related) kernel modules${normal}"
-echo -e "echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
+echo -e "$ echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
 echo -e "$(lsmod | head -n 1)\n$(lsmod | grep vgem)"
 
 echo -e "\n${cyanbold}Show vgem (and related) kernel modules${normal}"
@@ -156,7 +156,7 @@ glxinfo -B
 echo -e "\n${cyanbold}Set up virtual screen on Weston with name weston${normal}"
 echo -e "$ weston --socket=weston > /dev/null 2>&1 &"
 weston --socket=weston > /dev/null 2>&1 &
-echo -e "$ ls /run/user/\$(id -u)/weston"
+echo -e "$ ls /run/user/\$(id -u)/weston\n"
 ls /run/user/$(id -u)/weston
 
 # Run kde-plasma in weston
