@@ -82,7 +82,7 @@ tzdata          tzdata/Zones/Australia      select  Brisbane
 tzdata          tzdata/Zones/Etc            select  UTC
 " | sudo debconf-set-selections
 # shellcheck disable=SC2086
-sudo DEBIAN_FRONTEND=noninteractive apt -y ${PACKAGES}
+sudo DEBIAN_FRONTEND=noninteractive apt install -y ${PACKAGES}
 
 echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
