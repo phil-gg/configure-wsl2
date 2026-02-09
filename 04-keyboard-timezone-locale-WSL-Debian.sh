@@ -53,8 +53,7 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 PACKAGES="\
 keyboard-configuration \
-console-setup \
-pkexec"
+console-setup"
 
 # shellcheck disable=SC2086
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
@@ -71,7 +70,7 @@ if [ -n "${APT_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 echo -e "$ sudo apt update && sudo apt -y install ${PACKAGES}\n"
 sudo apt update
-echo "\
+echo -e "\
 keyboard-configuration  keyboard-configuration/layoutcode    string  gb
 keyboard-configuration  keyboard-configuration/modelcode     string  pc105
 keyboard-configuration  keyboard-configuration/variantcode   string  extd
@@ -95,9 +94,24 @@ echo -e "$ sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup"
 sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup
 echo -e "$ cat /etc/default/console-setup\n"
 cat /etc/default/console-setup
-
 echo -e "\n$ sudo setupcon"
 sudo setupcon
+
+echo -e "\
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "gb"
+        Option "XkbModel" "pc105"
+        Option "XkbVariant" "extd"
+        Option "XkbOptions" ""
+EndSection
+" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
+echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
+cat /etc/X11/xorg.conf.d/00-keyboard.conf
+echo -e "\n$ sudo systemctl restart systemd-localed"
+sudo systemctl restart systemd-localed
+
 echo -e "$ localectl status\n"
 localectl status
 
