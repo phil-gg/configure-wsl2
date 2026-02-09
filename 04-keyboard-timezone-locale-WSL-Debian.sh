@@ -29,7 +29,7 @@ changes_made="0"
 
 # Now running `${filename}`
 
-echo -e "\n${cyanbold}Now running ‘${filename}’${normal}"
+echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Make folder(s) if they don't exist
 
