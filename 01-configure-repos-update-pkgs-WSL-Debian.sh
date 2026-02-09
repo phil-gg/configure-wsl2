@@ -567,16 +567,15 @@ echo -e "> ${installedver1pcli:=${bluebold}(none)${normal}} = 1password-cli"
 
 # Install 1password
 
-if ! sudo -n true 2> /dev/null; then
-echo -e "\n${cyanbold}Checking if 1password is upgradable (requires sudo)\
-${normal}"
-fi
+echo -e "\n${cyanbold}Checking if 1password is upgradable${normal}"
+echo -e "$ sudo apt update"
 
 opguidpkgcheck=$(dpkg -s 1password 2> /dev/null | grep "Package: 1password")
 opclidpkgcheck=$(dpkg -s 1password-cli 2> /dev/null \
 | grep "Package: 1password-cli")
-opupdatecheck=$(sudo apt-get update 1> /dev/null && apt list --upgradable 2>&1 \
-| grep -vE "Use with caution in scripts|Listing" | grep -o "1password" \
+opupdatecheck=$(apt list --upgradable 2>&1 \
+| grep -vE "Use with caution in scripts|Listing" \
+| grep -o "1password" \
 | head -c 9)
 
 if [[ "${opupdatecheck}" == "1password"
@@ -597,7 +596,7 @@ fi
 # ################## #
 # ON ARM64 ARCH ONLY #
 # ################## #
-# 
+
 # Ignore this section, it is not complete, and not executed
 #
 # if [[ "${pkgarch}" == "arm64" ]]; then
@@ -680,7 +679,7 @@ fi
 # # OR: Don't even make tmp folder; instead sig-check & install tarball
 # 
 # fi
-# 
+
 # ###################### #
 # END ARM64 ONLY SECTION #
 # ###################### #
