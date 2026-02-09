@@ -96,22 +96,6 @@ echo -e "$ cat /etc/default/console-setup\n"
 cat /etc/default/console-setup
 echo -e "\n$ sudo setupcon"
 sudo setupcon
-
-echo -e "\
-Section "InputClass"
-        Identifier "system-keyboard"
-        MatchIsKeyboard "on"
-        Option "XkbLayout" "gb"
-        Option "XkbModel" "pc105"
-        Option "XkbVariant" "extd"
-        Option "XkbOptions" ""
-EndSection
-" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
-echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
-cat /etc/X11/xorg.conf.d/00-keyboard.conf
-echo -e "\n$ sudo systemctl restart systemd-localed"
-sudo systemctl restart systemd-localed
-
 echo -e "$ localectl status\n"
 localectl status
 
@@ -167,8 +151,23 @@ if ! localectl status | grep -q -i "keymap: uk" || \
    ! localectl status | grep -q -i "layout: gb" || \
    ! localectl status | grep -q -i "model: pc105" || \
    ! localectl status | grep -q -i "variant: extd"; then
-echo -e "\n$ sudo localectl set-x11-keymap gb pc105 extd"
-sudo localectl set-x11-keymap gb pc105 extd
+
+sudo mkdir -p /etc/X11/xorg.conf.d/
+echo -e "\
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "gb"
+        Option "XkbModel" "pc105"
+        Option "XkbVariant" "extd"
+        Option "XkbOptions" ""
+EndSection
+" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
+echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
+cat /etc/X11/xorg.conf.d/00-keyboard.conf
+echo -e "\n$ sudo systemctl restart systemd-localed"
+sudo systemctl restart systemd-localed
+
 else
 echo -e ""
 fi
