@@ -116,7 +116,7 @@ if [ -n "${APT_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 
-if ! grep -q -i 'KEYMAP="uk"' /etc/vconsole.conf; then
+if ! grep -q -i "KEYMAP=uk" /etc/vconsole.conf; then
 echo -e "KEYMAP=uk" | sudo tee /etc/vconsole.conf 1> /dev/null
 fi
 echo -e "$ cat /etc/vconsole.conf\n"
@@ -162,6 +162,9 @@ fi
 
 echo -e "$ cat /etc/default/keyboard\n"
 cat /etc/default/keyboard
+
+echo -e "\n$ cat /etc/vconsole.conf\n"
+cat /etc/vconsole.conf
 
 echo -e "\n$ localectl status\n"
 localectl status
