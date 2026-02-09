@@ -113,76 +113,76 @@ localectl status
 
 # Work around keymaps packaging issue as documented here:
 # https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
-
-if ! localectl list-keymaps &> /dev/null; then
-
-echo -e "\n${cyanbold}Installing keymaps${normal}"
-kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
-grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
-
-echo -e "$ sudo mkdir -p /usr/share/keymaps"
-sudo mkdir -p /usr/share/keymaps
-
-echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
-mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
-
-echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
-cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-; exit 102; }
-
-echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
-v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
-wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
-kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
-
-echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
-tar -xf "kbd-${kbd_version}.tar.xz"
-
-echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
-# shellcheck disable=SC2086
-sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
-
-echo -e "$ cd ~/git/${github_username}/${github_project}"
-cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-; exit 103; }
-
-echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
-rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
-
-fi
-
-echo -e "\n${cyanbold}Configure keyboard layout${normal}"
-echo -e "$ localectl list-keymaps | grep -i UK\n"
-localectl list-keymaps | grep -i UK
-
-if ! localectl status | grep -q -i "keymap: uk" || \
-   ! localectl status | grep -q -i "layout: gb" || \
-   ! localectl status | grep -q -i "model: pc105" || \
-   ! localectl status | grep -q -i "variant: extd"; then
-
-sudo mkdir -p /etc/X11/xorg.conf.d/
-echo -e "\
-Section \"InputClass\"
-        Identifier \"system-keyboard\"
-        MatchIsKeyboard \"on\"
-        Option \"XkbLayout\" \"gb\"
-        Option \"XkbModel\" \"pc105\"
-        Option \"XkbVariant\" \"extd\"
-        Option \"XkbOptions\" \"\"
-EndSection" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
-echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
-cat /etc/X11/xorg.conf.d/00-keyboard.conf
-echo -e "\n$ sudo systemctl restart systemd-localed"
-sudo systemctl restart systemd-localed
-
-else
-echo -e ""
-fi
-
-echo -e "$ localectl status\n"
-localectl status
+# 
+# if ! localectl list-keymaps &> /dev/null; then
+# 
+# echo -e "\n${cyanbold}Installing keymaps${normal}"
+# kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
+# grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
+# 
+# echo -e "$ sudo mkdir -p /usr/share/keymaps"
+# sudo mkdir -p /usr/share/keymaps
+# 
+# echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+# mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+# 
+# echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+# cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
+# || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+# ; exit 102; }
+# 
+# echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
+# v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
+# wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
+# kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
+# 
+# echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
+# tar -xf "kbd-${kbd_version}.tar.xz"
+# 
+# echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
+# # shellcheck disable=SC2086
+# sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
+# 
+# echo -e "$ cd ~/git/${github_username}/${github_project}"
+# cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+# || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+# ; exit 103; }
+# 
+# echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
+# rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
+# 
+# fi
+# 
+# echo -e "\n${cyanbold}Configure keyboard layout${normal}"
+# echo -e "$ localectl list-keymaps | grep -i UK\n"
+# localectl list-keymaps | grep -i UK
+# 
+# if ! localectl status | grep -q -i "keymap: uk" || \
+#    ! localectl status | grep -q -i "layout: gb" || \
+#    ! localectl status | grep -q -i "model: pc105" || \
+#    ! localectl status | grep -q -i "variant: extd"; then
+# 
+# sudo mkdir -p /etc/X11/xorg.conf.d/
+# echo -e "\
+# Section \"InputClass\"
+#         Identifier \"system-keyboard\"
+#         MatchIsKeyboard \"on\"
+#         Option \"XkbLayout\" \"gb\"
+#         Option \"XkbModel\" \"pc105\"
+#         Option \"XkbVariant\" \"extd\"
+#         Option \"XkbOptions\" \"\"
+# EndSection" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
+# echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
+# cat /etc/X11/xorg.conf.d/00-keyboard.conf
+# echo -e "\n$ sudo systemctl restart systemd-localed"
+# sudo systemctl restart systemd-localed
+# 
+# else
+# echo -e ""
+# fi
+# 
+# echo -e "$ localectl status\n"
+# localectl status
 
 # Timezone configuration
 
@@ -238,6 +238,7 @@ locales  locales/locales_to_be_generated  multiselect  $(cat etc/locale.gen | \
 tail -n +6 | sed ':a;N;$!ba;s/\n/, /g')
 " | sudo debconf-set-selections
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
+
 echo -e "\n${redbold}Locale updated but restart required${normal}\n
 Please run:\n
 wsl.exe --shutdown\n
