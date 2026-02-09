@@ -81,6 +81,8 @@ fi
 PACKAGES="\
 weston \
 mesa-utils \
+libnvidia-egl-wayland1 \
+libgbm-dev \
 plasma-workspace \
 kde-cli-tools \
 kio-extras \
@@ -116,46 +118,66 @@ echo -e "$ sudo apt update && sudo apt install -y ${PACKAGES}"
 sudo apt update && sudo apt install -y ${PACKAGES}
 fi
 
-# Kernel module vgem required as DRM buffer for d3d12 driver
+#Show mesa using d3d12 and nvidia graphics when passed suitable variables
 
-if [ ! -f /etc/modules-load.d/vgem.conf ]; then
-echo -e "\n${cyanbold}Load vgem on every future boot${normal}"
-echo -e "$ echo -e \"vgem\\\n\" &> /dev/null | sudo tee /etc/modules-load.d/\
-vgem.conf"
-echo -e "vgem\n" | sudo tee /etc/modules-load.d/vgem.conf &> /dev/null
-fi
+echo -e "\n${cyanbold}Symlink dri_gbm.so to drm_gbm.so{normal}"
+echo -e "$ sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
+/usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so"
+sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
+/usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so
 
-if ! lsmod | grep -q vgem; then
-echo -e "\n${cyanbold}Load vgem now${normal}"
-echo -e "$ sudo modprobe vgem"
-sudo modprobe vgem
-fi
-
-echo -e "\n${cyanbold}Show loaded vgem (and related) kernel modules${normal}"
-echo -e "$ echo -e $ \"\$(lsmod | head -n 1)\\\n\$(lsmod | grep vgem)\"\n"
-echo -e "$(lsmod | head -n 1)\n$(lsmod | grep vgem)"
-
-echo -e "\n${cyanbold}Show vgem (and related) kernel modules${normal}"
-echo -e "$ ls -l /dev/dri\n"
-ls -l /dev/dri
-echo -e "\n$ ls -l /dev/dri/by-path\n"
-ls -l /dev/dri/by-path
-
-echo -e "\n${cyanbold}Show glxinfo using Nvidia graphics through d3d12 driver\
-${normal}"
-echo -e "\
-$ GALLIUM_DRIVER=d3d12 \\\\
-  MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
-  glxinfo -B\n"
+echo -e "\n${cyanbold}Show glxinfo${normal}"
+# TO-DO: Update echo once stopped fiddling with below command
+# echo -e "\
+# $ GALLIUM_DRIVER=d3d12 \\\\
+#   MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+#   glxinfo -B\n"
+EGL_PLATFORM=wayland \
+WAYLAND_DEBUG=1 \
+GBM_BACKEND=drm \
+WSA_RENDER_DEVICE=/dev/dri/renderD128 \
 GALLIUM_DRIVER=d3d12 \
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+MESA_VK_WSI_PRESENT_MODE=immediate \
+LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu \
+LIBGL_ALWAYS_SOFTWARE=0 \
 glxinfo -B
+
+echo -e "\n${cyanbold}Show eglinfo${normal}"
+# TO-DO: Update echo once stopped fiddling with below command
+# echo -e "\
+# $ GALLIUM_DRIVER=d3d12 \\\\
+#   MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+#   glxinfo -B\n"
+EGL_PLATFORM=wayland \
+WAYLAND_DEBUG=1 \
+GBM_BACKEND=drm \
+WSA_RENDER_DEVICE=/dev/dri/renderD128 \
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+MESA_VK_WSI_PRESENT_MODE=immediate \
+LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu \
+LIBGL_ALWAYS_SOFTWARE=0 \
+eglinfo -B
 
 # Set up virtual screen on Weston, in the background (final ampersand)
 
 echo -e "\n${cyanbold}Set up virtual screen on Weston with name weston${normal}"
-echo -e "$ weston --socket=weston > /dev/null 2>&1 &"
+
+# TO-DO: Update echo once stopped fiddling with below command
+# echo -e "$ weston --socket=weston > /dev/null 2>&1 &"
+
+EGL_PLATFORM=wayland \
+WAYLAND_DEBUG=1 \
+GBM_BACKEND=drm \
+WSA_RENDER_DEVICE=/dev/dri/renderD128 \
+GALLIUM_DRIVER=d3d12 \
+MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
+MESA_VK_WSI_PRESENT_MODE=immediate \
+LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu \
+LIBGL_ALWAYS_SOFTWARE=0 \
 weston --socket=weston > /dev/null 2>&1 &
+
 echo -e "$ ls /run/user/\$(id -u)/weston\n"
 ls /run/user/$(id -u)/weston
 
@@ -168,24 +190,41 @@ $ WAYLAND_DISPLAY=weston\\\\
   MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
   dbus-run-session startplasma-wayland > /dev/null 2>&1 &"
 WAYLAND_DISPLAY=weston \
+EEGL_PLATFORM=wayland \
+WAYLAND_DEBUG=1 \
+GBM_BACKEND=drm \
+WSA_RENDER_DEVICE=/dev/dri/renderD128 \
 GALLIUM_DRIVER=d3d12 \
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-dbus-run-session startplasma-wayland > /dev/null 2>&1 &
+MESA_VK_WSI_PRESENT_MODE=immediate \
+LD_LIBRARY_PATH=/usr/lib/wsl/lib:/usr/lib/x86_64-linux-gnu \
+LIBGL_ALWAYS_SOFTWARE=0 \
+startplasma-wayland > /dev/null 2>&1 &
 
 echo -e "\n${bluebold}End weston session${normal}"
-echo -e "${cyanbold}pkill -f \"weston --socket=weston\"${normal}"
+echo -e "\
+${cyanbold}\$(cat /proc/$(pgrep -n -f "startplasma-wayland")/environ | \
+tr '\\\\0' '\\\\n' | grep \"^DBUS_SESSION_BUS_ADDRESS=\") \
+qdbus6 org.kde.Shutdown /Shutdown org.kde.Shutdown.logout  && \
+tail --pid=$(pgrep -n -f "startplasma-wayland") --follow /dev/null && \
+pkill -f \"weston --socket=weston --drm-device=card0\"${normal}"
 
-echo -e "\n${bluebold}Run weston with log output to terminal for \
-troubleshooting${normal}"
-echo -e "${cyanbold}weston --socket=weston${normal}"
+# TO-DO: Update echo once stopped fiddling with varables
+# echo -e "\n${bluebold}Run weston with log output to terminal for \
+# troubleshooting${normal}"
+# echo -e "${cyanbold}\
+# GALLIUM_DRIVER=d3d12 \\\\
+# MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+# weston --socket=weston${normal}"
 
-echo -e "\n${bluebold}Run KDE Plasma with log output to (second) terminal \
-(separate from weston)${normal}"
-echo -e "${cyanbold}\
-WAYLAND_DISPLAY=weston \\\\
-GALLIUM_DRIVER=d3d12 \\\\
-MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
-dbus-run-session startplasma-wayland${normal}"
+# TO-DO: Update echo once stopped fiddling with varables
+# echo -e "\n${bluebold}Run KDE Plasma with log output to (second) terminal \
+# (separate from weston)${normal}"
+# echo -e "${cyanbold}\
+# WAYLAND_DISPLAY=weston \\\\
+# GALLIUM_DRIVER=d3d12 \\\\
+# MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \\\\
+# startplasma-wayland${normal}"
 
 # TO-DO: More config here
 
