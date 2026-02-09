@@ -160,7 +160,10 @@ else
 echo -e ""
 fi
 
-echo -e "$ localectl status\n"
+echo -e "$ cat /etc/default/keyboard\n"
+cat /etc/default/keyboard
+
+echo -e "\n$ localectl status\n"
 localectl status
 
 # Timezone configuration
