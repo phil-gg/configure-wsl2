@@ -51,14 +51,27 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 # https://manpages.debian.org/trixie/keyboard-configuration/keyboard.5.en.html
 # Note more customisation available with KMAP variable & loadkeys
 
-if ! dpkg -l keyboard-configuration 2> /dev/null | grep -q "ii" || \
-   ! dpkg -l console-setup 2> /dev/null | grep -q "ii"; then
+PACKAGES="\
+keyboard-configuration \
+console-setup \
+pkexec"
+
+# shellcheck disable=SC2086
+DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
+DPKG_ERROR=$?
+if [ "${DPKG_ERROR}" -eq 0 ]; then
+START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
+# shellcheck disable=SC2086
+DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
+APT_REQD=$(echo "${DPKG_TAIL}" | awk '!/^(ii |hi )/ {print substr($0, 1, 2)}')
+fi
+
+if [ -n "${APT_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
-echo -e "$ sudo apt update && sudo apt -y install keyboard-configuration \
-console-setup\n"
+echo -e "$ sudo apt update && sudo apt -y install ${PACKAGES}\n"
 sudo apt update
-echo -e "\
+echo "\
 keyboard-configuration  keyboard-configuration/layoutcode    string  gb
 keyboard-configuration  keyboard-configuration/modelcode     string  pc105
 keyboard-configuration  keyboard-configuration/variantcode   string  extd
@@ -69,8 +82,8 @@ tzdata          tzdata/Areas                select  Australia
 tzdata          tzdata/Zones/Australia      select  Brisbane
 tzdata          tzdata/Zones/Etc            select  UTC
 " | sudo debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive apt -y install keyboard-configuration \
-console-setup
+# shellcheck disable=SC2086
+sudo DEBIAN_FRONTEND=noninteractive apt -y ${PACKAGES}
 
 echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
@@ -140,7 +153,7 @@ if ! localectl status | grep -q -i "keymap: uk" || \
    ! localectl status | grep -q -i "layout: gb" || \
    ! localectl status | grep -q -i "model: pc105" || \
    ! localectl status | grep -q -i "variant: extd"; then
-echo -e "\n$ sudo localectl set-x11-keymap gb extd"
+echo -e "\n$ sudo localectl set-x11-keymap gb pc105 extd"
 sudo localectl set-x11-keymap gb pc105 extd
 else
 echo -e ""
