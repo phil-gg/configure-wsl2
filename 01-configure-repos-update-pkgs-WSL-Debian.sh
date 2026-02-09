@@ -281,9 +281,9 @@ fi
 
 if [[ -f /etc/apt/sources.list
    || ! -f /etc/apt/preferences.d/99pin-prefs
-   || ! -f /etc/apt/sources.list.d/sid-debian.sources
-   || ! -f /etc/apt/sources.list.d/trixie-debian.sources
-   || ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
+   || ! -f /etc/apt/sources.list.d/99-sid-debian.sources
+   || ! -f /etc/apt/sources.list.d/02-trixie-debian.sources
+   || ! -f /etc/apt/sources.list.d/01-trixie-security.sources ]]; then
 echo -e "\n${cyanbold}Updating package sources to deb822 format${normal}"
 fi
 
@@ -378,10 +378,10 @@ echo -e "${PIN_PREFS}" | \
 sudo tee /etc/apt/preferences.d/99pin-prefs 1> /dev/null
 fi
 
-if [[ ! -f /etc/apt/sources.list.d/sid-debian.sources ]]; then
-echo -e "> Create /etc/apt/sources.list.d/sid-debian.sources"
+if [[ ! -f /etc/apt/sources.list.d/99-sid-debian.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/99-sid-debian.sources"
 echo -e "\
-# Config to save at /etc/apt/sources.list.d/sid-debian.sources
+# Config to save at /etc/apt/sources.list.d/99-sid-debian.sources
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
 # available suites: sid
@@ -396,13 +396,13 @@ Suites: sid
 Components: main contrib non-free-firmware non-free
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/trixie-debian-archive-keyring.asc\
-" | sudo tee /etc/apt/sources.list.d/sid-debian.sources 1> /dev/null
+" | sudo tee /etc/apt/sources.list.d/99-sid-debian.sources 1> /dev/null
 fi
 
-if [[ ! -f /etc/apt/sources.list.d/trixie-debian.sources ]]; then
-echo -e "> Create /etc/apt/sources.list.d/trixie-debian.sources"
+if [[ ! -f /etc/apt/sources.list.d/02-trixie-debian.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/02-trixie-debian.sources"
 echo -e "\
-# Config to save at /etc/apt/sources.list.d/trixie-debian.sources
+# Config to save at /etc/apt/sources.list.d/02-trixie-debian.sources
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
 # available suites: trixie trixie-updates trixie-proposed-updates \
@@ -423,13 +423,13 @@ trixie-backports-sloppy
 Components: main contrib non-free-firmware non-free
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/trixie-debian-archive-keyring.asc\
-" | sudo tee /etc/apt/sources.list.d/trixie-debian.sources 1> /dev/null
+" | sudo tee /etc/apt/sources.list.d/02-trixie-debian.sources 1> /dev/null
 fi
 
-if [[ ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
-echo -e "> Create /etc/apt/sources.list.d/trixie-security.sources"
+if [[ ! -f /etc/apt/sources.list.d/01-trixie-security.sources ]]; then
+echo -e "> Create /etc/apt/sources.list.d/01-trixie-security.sources"
 echo -e "\
-# Config to save at /etc/apt/sources.list.d/trixie-security.sources
+# Config to save at /etc/apt/sources.list.d/01-trixie-security.sources
 # This replaces /etc/apt/sources.list
 # debian repo available types: deb deb-src
 # trixie available components: main contrib non-free-firmware non-free
@@ -441,14 +441,14 @@ Suites: trixie-security
 Components: main contrib non-free-firmware non-free
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/trixie-security-archive-keyring.asc
-" | sudo tee /etc/apt/sources.list.d/trixie-security.sources 1> /dev/null
+" | sudo tee /etc/apt/sources.list.d/01-trixie-security.sources 1> /dev/null
 fi
 
 # Install mozilla deb repo and firefox (on any arch)
 
-if [[ ! -f /etc/apt/sources.list.d/mozilla.sources ]]; then
-echo -e "\n${bluebold}Create /etc/apt/sources.list.d/mozilla.sources${normal}\
-\n"
+if [[ ! -f /etc/apt/sources.list.d/03-mozilla.sources ]]; then
+echo -e "\n${bluebold}Create /etc/apt/sources.list.d/03-mozilla.sources\
+${normal}\n"
 echo "\
 # Mozilla apt package repository
 Types: deb
@@ -457,7 +457,7 @@ Suites: mozilla
 Components: main
 Architectures: ${pkgarch}
 Signed-By: /usr/share/keyrings/mozilla-archive-keyring.asc\
-" | sudo tee /etc/apt/sources.list.d/mozilla.sources
+" | sudo tee /etc/apt/sources.list.d/03-mozilla.sources
 fi
 
 if ! command -v firefox-devedition &> /dev/null; then
