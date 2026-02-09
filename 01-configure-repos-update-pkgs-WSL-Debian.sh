@@ -447,7 +447,7 @@ fi
 # Install mozilla deb repo and firefox (on any arch)
 
 if [[ ! -f /etc/apt/sources.list.d/mozilla.sources ]]; then
-echo -e "\n${bluebold}  Create /etc/apt/sources.list.d/mozilla.sources${normal}\
+echo -e "\n${bluebold}Create /etc/apt/sources.list.d/mozilla.sources${normal}\
 \n"
 echo "\
 # Mozilla apt package repository
@@ -480,7 +480,7 @@ fi
 
 if [[ "${pkgarch}" == "amd64" && ! -f /etc/apt/sources.list.d/1password.list ]];
 then
-echo -e "\n${bluebold}  Create /etc/apt/sources.list.d/1password.list\
+echo -e "\n${bluebold}Create /etc/apt/sources.list.d/1password.list\
 ${normal}\n"
 
 # Can't use this new format until built-in 1password config updates
@@ -514,7 +514,7 @@ onepid=$(gpg --list-packets /usr/share/keyrings/1password-archive-keyring.gpg \
 
 if [[ ! -f "/etc/debsig/policies/${onepid}/${onepname}.pol"
    || ! -f "/usr/share/debsig/keyrings/${onepid}/debsig.gpg" ]]; then
-echo -e "\n${bluebold}  Set debsig policy for ${onepname}${normal}\n"
+echo -e "\n${bluebold}Set debsig policy for ${onepname}${normal}\n"
 echo -e "> Create /usr/share/debsig/keyrings/${onepid}/debsig.gpg\n"
 sudo mkdir -p "/etc/debsig/policies/${onepid}"
 echo -e "\
