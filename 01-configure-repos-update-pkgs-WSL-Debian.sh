@@ -280,7 +280,7 @@ fi
 # modernise deb package config files
 
 if [[ -f /etc/apt/sources.list
-   || ! -f /etc/apt/preferences.d/99administrator-prefs
+   || ! -f /etc/apt/preferences.d/99pin-prefs
    || ! -f /etc/apt/sources.list.d/sid-debian.sources
    || ! -f /etc/apt/sources.list.d/trixie-debian.sources
    || ! -f /etc/apt/sources.list.d/trixie-security.sources ]]; then
@@ -292,10 +292,10 @@ echo -e "$ sudo rm /etc/apt/sources.list"
 sudo rm /etc/apt/sources.list
 fi
 
-# Set apt pinning administrator preferences
+# Set apt pinning preferences
 
-ADMIN_PREFS="\
-Explanation: This file is /etc/apt/preferences.d/99administrator-prefs
+PIN_PREFS="\
+Explanation: This file is /etc/apt/preferences.d/99pin-prefs
 Explanation: https://manpages.debian.org/trixie/apt/apt_preferences.5.en.html
 Explanation: Never downgrade unless the priority of an available version \
 exceeds 1000
@@ -371,11 +371,11 @@ Pin: version *
 Pin-Priority: -1
 "
 
-if [ ! -f /etc/apt/preferences.d/99administrator-prefs ] || \
-! cmp -s <(echo "${ADMIN_PREFS}") /etc/apt/preferences.d/99administrator-prefs;
+if [ ! -f /etc/apt/preferences.d/99pin-prefs ] || \
+! cmp -s <(echo -e "${PIN_PREFS}") /etc/apt/preferences.d/99pin-prefs;
 then
-echo "${ADMIN_PREFS}" | sudo tee /etc/apt/preferences.d/\
-99administrator-prefs 1> /dev/null
+echo -e "${PIN_PREFS}" | \
+sudo tee /etc/apt/preferences.d/99pin-prefs 1> /dev/null
 fi
 
 if [[ ! -f /etc/apt/sources.list.d/sid-debian.sources ]]; then
@@ -598,89 +598,93 @@ fi
 # ################## #
 # ON ARM64 ARCH ONLY #
 # ################## #
-if [[ "${pkgarch}" == "arm64" ]]; then
-
-# TO-DO: 1password & 1password-cli versions without looking at deb packages
-
-# Explicitly install 1password dependencies
-
-echo -e "\n${cyanbold}Explicitly install 1password dependencies${normal}"
-echo -e "${cyanbold}( this dependency list was extracted from deb file in \
-Oct-2025 )${normal}"
-echo -e "${cyanbold}( https://downloads.1password.com/linux/debian/amd64/stable\
-/1password-latest.deb )${normal}"
-echo -e "
-sudo apt -y install \\
-curl \\
-gnupg2 \\
-libasound2 \\
-libatk-bridge2.0-0 \\
-libatk1.0-0 \\
-libc6 \\
-libcurl4 \\
-libdrm2 \\
-libgbm1 \\
-libgtk-3-0 \\
-libnotify4 \\
-libnss3 \\
-libxcb-shape0 \\
-libxcb-xfixes0 \\
-libxshmfence1 \\
-libudev1 \\
-xdg-utils \\
-libappindicator3-1\
-\n"
-sudo apt -y install \
-curl \
-gnupg2 \
-libasound2 \
-libatk-bridge2.0-0 \
-libatk1.0-0 \
-libc6 \
-libcurl4 \
-libdrm2 \
-libgbm1 \
-libgtk-3-0 \
-libnotify4 \
-libnss3 \
-libxcb-shape0 \
-libxcb-xfixes0 \
-libxshmfence1 \
-libudev1 \
-xdg-utils \
-libappindicator3-1
-
-# Make folder(s) if they don't exist
-
-if [ ! -d "${HOME}/git/${github_username}/${github_project}/tmp" ]; then
-echo -e "\n${cyanbold}Build our own deb package for arm64 arch${normal}"
-echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
-mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
-fi
-
-# Navigate to working directory
-
-echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
-cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
-|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
-; exit 111; }
-
-# get latest 1password amd64 deb package
-
-echo -e "\n${cyanbold}Get latest 1password amd64 deb package${normal}"
-echo -e "$ wget -O 1password_${shortversion1p}_amd64.deb \
-https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb"
-echo -e "\n"
-wget -O "1password_${shortversion1p}_amd64.deb" \
-https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
-
-# TO-DO: Complete manual deb package build here
-# OR: Don't even make tmp folder; instead sig-check & install tarball
-
+# 
+# Ignore this section, it is not complete, and not executed
+#
+# if [[ "${pkgarch}" == "arm64" ]]; then
+# 
+# # TO-DO: 1password & 1password-cli versions without looking at deb packages
+# 
+# # Explicitly install 1password dependencies
+# 
+# echo -e "\n${cyanbold}Explicitly install 1password dependencies${normal}"
+# echo -e "${cyanbold}( this dependency list was extracted from deb file in \
+# Oct-2025 )${normal}"
+# echo -e "${cyanbold}( https://downloads.1password.com/linux/debian/amd64/stable\
+# /1password-latest.deb )${normal}"
+# echo -e "
+# sudo apt -y install \\
+# curl \\
+# gnupg2 \\
+# libasound2 \\
+# libatk-bridge2.0-0 \\
+# libatk1.0-0 \\
+# libc6 \\
+# libcurl4 \\
+# libdrm2 \\
+# libgbm1 \\
+# libgtk-3-0 \\
+# libnotify4 \\
+# libnss3 \\
+# libxcb-shape0 \\
+# libxcb-xfixes0 \\
+# libxshmfence1 \\
+# libudev1 \\
+# xdg-utils \\
+# libappindicator3-1\
+# \n"
+# sudo apt -y install \
+# curl \
+# gnupg2 \
+# libasound2 \
+# libatk-bridge2.0-0 \
+# libatk1.0-0 \
+# libc6 \
+# libcurl4 \
+# libdrm2 \
+# libgbm1 \
+# libgtk-3-0 \
+# libnotify4 \
+# libnss3 \
+# libxcb-shape0 \
+# libxcb-xfixes0 \
+# libxshmfence1 \
+# libudev1 \
+# xdg-utils \
+# libappindicator3-1
+# 
+# # Make folder(s) if they don't exist
+# 
+# if [ ! -d "${HOME}/git/${github_username}/${github_project}/tmp" ]; then
+# echo -e "\n${cyanbold}Build our own deb package for arm64 arch${normal}"
+# echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+# mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+# fi
+# 
+# # Navigate to working directory
+# 
+# echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+# cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
+# || { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+# ; exit 111; }
+# 
+# # get latest 1password amd64 deb package
+# 
+# echo -e "\n${cyanbold}Get latest 1password amd64 deb package${normal}"
+# echo -e "$ wget -O 1password_${shortversion1p}_amd64.deb \
+# https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb"
+# echo -e "\n"
+# wget -O "1password_${shortversion1p}_amd64.deb" \
+# https://downloads.1password.com/linux/debian/amd64/stable/1password-latest.deb
+# 
+# # TO-DO: Complete manual deb package build here
+# # OR: Don't even make tmp folder; instead sig-check & install tarball
+# 
+# fi
+# 
 # ###################### #
 # END ARM64 ONLY SECTION #
 # ###################### #
-fi
 
 # general system update
 
