@@ -338,7 +338,7 @@ Pin-Priority: 970
 Explanation: Add any more third-party repos just above here
 Explanation: trixie-backports is here at 510 just more than default priority
 Package: *
-Pin: release o=Debian, n=trixie-backports
+Pin: release o=Debian Backports, n=trixie-backports
 Pin-Priority: 510
 
 Explanation: Default (with no pin or target release) priority is 500
@@ -347,7 +347,7 @@ Explanation: Installed packages have priority 100
 Explanation: Stable backports sloppy is here at 90 for selected packages only
 Explanation: *NOTE* Remove all sloppy packages before distribution upgrade
 Package: *
-Pin: release o=Debian, n=trixie-backports-sloppy
+Pin: release o=Debian Backports, n=trixie-backports-sloppy
 Pin-Priority: 120
 
 Explanation: Sid/Unstable is here at 90 for selected packages only
