@@ -120,11 +120,13 @@ fi
 
 #Show mesa using d3d12 and nvidia graphics when passed suitable variables
 
-echo -e "\n${cyanbold}Symlink dri_gbm.so to drm_gbm.so{normal}"
+if [ ! -e "/usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so" ]; then
+echo -e "\n${cyanbold}Symlink dri_gbm.so to drm_gbm.so${normal}"
 echo -e "$ sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so"
 sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so
+fi
 
 echo -e "\n${cyanbold}Show glxinfo${normal}"
 # TO-DO: Update echo once stopped fiddling with below command
@@ -163,10 +165,8 @@ eglinfo -B
 # Set up virtual screen on Weston, in the background (final ampersand)
 
 echo -e "\n${cyanbold}Set up virtual screen on Weston with name weston${normal}"
-
 # TO-DO: Update echo once stopped fiddling with below command
 # echo -e "$ weston --socket=weston > /dev/null 2>&1 &"
-
 EGL_PLATFORM=wayland \
 WAYLAND_DEBUG=1 \
 GBM_BACKEND=drm \
