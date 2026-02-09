@@ -53,7 +53,8 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 PACKAGES="\
 keyboard-configuration \
-console-setup"
+console-setup \
+python3"
 
 # shellcheck disable=SC2086
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
@@ -86,6 +87,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ${PACKAGES}
 
 echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
+
 echo -e "$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup
 echo -e "$ sudo sed -i '/^FONTFACE=/c\FONTFACE=""' /etc/default/console-setup"
@@ -94,12 +96,20 @@ echo -e "$ sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup"
 sudo sed -i '/^FONTSIZE=/c\FONTSIZE=""' /etc/default/console-setup
 echo -e "$ cat /etc/default/console-setup\n"
 cat /etc/default/console-setup
+
+if [ "$(cat /etc/vconsole.conf)" != "KEYMAP=uk" ]; then
+echo -e "KEYMAP=uk" | sudo tee /etc/vconsole.conf 1> /dev/null
+fi
+echo -e "$ cat /etc/vconsole.conf\n"
+cat /etc/vconsole.conf
+
 echo -e "\n$ sudo setupcon"
 sudo setupcon
-echo -e "$ localectl status\n"
-localectl status
 
 fi
+
+echo -e "$ localectl status\n"
+localectl status
 
 # Work around keymaps packaging issue as documented here:
 # https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
