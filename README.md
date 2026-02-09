@@ -6,6 +6,10 @@
  - Better developers & maintainers than me have said; _"It would be much better if most derivative distro projects were just a configuration script on top of the parent distro"_; so that is what this project is.
  - The use case / manifesto for Plow (& Configure WSL dotfiles) is:  _"I am required to work on a Windows laptop at work, but I have local admin for said Windows laptop, and I can use the WSL Windows component.  Let's turn Debian on WSL into the best possible native Windows application window, containing a full, graphical KDE-based Linux environment."_
 
+## Idiosyncracies
+ - I use 1password for my secrets management; this is heavily integrated into the scripts.
+ - I have a custom AU locale, a gb/uk keyboard, and Brisbane timezone, all in `04-keyboard-timezone-locale-WSL-Debian.sh`.  This shows you how I manage the warring configurations of Debian (debconf) vs. systemd but you will likely want to fork and set your own preferences there.
+
 ## Configuration Instructions
 
 1. Install WSL on Windows host
@@ -143,7 +147,7 @@
     ```
     1password
     ```
-    _These apps should also be available from Windows start menu with a _(Debian)_ suffix_
+    _These apps should also be available from Windows start menu with a ` (Debian)` suffix_
 
 ## Graphical option #2: Run {wslg > weston > kde-plasma} nested desktop environment
 
