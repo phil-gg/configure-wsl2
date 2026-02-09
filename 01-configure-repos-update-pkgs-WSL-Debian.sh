@@ -348,12 +348,12 @@ Explanation: Stable backports sloppy is here at 90 for selected packages only
 Explanation: *NOTE* Remove all sloppy packages before distribution upgrade
 Package: *
 Pin: release o=Debian, n=trixie-backports-sloppy
-Pin-Priority: 90
+Pin-Priority: 120
 
 Explanation: Sid/Unstable is here at 90 for selected packages only
 Package: *
 Pin: release o=Debian, n=sid
-Pin-Priority: 90
+Pin-Priority: 110
 
 Explanation: Prevent installation on WSL2
 Package: xwaylandvideobridge
