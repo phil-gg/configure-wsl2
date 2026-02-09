@@ -47,6 +47,52 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 # Keyboard configuration
 
+# Work around keymaps packaging issue as documented here:
+# https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
+
+if ! localectl list-keymaps &> /dev/null; then
+
+echo -e "\n${cyanbold}Installing keymaps${normal}"
+kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
+grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
+
+echo -e "$ sudo mkdir -p /usr/share/keymaps"
+sudo mkdir -p /usr/share/keymaps
+
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+
+echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 102; }
+
+echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
+v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
+wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
+kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
+
+echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
+tar -xf "kbd-${kbd_version}.tar.xz"
+
+echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
+# shellcheck disable=SC2086
+sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
+
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 103; }
+
+echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
+rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
+
+fi
+
+echo -e "\n${cyanbold}Configure keyboard layout${normal}"
+echo -e "$ localectl list-keymaps | grep -i UK\n"
+localectl list-keymaps | grep -i UK
+
 # This sets up /etc/default/keyboard as per:
 # https://manpages.debian.org/trixie/keyboard-configuration/keyboard.5.en.html
 # Note more customisation available with KMAP variable & loadkeys
@@ -71,7 +117,7 @@ if [ -n "${APT_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 
 if ! grep -q -i 'KEYMAP="uk"' /etc/vconsole.conf; then
-echo -e "KEYMAP=\"uk\"" | sudo tee /etc/vconsole.conf 1> /dev/null
+echo -e "KEYMAP=uk" | sudo tee /etc/vconsole.conf 1> /dev/null
 fi
 echo -e "$ cat /etc/vconsole.conf\n"
 cat /etc/vconsole.conf
@@ -95,7 +141,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt install -y ${PACKAGES}
 echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure \
 keyboard-configuration"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure keyboard-configuration
-echo -e "\n$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
+echo -e "$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata"
 sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure tzdata
 
 echo -e "$ sudo DEBIAN_FRONTEND=noninteractive dpkg-reconfigure console-setup"
@@ -110,83 +156,12 @@ cat /etc/default/console-setup
 echo -e "\n$ sudo setupcon"
 sudo setupcon
 
+else
+echo -e ""
 fi
 
 echo -e "$ localectl status\n"
 localectl status
-
-# Work around keymaps packaging issue as documented here:
-# https://www.claudiokuenzler.com/blog/1257/how-to-fix-missing-keymaps-debian-ubuntu-localectl-failed-read-list
-# 
-# if ! localectl list-keymaps &> /dev/null; then
-# 
-# echo -e "\n${cyanbold}Installing keymaps${normal}"
-# kbd_version=$(lynx -dump https://github.com/legionus/kbd/releases/latest | \
-# grep -E "^v[0-9.]+$" | head -n 1 | cut -c 2-)
-# 
-# echo -e "$ sudo mkdir -p /usr/share/keymaps"
-# sudo mkdir -p /usr/share/keymaps
-# 
-# echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
-# mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
-# 
-# echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
-# cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
-# || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-# ; exit 102; }
-# 
-# echo -e "$ wget https://github.com/legionus/kbd/releases/download/\
-# v${kbd_version}/kbd-${kbd_version}.tar.xz -O kbd-${kbd_version}.tar.xz\n"
-# wget "https://github.com/legionus/kbd/releases/download/v${kbd_version}/\
-# kbd-${kbd_version}.tar.xz" -O "kbd-${kbd_version}.tar.xz"
-# 
-# echo -e "$ tar -xf kbd-${kbd_version}.tar.xz"
-# tar -xf "kbd-${kbd_version}.tar.xz"
-# 
-# echo -e "$ sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/"
-# # shellcheck disable=SC2086
-# sudo cp -Rp kbd-${kbd_version}/data/keymaps/* /usr/share/keymaps/
-# 
-# echo -e "$ cd ~/git/${github_username}/${github_project}"
-# cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-# || { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
-# ; exit 103; }
-# 
-# echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
-# rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
-# 
-# fi
-# 
-# echo -e "\n${cyanbold}Configure keyboard layout${normal}"
-# echo -e "$ localectl list-keymaps | grep -i UK\n"
-# localectl list-keymaps | grep -i UK
-# 
-# if ! localectl status | grep -q -i "keymap: uk" || \
-#    ! localectl status | grep -q -i "layout: gb" || \
-#    ! localectl status | grep -q -i "model: pc105" || \
-#    ! localectl status | grep -q -i "variant: extd"; then
-# 
-# sudo mkdir -p /etc/X11/xorg.conf.d/
-# echo -e "\
-# Section \"InputClass\"
-#         Identifier \"system-keyboard\"
-#         MatchIsKeyboard \"on\"
-#         Option \"XkbLayout\" \"gb\"
-#         Option \"XkbModel\" \"pc105\"
-#         Option \"XkbVariant\" \"extd\"
-#         Option \"XkbOptions\" \"\"
-# EndSection" | sudo tee /etc/X11/xorg.conf.d/00-keyboard.conf 1> /dev/null
-# echo -e "\n$ cat /etc/X11/xorg.conf.d/00-keyboard.conf\n"
-# cat /etc/X11/xorg.conf.d/00-keyboard.conf
-# echo -e "\n$ sudo systemctl restart systemd-localed"
-# sudo systemctl restart systemd-localed
-# 
-# else
-# echo -e ""
-# fi
-# 
-# echo -e "$ localectl status\n"
-# localectl status
 
 # Timezone configuration
 
