@@ -289,9 +289,11 @@ fi
 
 # Log this latest `Config` operation and display runtime
 
-echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" >> config-runs.log
 echo -e "\n${bluebold}${filename} run at${normal}"
-echo -e "  ${runtime}\n"
+echo -e "> ${runtime}\n"
+mkdir -p "${HOME}/git/${github_username}/${github_project}"
+echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
+>> "${HOME}/git/${github_username}/${github_project}/config-runs.log"
 
 ################################################################################
 #
