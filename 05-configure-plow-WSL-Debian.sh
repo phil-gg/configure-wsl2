@@ -290,7 +290,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-WSL_KERNEL=$(eval wsl.exe --version)
+powershell.exe -NoProfile -Command 'wsl.exe --version | Out-File tmp/wsl'
 
 
 # WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
