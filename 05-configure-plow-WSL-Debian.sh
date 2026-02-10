@@ -263,8 +263,11 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ wsl.exe --version | tr -d '\\\\0\\\\r' | sed 's/[^[:print:]\\\\t\\\\n]//g'\\\\n"
-WSL_VERSION=$(wsl.exe --version | tr -d '\0\r' | sed 's/[^[:print:]\t\n]//g')
+echo -e "$ wsl.exe --version | tr -d '\\\\0\\\\r'\n"
+TMP_WSL_VER=$(mktemp)
+timeout 1s wsl.exe --version > "${TMP_WSL_VER}" || \
+echo -e "${redbold}> Warning: wsl.exe check timed out${normal}"
+WSL_VERSION=$(cat "${TMP_WSL_VER}" | tr -d '\0\r')
 echo -e "${WSL_VERSION}"
 echo -e "\n$ uname -a\n"
 uname -a
