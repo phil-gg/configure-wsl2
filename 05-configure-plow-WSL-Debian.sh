@@ -291,9 +291,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 cd /mnt/c/
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-WSL_KERNEL=$(cmd.exe /c "wsl --version")
-echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
-
+cmd.exe /c "wsl --version"
 
 # echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
 # WSL_KERNEL=$(pwsh.exe -NoProfile -Command "wsl --version | wsl tr -cd '[:print:]'")
