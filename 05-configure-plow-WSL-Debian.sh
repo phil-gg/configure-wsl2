@@ -391,13 +391,17 @@ fi
 
 # Show all systemd units in context (existing along with new plow & plasma)
 echo -e "\n${cyanbold}Listing available user units${normal}"
-echo -e "$ systemctl --user list-unit-files\n"
-systemctl --user list-unit-files
+echo -e "$ systemctl --user list-unit-files --no-pager\n"
+systemctl --user list-unit-files --no-pager
 
 # Run plow.service
 echo -e "\n${cyanbold}Run plow.service${normal}"
 echo -e "$ systemctl --user start plow.service"
 systemctl --user start plow.service
+
+# Stop a Plow session
+echo -e "\n${bluebold}Stop a Plow session with:${normal}"
+echo -e "\n${cyanbold}qdbus org.kde.Shutdown /Shutdown logout${normal}"
 
 # Log this latest `Config` operation and display runtime
 
