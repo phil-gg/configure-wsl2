@@ -290,16 +290,8 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-cd /mnt/c && wsl.exe --version
-
-cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
-|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
-; exit 102; }
-
-
-# WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
-# Out-String) -replace '[^\x20-\x7E\x0D\x0A]', ''" | tr -cd '[:print:]\n' | \
-# grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
+WSL_KERNEL=$(pwsh.exe -NoProfile -Command "wsl --version | wsl tr -cd '[:print:]'")
+echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 
 
 # Now can test mesa using d3d12 and nvidia graphics without passing variables
