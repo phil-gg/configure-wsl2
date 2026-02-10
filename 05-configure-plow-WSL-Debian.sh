@@ -268,7 +268,7 @@ powershell.exe -NoProfile -Command "wsl.exe --version"
 echo -e "\n$ uname -a\n"
 uname -a
 WSL_KERNEL=$(powershell.exe -NoProfile -Command "wsl.exe --version" \
-| tr -d '\0' | grep -i "Kernel version" \
+| tr -d '\0' | tr -d '\r' | grep -i "Kernel version" \
 | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
