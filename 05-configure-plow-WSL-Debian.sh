@@ -288,8 +288,10 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # echo -e "${redbold}> Kernel versions do NOT match${normal}\n"
 # fi
 
+
+cd /mnt/c/
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-WSL_KERNEL=$(pwsh.exe -NoProfile -Command "((wsl --version | Out-String) -replace '[^\x20-\x7E]', '').Trim()")
+WSL_KERNEL=$(cmd.exe /c "wsl --version")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 
 
