@@ -289,9 +289,10 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # fi
 
 
-cd /mnt/c/
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-wsl.exe --version | tr -cd '\040-\176\012'
+WSL_VERSION=$(wsl.exe --version < /dev/null | tr -cd '\040-\176\012')
+echo "${WSL_VERSION}"
+# (wsl.exe --version < /dev/null | tr -cd '\040-\176\012') > "${HOME}/git/${github_username}/${github_project}/tmp/wsl.txt"
 
 # pwsh.exe -NoProfile -Command "((wsl --version | Out-String) -replace '[^\x20-\x7E]', '').Trim() 2>&1"
 
