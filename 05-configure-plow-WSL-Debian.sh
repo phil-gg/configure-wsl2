@@ -263,9 +263,9 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ \$(wsl.exe --version < /dev/null | tr -cd '\\\\040-\\\\176\\\\012')"
+echo -e "$ wsl.exe --version < /dev/null | tr -cd '\\\\040-\\\\176\\\\012'\n"
 WSL_VERSION=$(wsl.exe --version < /dev/null | tr -cd '\040-\176\012')
-echo -e "\n${WSL_VERSION}"
+echo "${WSL_VERSION}"
 
 echo -e "\n$ uname -a\n"
 uname -a
@@ -291,7 +291,7 @@ echo -e "\n${cyanbold}Show eglinfo${normal}"
 # Backslash to prevent the variable being set from expanding in echo command
 echo -e "$ \$EGL_LOG_LEVEL=debug eglinfo -B"
 echo -e "${redbold}> Known issue: GBM\EGL (but apparently wslg/d3d12 works \
-around this)${normal}"
+around this)${normal}\n"
 EGL_LOG_LEVEL=debug eglinfo -p gbm
 eglinfo -B -p wayland
 eglinfo -B -p x11
@@ -388,7 +388,7 @@ systemctl --user list-unit-files --no-pager
 # Run plow-weston.service
 echo -e "\n${cyanbold}Run plow-weston.service${normal}"
 echo -e "$ systemctl --user start plow-weston.service"
-systemctl --user start plow-weston.service
+systemctl --user start plow-plasma.service
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
