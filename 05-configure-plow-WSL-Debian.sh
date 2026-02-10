@@ -264,12 +264,13 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
 echo -e "$ wsl.exe --version\n"
-wsl.exe --version
+echo -e "$(wsl.exe --version | tr -cd '\n -~')" | \
+tee "${HOME}/git//${github_username}/${github_project}/tmp/wsl"
+cat "${HOME}/git//${github_username}/${github_project}/tmp/wsl"
 echo -e "\n$ uname -a\n"
 uname -a
-WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version) \
--replace '[^ -~]', ''" | grep -i "Kernel version" \
-| sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
+WSL_KERNEL=$(cat "${HOME}/git//${github_username}/${github_project}/tmp/wsl" \
+| grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
 echo -e "\n> DEB_KERNEL=${DEB_KERNEL}"
