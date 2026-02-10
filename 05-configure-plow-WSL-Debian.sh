@@ -199,7 +199,7 @@ QT_QPA_PLATFORM=wayland
 # KWin Direct Rendering Manager No Atomic Mode Setting
 KWIN_DRM_NO_AMS=1
 # Set KDE version for file paths
-Environment=KDE_SESSION_VERSION=6
+KDE_SESSION_VERSION=6
 # GTK (GNOME, GIMP, LibreOffice)
 GDK_BACKEND=wayland
 # Mozilla (Firefox, Thunderbird)
@@ -300,15 +300,23 @@ eglinfo -B -p surfaceless
 # Define systemd unit for Weston (Plow)
 
 WESTON_SERVICE="\
+# plow-weston.service
+# this is the systemd unit file for the plow-weston user service
+
+# plow-weston (this one) is just a virtual display
+# plow-plasma is the main Service
+# plow-plasma runs plow-weston and Binds/PropagatesTo when needed
+# always/only interact with plow-plasma
+# never interact with plow-weston
+
 [Unit]
 Description=Weston compositor (nested on WSLg)
+# https://manpages.debian.org/trixie/weston/weston.1.en.html
 Documentation=man:weston(1)
 After=graphical-session-pre.target
 PartOf=graphical-session.target
-# Automatically pull in the session
-Wants=plow-plasma.service
-# Ensure display starts before session
-Before=plow-plasma.service
+# Only run while a desktop environment wants to nest within weston
+StopWhenUnneeded=true
 
 [Service]
 Type=notify
@@ -320,10 +328,28 @@ ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 # Define systemd unit for Plasma
 
 PLASMA_SERVICE="\
+# plow-plasma.service
+# this is the systemd unit file for the plow-plasma user service
+
+# plow-weston is just a virtual display
+# plow-plasma (this one) is the main Service
+# plow-plasma (this one) runs plow-weston and Binds/PropagatesTo when needed
+# always/only interact with plow-plasma
+# never interact with plow-weston
+
 [Unit]
 Description=KDE Plasma session (nested on Weston)
+After=graphical-session-pre.target
+PartOf=graphical-session.target
 After=plow-weston.service
+# Without plow-weston, this plow-plasma user service cannot run
+Requires=plow-weston.service
+# When plow-weston stops or dies, apply to plow-plasma too (stronger than Wants)
 BindsTo=plow-weston.service
+# When plow-weston is restarted, apply to plow-plasma too
+PartOf=plow-weston.service
+# When plow-weston is reloaded, apply to plow-plasma too
+ReloadPropagatedFrom=plow-weston.service
 
 [Service]
 Type=notify
@@ -333,11 +359,14 @@ Environment=XDG_SESSION_CLASS=user
 Environment=XDG_SESSION_TYPE=wayland
 Environment=XDG_SESSION_DESKTOP=KDE
 Environment=XDG_CURRENT_DESKTOP=KDE
-ExecStart=/bin/bash -c '/usr/bin/startplasma-wayland & PID=\$!; ( until qdbus org.kde.plasmashell > /dev/null 2>&1; do sleep 0.1; done; systemd-notify --ready ) & wait \$PID'
+ExecStart=/bin/bash -c '/usr/bin/startplasma-wayland & PID=\$\$!; ( until \
+qdbus org.kde.plasmashell > /dev/null 2>&1; do sleep 0.1; done; systemd-notify \
+--ready ) & wait \$\$PID'
 Restart=no
 
 [Install]
-WantedBy=plow-weston.service
+# This allows you to run systemctl --user enable plow-plasma
+WantedBy=graphical-session.target
 "
 
 # Configure system-wide systemd user units
@@ -385,14 +414,14 @@ echo -e "\n${cyanbold}Listing all available systemd user unit-files${normal}"
 echo -e "$ systemctl --user list-unit-files --no-pager\n"
 systemctl --user list-unit-files --no-pager
 
-# Run plow-weston.service
-echo -e "\n${cyanbold}Run plow-weston.service${normal}"
-echo -e "$ systemctl --user start plow-weston.service"
-systemctl --user start plow-plasma.service
+# Run plow-plasma.service
+echo -e "\n${cyanbold}Run plow-plasma.service${normal}"
+echo -e "$ systemctl --user start plow-plasma.service"
+systemctl --user start plow-plasma
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}systemctl --user stop plow-weston plow-plasma${normal}"
+echo -e "${cyanbold}systemctl --user stop plow-plasma${normal}"
 echo -e "${redbold}> Note this kills the session with no requests to save \
 unsaved work${normal}"
 
