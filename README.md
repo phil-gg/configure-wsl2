@@ -149,7 +149,7 @@
     ```
     _These apps should also be available from Windows start menu with a ` (Debian)` suffix_
 
-## Graphical option #2: Run {wslg > weston > kde-plasma} nested desktop environment
+## Graphical option #2: Run Plow nested desktop environment
 
 > [!NOTE]  
 >   - _Work in progress: `05-configure-plow-WSL-Debian.sh` sets up everything._
