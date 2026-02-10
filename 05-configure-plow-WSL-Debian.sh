@@ -263,7 +263,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 # echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-# echo -e "$ wsl.exe --version | tr -cd '\n -~'\n"
+# echo -e "$ wsl.exe --version | tr -cd '\\\\n -~'\n"
 # wsl.exe --version | tr -cd '\n -~'
 
 # mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
