@@ -24,25 +24,25 @@ filename="05-configure-plow-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')
-greenbold=$(printf '\033[92;1m')
-cyanbold=$(printf '\033[96;1m')
-bluebold=$(printf '\033[94;1m')
+greenbold=$(printf '033[92;1m')
+cyanbold=$(printf '033[96;1m')
+bluebold=$(printf '033[94;1m')
 UNITS_CHANGED=0
 
 # Now running `${filename}`
 
-echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
+echo -e "n${bluebold}Now running ‘${filename}’${normal}"
 
 # Network test
 
-echo -e "\n${bluebold}Testing network connectivity${normal}"
-echo -e "$ wget -q --spider https://raw.githubusercontent.com\
-/${github_username}\
-/${github_project}\
-/${github_branch}\
+echo -e "n${bluebold}Testing network connectivity${normal}"
+echo -e "$ wget -q --spider https://raw.githubusercontent.com
+/${github_username}
+/${github_project}
+/${github_branch}
 /${filename}"
 
-if ! wget -q --spider https://raw.githubusercontent.com\
+if ! wget -q --spider https://raw.githubusercontent.com
 /${github_username}\
 /${github_project}\
 /${github_branch}\
@@ -263,7 +263,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ wsl.exe --version | tr -d '\\0'\n"
+echo -e "$ wsl.exe --version | tr -d '\\\\0'\n"
 wsl.exe --version | tr -d '\0'
 echo -e "\n$ uname -a\n"
 uname -a
