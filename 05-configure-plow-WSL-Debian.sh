@@ -291,7 +291,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 cd /mnt/c/
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-cmd.exe /c "wsl --version"
+pwsh.exe -NoProfile -Command "((wsl --version | Out-String) -replace '[^\x20-\x7E]', '').Trim() 2>&1"
 
 # echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
 # WSL_KERNEL=$(pwsh.exe -NoProfile -Command "wsl --version | wsl tr -cd '[:print:]'")
