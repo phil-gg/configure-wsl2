@@ -8,7 +8,7 @@
 
 ## Idiosyncracies
  - I use 1password for my secrets management; this is heavily integrated into the scripts.
- - I have a custom AU locale, a gb/uk keyboard, and Brisbane timezone, all in `04-keyboard-timezone-locale-WSL-Debian.sh`.  This shows you how I manage the warring configurations of Debian (debconf) vs. systemd but you will likely want to fork and set your own preferences there.
+ - I have a custom AU locale, a gb/uk keyboard, and Brisbane timezone, all in `04-keyboard-timezone-locale-WSL-Debian.sh`.  This shows you how I manage the warring configurations of Debian (debconf) vs. systemd, but you will likely want to fork and set your own preferences there.
 
 ## Configuration Instructions
 
