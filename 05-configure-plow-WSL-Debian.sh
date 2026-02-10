@@ -289,7 +289,7 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # fi
 
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-WSL_KERNEL=$(pwsh.exe -NoProfile -Command "(wsl --version | Out-String) -replace '[^[:print:]\r\n]', ''")
+WSL_KERNEL=$(pwsh.exe -NoProfile -Command "((wsl --version | Out-String) -replace '[^\x20-\x7E]', '').Trim()")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 
 
