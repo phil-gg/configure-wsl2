@@ -263,28 +263,30 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ wsl.exe --version\n"
-mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+echo -e "$ wsl.exe --version | tr -cd '\n -~'\n"
+wsl.exe --version | tr -cd '\n -~'
+
+# mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
 # echo -e "$(wsl.exe --version | tr -cd '\n -~')" | \
 # tee "${HOME}/git/${github_username}/${github_project}/tmp/wsl"
-( timeout -k 1s 1s bash -c "wsl.exe --version \
-| tr -cd '\n -~' > ${HOME}/git/${github_username}/${github_project}/tmp/wsl" ) \
-|| echo -e "${redbold}> Version check timed out, moving on...${normal}"
+# ( timeout -k 1s 1s bash -c "wsl.exe --version \
+# | tr -cd '\n -~' > ${HOME}/git/${github_username}/${github_project}/tmp/wsl" ) \
+# || echo -e "${redbold}> Version check timed out, moving on...${normal}"
 
 echo -e "\n$ uname -a\n"
 uname -a
 
-WSL_KERNEL=$(cat "${HOME}/git/${github_username}/${github_project}/tmp/wsl" \
-| grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
-echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
-DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
-echo -e "> DEB_KERNEL=${DEB_KERNEL}"
+# WSL_KERNEL=$(cat "${HOME}/git/${github_username}/${github_project}/tmp/wsl" \
+# | grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
+# echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
+# DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
+# echo -e "> DEB_KERNEL=${DEB_KERNEL}"
 
-if [ "${WSL_KERNEL}" == "${DEB_KERNEL}" ]; then
-echo -e "${greenbold}> Kernel versions match${normal}"
-else
-echo -e "${redbold}> Kernel versions do NOT match${normal}\n"
-fi
+# if [ "${WSL_KERNEL}" == "${DEB_KERNEL}" ]; then
+# echo -e "${greenbold}> Kernel versions match${normal}"
+# else
+# echo -e "${redbold}> Kernel versions do NOT match${normal}\n"
+# fi
 
 # Now can test mesa using d3d12 and nvidia graphics without passing variables
 
