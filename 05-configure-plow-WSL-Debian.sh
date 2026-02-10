@@ -290,7 +290,11 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-powershell.exe -NoProfile -Command 'wsl.exe --version | Out-File tmp/wsl'
+cd /mnt/c && wsl.exe --version
+
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "${redbold}> Failed to change directory, exiting${normal}\n"\
+; exit 102; }
 
 
 # WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
