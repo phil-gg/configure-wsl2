@@ -288,10 +288,14 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # echo -e "${redbold}> Kernel versions do NOT match${normal}\n"
 # fi
 
-
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
-WSL_KERNEL=$(pwsh.exe -NoProfile -Command "wsl --version | wsl tr -cd '[:print:]'")
+WSL_KERNEL=$(pwsh.exe -NoProfile -Command "(wsl --version | Out-String) -replace '[^[:print:]\r\n]', ''")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
+
+
+# echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
+# WSL_KERNEL=$(pwsh.exe -NoProfile -Command "wsl --version | wsl tr -cd '[:print:]'")
+# echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 
 
 # Now can test mesa using d3d12 and nvidia graphics without passing variables
