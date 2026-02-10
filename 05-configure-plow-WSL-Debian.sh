@@ -24,25 +24,25 @@ filename="05-configure-plow-WSL-Debian.sh"
 runtime=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 normal=$(printf '\033[0m')
 redbold=$(printf '\033[91;1m')
-greenbold=$(printf '033[92;1m')
-cyanbold=$(printf '033[96;1m')
-bluebold=$(printf '033[94;1m')
+greenbold=$(printf '\033[92;1m')
+cyanbold=$(printf '\033[96;1m')
+bluebold=$(printf '\033[94;1m')
 UNITS_CHANGED=0
 
 # Now running `${filename}`
 
-echo -e "n${bluebold}Now running ‘${filename}’${normal}"
+echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Network test
 
-echo -e "n${bluebold}Testing network connectivity${normal}"
-echo -e "$ wget -q --spider https://raw.githubusercontent.com
-/${github_username}
-/${github_project}
-/${github_branch}
+echo -e "\n${bluebold}Testing network connectivity${normal}"
+echo -e "$ wget -q --spider https://raw.githubusercontent.com\
+/${github_username}\
+/${github_project}\
+/${github_branch}\
 /${filename}"
 
-if ! wget -q --spider https://raw.githubusercontent.com
+if ! wget -q --spider https://raw.githubusercontent.com\
 /${github_username}\
 /${github_project}\
 /${github_branch}\
@@ -404,5 +404,4 @@ echo -e "FILE: ${filename} | EXEC-TIME: ${runtime}" \
 #   5   10   15   20   25   30   35   40   45   50   55   60   65   70   75   80
 #
 ################################################################################
-
 
