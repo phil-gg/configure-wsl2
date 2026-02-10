@@ -288,6 +288,15 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # echo -e "${redbold}> Kernel versions do NOT match${normal}\n"
 # fi
 
+
+echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
+
+WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
+Out-String) -replace '[^\x20-\x7E\x0D\x0A]', ''" | grep -i "Kernel version" | \
+sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
+echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
+
+
 # Now can test mesa using d3d12 and nvidia graphics without passing variables
 
 echo -e "\n${cyanbold}Show glxinfo${normal}"
@@ -312,9 +321,9 @@ Documentation=man:weston(1)
 After=graphical-session-pre.target
 PartOf=graphical-session.target
 # Automatically pull in the session
-Wants=nested-plasma.service
+Wants=plow-plasma.service
 # Ensure display starts before session
-Before=nested-plasma.service
+Before=plow-plasma.service
 
 [Service]
 Type=notify
@@ -328,8 +337,8 @@ ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 PLASMA_SERVICE="\
 [Unit]
 Description=KDE Plasma session (nested on Weston)
-After=plow.service
-BindsTo=plow.service
+After=plow-weston.service
+BindsTo=plow-weston.service
 
 [Service]
 Type=notify
@@ -343,7 +352,7 @@ ExecStart=/bin/bash -c '/usr/bin/startplasma-wayland & PID=\$!; ( until qdbus or
 Restart=no
 
 [Install]
-WantedBy=plow.service
+WantedBy=plow-weston.service
 "
 
 # Configure system-wide systemd user units
@@ -353,28 +362,29 @@ echo -e "${cyanbold}Configuring system-wide systemd units${normal}"
 # Quietly ensure folder exists (but should already be there)
 sudo mkdir -p /etc/systemd/user
 
-# Configure plow.service systemd unit
-if [ ! -f /etc/systemd/user/plow.service ] || \
-! cmp -s <(echo -e "${WESTON_SERVICE}") /etc/systemd/user/plow.service; then
-echo -e "\n${cyanbold}Configure plow.service systemd unit${normal}"
+# Configure plow-weston.service systemd unit
+if [ ! -f /etc/systemd/user/plow-weston.service ] || \
+! cmp -s <(echo -e "${WESTON_SERVICE}") /etc/systemd/user/plow-weston.service
+then
+echo -e "\n${cyanbold}Configure plow-weston.service systemd unit${normal}"
 # Escape with backslashes to show variable name not contents in echo output
 echo -e "$ echo -e \"\${WESTON_SERVICE}\" | sudo tee /etc/systemd/user/\
-plow.service > /dev/null"
+plow-weston.service > /dev/null"
 echo -e "${WESTON_SERVICE}" | sudo tee /etc/systemd/user/\
-plow.service > /dev/null
+plow-weston.service > /dev/null
 UNITS_CHANGED=1
 fi
 
-# Configure nested-plasma.service systemd unit
-if [ ! -f /etc/systemd/user/nested-plasma.service ] || \
-! cmp -s <(echo -e "${PLASMA_SERVICE}") /etc/systemd/user/nested-plasma.service
+# Configure plow-plasma.service systemd unit
+if [ ! -f /etc/systemd/user/plow-plasma.service ] || \
+! cmp -s <(echo -e "${PLASMA_SERVICE}") /etc/systemd/user/plow-plasma.service
 then
-echo -e "\n${cyanbold}Configure nested-plasma.service systemd unit${normal}"
+echo -e "\n${cyanbold}Configure plow-plasma.service systemd unit${normal}"
 # Escape with backslashes to show variable name not contents in echo output
 echo -e "$ echo -e \"\${PLASMA_SERVICE}\" | sudo tee /etc/systemd/user/\
-nested-plasma.service > /dev/null"
+plow-plasma.service > /dev/null"
 echo -e "${PLASMA_SERVICE}" | sudo tee /etc/systemd/user/\
-nested-plasma.service > /dev/null
+plow-plasma.service > /dev/null
 UNITS_CHANGED=1
 fi
 
@@ -386,18 +396,18 @@ systemctl --user daemon-reload
 fi
 
 # Show all systemd units in context (existing along with new plow & plasma)
-echo -e "\n${cyanbold}Listing available user units${normal}"
+echo -e "\n${cyanbold}Listing all available systemd user unit-files${normal}"
 echo -e "$ systemctl --user list-unit-files --no-pager\n"
 systemctl --user list-unit-files --no-pager
 
-# Run plow.service
-echo -e "\n${cyanbold}Run plow.service${normal}"
-echo -e "$ systemctl --user start plow.service"
-systemctl --user start plow.service
+# Run plow-weston.service
+echo -e "\n${cyanbold}Run plow-weston.service${normal}"
+echo -e "$ systemctl --user start plow-weston.service"
+systemctl --user start plow-weston.service
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}systemctl --user stop plow.service${normal}"
+echo -e "${cyanbold}systemctl --user stop plow-weston.service${normal}"
 echo -e "> Note this kills the session with no requests to save unsaved work"
 
 # Log this latest `Config` operation and display runtime
