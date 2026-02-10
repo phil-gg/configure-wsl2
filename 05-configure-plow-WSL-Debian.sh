@@ -296,15 +296,8 @@ glxinfo -B
 echo -e "\n${cyanbold}Show eglinfo${normal}"
 # Backslash to prevent the variable being set from expanding in echo command
 echo -e "$ \$EGL_LOG_LEVEL=debug eglinfo -B"
-echo -e "${redbold}
-> Known issue: No GBM (apparently wslg/d3d12 converts EGL to Win-native
-  calls instead)
-> Known issue: No DRI3 for X11 (apparently wslg/d3d12 works around with
-  DRI2+XWayland)
-> Known issue: Surfaceless platform needs to use a software-based loader
-  (buffer manager) but still appears to be hardware accelerated
-> Known issue: No DRI config for 10-bit or 16-bit colour (in wslg/d3d12)
-${normal}"
+echo -e "${redbold}> Known issue: GBM\EGL (but apparently wslg/d3d12 works \
+around this)${normal}"
 EGL_LOG_LEVEL=debug eglinfo -p gbm
 eglinfo -B -p wayland
 eglinfo -B -p x11
@@ -355,7 +348,7 @@ WantedBy=plow.service
 
 # Configure system-wide systemd user units
 
-echo -e "\n${cyanbold}Configuring system-wide systemd units${normal}"
+echo -e "${cyanbold}Configuring system-wide systemd units${normal}"
 
 # Quietly ensure folder exists (but should already be there)
 sudo mkdir -p /etc/systemd/user
@@ -404,7 +397,8 @@ systemctl --user start plow.service
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "\n${cyanbold}qdbus org.kde.Shutdown /Shutdown logout${normal}"
+echo -e "${cyanbold}systemctl --user stop plow.service${normal}"
+echo -e "> Note this kills the session with no requests to save unsaved work"
 
 # Log this latest `Config` operation and display runtime
 
