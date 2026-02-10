@@ -305,7 +305,10 @@ echo -e "${redbold}
   (buffer manager) but still appears to be hardware accelerated
 > Known issue: No DRI config for 10-bit or 16-bit colour (in wslg/d3d12)
 ${normal}"
-EGL_LOG_LEVEL=debug eglinfo -B
+EGL_LOG_LEVEL=debug eglinfo -p gbm
+eglinfo -B -p wayland
+eglinfo -B -p x11
+eglinfo -B -p surfaceless
 
 # Define systemd unit for Weston (Plow)
 
