@@ -262,9 +262,9 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 # Check WSL kernel version
 
-echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ wsl.exe --version | tr -cd '\n -~'\n"
-wsl.exe --version | tr -cd '\n -~'
+# echo -e "\n${cyanbold}Show WSL kernel version${normal}"
+# echo -e "$ wsl.exe --version | tr -cd '\n -~'\n"
+# wsl.exe --version | tr -cd '\n -~'
 
 # mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
 # echo -e "$(wsl.exe --version | tr -cd '\n -~')" | \
@@ -273,8 +273,8 @@ wsl.exe --version | tr -cd '\n -~'
 # | tr -cd '\n -~' > ${HOME}/git/${github_username}/${github_project}/tmp/wsl" ) \
 # || echo -e "${redbold}> Version check timed out, moving on...${normal}"
 
-echo -e "\n$ uname -a\n"
-uname -a
+# echo -e "\n$ uname -a\n"
+# uname -a
 
 # WSL_KERNEL=$(cat "${HOME}/git/${github_username}/${github_project}/tmp/wsl" \
 # | grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
