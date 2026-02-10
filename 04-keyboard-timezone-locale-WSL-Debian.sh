@@ -116,8 +116,8 @@ if [ -n "${APT_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
 
 echo -e "\n${cyanbold}Installing keyboard configuration packages${normal}"
 
-if ! grep -q -i "KEYMAP=uk" /etc/vconsole.conf; then
-echo -e "KEYMAP=uk" | sudo tee /etc/vconsole.conf 1> /dev/null
+if ! grep -q -i "KEYMAP=uk" /etc/vconsole.conf > /dev/null 2>&1; then
+echo -e "KEYMAP=uk" | sudo tee /etc/vconsole.conf > /dev/null 2>&1
 fi
 echo -e "$ cat /etc/vconsole.conf\n"
 cat /etc/vconsole.conf
