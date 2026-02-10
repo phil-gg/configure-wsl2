@@ -291,9 +291,11 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
 echo -e "\n${cyanbold}Testing WSL_KERNEL${normal}"
 
+# WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
+# Out-String) -replace '[^\x20-\x7E\x0D\x0A]', ''" | tr -cd '[:print:]\n' | \
+# grep -i "Kernel version" | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
 WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version | \
-Out-String) -replace '[^\x20-\x7E\x0D\x0A]', ''" | grep -i "Kernel version" | \
-sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
+Out-String) -replace '[^\x20-\x7E\x0D\x0A]', ''")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 
 
