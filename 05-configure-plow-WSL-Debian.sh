@@ -263,12 +263,12 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ powershell.exe -NoProfile -Command \"wsl.exe --version\"\n"
-powershell.exe -NoProfile -Command "wsl.exe --version"
+echo -e "$ wsl.exe --version\n"
+wsl.exe --version
 echo -e "\n$ uname -a\n"
 uname -a
-WSL_KERNEL=$(powershell.exe -NoProfile -Command "wsl.exe --version" \
-| tr -d '\0' | tr -d '\r' | grep -i "Kernel version" \
+WSL_KERNEL=$(powershell.exe -NoProfile -Command "(wsl.exe --version) \
+-replace '[^ -~]', ''" | grep -i "Kernel version" \
 | sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
