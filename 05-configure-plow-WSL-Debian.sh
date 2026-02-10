@@ -263,14 +263,14 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # Check WSL kernel version
 
 echo -e "\n${cyanbold}Show WSL kernel version${normal}"
-echo -e "$ wsl.exe --version < /dev/null | tr -cd '\\\\040-\\\\176\\\\012'\n"
+echo -e "$ \$(wsl.exe --version < /dev/null | tr -cd '\\\\040-\\\\176\\\\012')"
 WSL_VERSION=$(wsl.exe --version < /dev/null | tr -cd '\040-\176\012')
-echo -e "${WSL_VERSION}"
+echo -e "\n${WSL_VERSION}"
 
 echo -e "\n$ uname -a\n"
 uname -a
 
-WSL_KERNEL=$(cat "${WSL_VERSION}" | grep -i "Kernel version" | \
+WSL_KERNEL=$(echo "${WSL_VERSION}" | grep -i "Kernel version" | \
 sed 's/^Kernel version: //' | grep -oE "^[0-9.]+")
 echo -e "\n> WSL_KERNEL=${WSL_KERNEL}"
 DEB_KERNEL=$(uname -r | grep -oE "^[0-9.]+")
@@ -392,8 +392,9 @@ systemctl --user start plow-weston.service
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}systemctl --user stop plow-weston.service${normal}"
-echo -e "> Note this kills the session with no requests to save unsaved work"
+echo -e "${cyanbold}systemctl --user stop plow-weston plow-plasma${normal}"
+echo -e "${redbold}> Note this kills the session with no requests to save \
+unsaved work${normal}"
 
 # Log this latest `Config` operation and display runtime
 
