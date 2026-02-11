@@ -416,8 +416,8 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run plow-plasma.service${normal}"
-echo -e "$ systemctl --user start plow-plasma.service"
-systemctl --user start plow-plasma
+echo -e "$ systemctl --user start plow-plasma.service &"
+systemctl --user start plow-plasma &
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
