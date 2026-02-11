@@ -190,7 +190,8 @@ fi
 WSLG_VARS="\
 # --- Driver / Hardware Layer ---
 EGL_PLATFORM=wayland
-WAYLAND_DEBUG=1
+# Only uncomment when you want (lots!) more wayland logging
+# WAYLAND_DEBUG=1
 WSA_RENDER_DEVICE=/dev/dri/renderD128
 GALLIUM_DRIVER=d3d12
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
@@ -317,7 +318,8 @@ Description=Weston compositor (nested on WSLg)
 # https://manpages.debian.org/trixie/weston/weston.1.en.html
 Documentation=man:weston(1)
 After=graphical-session-pre.target
-PartOf=graphical-session.target
+# Not sure I want Plow to be part of graphical-session
+# PartOf=graphical-session.target
 # Only run while a desktop environment wants to nest within weston
 StopWhenUnneeded=true
 
@@ -343,7 +345,8 @@ PLASMA_SERVICE="\
 [Unit]
 Description=KDE Plasma session (nested on Weston)
 After=graphical-session-pre.target
-PartOf=graphical-session.target
+Not sure I want Plow to be part of graphical-session
+# PartOf=graphical-session.target
 After=plow-weston.service
 # Without plow-weston, this plow-plasma user service cannot run
 Requires=plow-weston.service
@@ -430,8 +433,8 @@ unsaved work${normal}"
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
-echo -e "${cyanbold}systemctl --user status "plow-*" --no-pager${normal}"
-echo -e "${cyanbold}journalctl --user -xbu "plow-*" --no-pager${normal}"
+echo -e "${cyanbold}systemctl --user status \"plow-*\" --no-pager${normal}"
+echo -e "${cyanbold}journalctl --user -xbu \"plow-*\" --no-pager${normal}"
 
 # Log this latest `Config` operation and display runtime
 
