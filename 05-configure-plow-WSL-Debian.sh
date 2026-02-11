@@ -309,13 +309,8 @@ eglinfo -B -p surfaceless
 
 WESTON_SERVICE="\
 # plow-weston.service
-# this is the systemd unit file for the plow-weston user service
-
-# plow-weston (this one) is just a virtual display
-# plow-plasma is the main Service
-# plow-plasma runs plow-weston and Binds/PropagatesTo when needed
-# always/only interact with plow-plasma
-# never interact with plow-weston
+# Just a virtual display
+# A customised /usr/lib/systemd/user/plasma-plasmashell.service depends on this
 
 [Unit]
 Description=Weston compositor (nested on WSLg)
@@ -334,87 +329,68 @@ Restart=no
 ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 "
 
-# Define systemd & dbus services for Plasma
+# Define the config change for Plasma
 
-PLASMA_SERVICE="\
-# plow-plasma.service
-# this is the systemd unit file for the plow-plasma user service
-
-# plow-weston is just a virtual display
-# plow-plasma (this one) is the main Service
-# plow-plasma (this one) runs plow-weston and Binds/PropagatesTo when needed
-# always/only interact with plow-plasma
-# never interact with plow-weston
+PLASMA_CONF="\
+# plow-plasma.conf
+# Injects plow-weston dependencies natively into KDE's plasmashell
+# Customises /usr/lib/systemd/user/plasma-plasmashell.service
 
 [Unit]
-Description=KDE Plasma session (nested on Weston)
-After=graphical-session-pre.target
-Not sure I want Plow to be part of graphical-session
-# PartOf=graphical-session.target
 After=plow-weston.service
-# Without plow-weston, this plow-plasma user service cannot run
+# Without plow-weston, customised plasmashell cannot run
 Requires=plow-weston.service
-# When plow-weston stops or dies, apply to plow-plasma too (stronger than Wants)
+# When plow-weston stops/dies, apply to plasmashell too (stronger than Wants)
 BindsTo=plow-weston.service
-# When plow-weston is restarted, apply to plow-plasma too
+# When plow-weston is restarted, apply to customised plasmashell too
 PartOf=plow-weston.service
-# When plow-weston is reloaded, apply to plow-plasma too
+# When plow-weston is reloaded, apply to customised plasmashell too
 ReloadPropagatedFrom=plow-weston.service
 
 [Service]
-Type=dbus
-BusName=org.kde.plasmashell
+# Ensure these variables are set as part of plasmashell customisations
 Environment=WAYLAND_DISPLAY=weston
 Environment=XDG_SESSION_CLASS=user
 Environment=XDG_SESSION_TYPE=wayland
 Environment=XDG_SESSION_DESKTOP=KDE
 Environment=XDG_CURRENT_DESKTOP=KDE
-ExecStart=/usr/bin/startplasma-wayland
-Restart=no
-
-# [Install]
-# This allows you to run systemctl --user enable plow-plasma
-# But not sure I want this, and for manual-only service launch, not needed
-# WantedBy=graphical-session.target
-"
-
-PLASMA_DBUS="\
-[D-BUS Service]
-Name=org.kde.plasmashell
-SystemdService=plow-plasma.service
 "
 
 # Configure system-wide systemd user units
 
 echo -e "${bluebold}Define systemd & dbus services for Plow${normal}"
 
-# Quietly ensure folders exist (but should already be there)
-sudo mkdir -p /etc/systemd/user
-sudo mkdir -p /usr/share/dbus-1/services/
+# Set file locations once as variables
+
+WESTON_UNIT_DIR="/etc/systemd/user"
+WESTON_UNIT_FILE="${WESTON_UNIT_DIR}/plow-weston.service"
+PLASMA_CONF_DIR="/etc/systemd/user/plasma-plasmashell.service.d"
+PLASMA_CONF_FILE="${PLASMA_CONF_DIR}/plow-plasma.conf"
+
+# Quietly ensure folders exist
+sudo mkdir -p "${PLASMA_CONF_DIR}"
 
 # Configure plow-weston.service systemd unit
-if [ ! -f /etc/systemd/user/plow-weston.service ] || \
-! cmp -s <(echo -e "${WESTON_SERVICE}") /etc/systemd/user/plow-weston.service
-then
+if [ ! -f "${WESTON_UNIT_FILE}" ] || \
+! cmp -s <(echo -e "${WESTON_SERVICE}") "${WESTON_UNIT_FILE}"; then
 echo -e "\n${cyanbold}Configure plow-weston.service systemd unit${normal}"
-# Escape with backslashes to show variable name not contents in echo output
-echo -e "$ echo -e \"\${WESTON_SERVICE}\" | sudo tee /etc/systemd/user/\
-plow-weston.service > /dev/null"
-echo -e "${WESTON_SERVICE}" | sudo tee /etc/systemd/user/\
-plow-weston.service > /dev/null
+# Choosing to expand path but not file contents in echo output here
+# Hence backslash escapes for WESTON_SERVICE variable
+echo -e "$ echo -e \"\${WESTON_SERVICE}\" | sudo tee ${WESTON_UNIT_FILE} > \
+/dev/null"
+echo -e "${WESTON_SERVICE}" | sudo tee "${WESTON_UNIT_FILE}" > /dev/null
 UNITS_CHANGED=1
 fi
 
-# Configure plow-plasma.service systemd unit
-if [ ! -f /etc/systemd/user/plow-plasma.service ] || \
-! cmp -s <(echo -e "${PLASMA_SERVICE}") /etc/systemd/user/plow-plasma.service
-then
-echo -e "\n${cyanbold}Configure plow-plasma.service systemd unit${normal}"
-# Escape with backslashes to show variable name not contents in echo output
-echo -e "$ echo -e \"\${PLASMA_SERVICE}\" | sudo tee /etc/systemd/user/\
-plow-plasma.service > /dev/null"
-echo -e "${PLASMA_SERVICE}" | sudo tee /etc/systemd/user/\
-plow-plasma.service > /dev/null
+# Configure plasmashell customisation
+if [ ! -f "${PLASMA_CONF_FILE}" ] || \
+! cmp -s <(echo -e "${PLASMA_CONF}") "${PLASMA_CONF_FILE}"; then
+echo -e "\n${cyanbold}Customise plasmashell systemd unit${normal}"
+# Choosing to expand path but not file contents in echo output here
+# Hence backslash escapes for PLASMA_CONF variable
+echo -e "$ echo -e \"\${PLASMA_CONF}\" | sudo tee ${PLASMA_CONF_FILE} > \
+/dev/null"
+echo -e "${PLASMA_CONF}" | sudo tee "${PLASMA_CONF_FILE}" > /dev/null
 UNITS_CHANGED=1
 fi
 
@@ -425,46 +401,35 @@ echo -e "$ systemctl --user daemon-reload"
 systemctl --user daemon-reload
 fi
 
-# Configure org.kde.plasmashell.service D-Bus service file
-if [ ! -f /usr/share/dbus-1/services/org.kde.plasmashell.service ] || \
-! cmp -s <(echo -e "${PLASMA_DBUS}") /usr/share/dbus-1/services/\
-org.kde.plasmashell.service; then
-echo -e "\n${cyanbold}Configure org.kde.plasmashell.service D-Bus service file\
-${normal}"
-# Escape with backslashes to show variable name not contents in echo output
-echo -e "$ echo -e \"\${PLASMA_DBUS}\" | sudo tee /usr/share/dbus-1/services/\
-org.kde.plasmashell.service > /dev/null"
-echo -e "${PLASMA_DBUS}" | sudo tee /usr/share/dbus-1/services/\
-org.kde.plasmashell.service > /dev/null
-echo -e "$ dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
---print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig\n"
-dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
---print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig
-fi
-
 # Show all systemd units in context (existing along with new plow & plasma)
 echo -e "\n${cyanbold}Listing all available systemd user unit-files${normal}"
 echo -e "$ systemctl --user list-unit-files --no-pager\n"
 systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
-echo -e "\n${cyanbold}Run plow-plasma.service${normal}"
-echo -e "$ systemctl --user unmask plow-plasma"
-echo -e "$ systemctl --user start plow-plasma &"
-systemctl --user unmask plow-plasma
-systemctl --user start plow-plasma &
+echo -e "\n${cyanbold}Run Plow session${normal}"
+echo -e "$ startplasma-wayland &"
+startplasma-wayland &
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}systemctl --user mask plow-plasma${normal}"
-echo -e "${redbold}> Note this kills the session with no requests to save \
-unsaved work${normal}"
-echo -e "> Mask not stop required to prevent WSLg respawn"
+echo -e "${cyanbold}dbus-send --session --dest=org.kde.ksmserver \
+--type=method_call /KSMServer org.kde.KSMServerInterface.logout \
+int32:0 int32:0 int32:0${normal}"
+# The three zeros are:
+# Confirm (0): Do not show the graphical logout confirmation dialogue
+# Type (0): Perform a standard logout (rather than a reboot or shutdown)
+# Mode (0): Schedule the logout, allowing applications to save state gracefully
+echo -e "> This triggers a clean logout & safely stops the nested compositor."
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
-echo -e "${cyanbold}systemctl --user status \"plow-*\" --no-pager${normal}"
-echo -e "${cyanbold}journalctl --user -xbu \"plow-*\" --no-pager${normal}"
+echo -e "${cyanbold}systemctl --user status plow-weston plasma-plasmashell \
+plasma-workspace.target --no-pager${normal}"
+echo -e "${cyanbold}journalctl --user -x -b -u plow-weston.service \
+--no-pager${normal}"
+echo -e "${cyanbold}journalctl --user -x -b -u plasma-plasmashell.service \
+--no-pager${normal}"
 
 # Log this latest `Config` operation and display runtime
 
