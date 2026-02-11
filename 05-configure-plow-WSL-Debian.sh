@@ -242,8 +242,8 @@ echo -e "${WSLG_VARS}" | sudo tee /etc/environment.d/\
 01-graphics-on-wsl.conf 1> /dev/null
 
 echo -e "\n${cyanbold}Print current systemd user environment${normal}"
-echo -e "$ systemctl --user show-environment\n"
-systemctl --user show-environment
+echo -e "$ systemctl --user show-environment --no-pager\n"
+systemctl --user show-environment --no-pager
 
 echo -e "\n${cyanbold}Add to current systemd user environment${normal}"
 echo -e "> Needed for first launch of Weston & Plasma from this script"
@@ -257,8 +257,8 @@ echo -e "\n$ dbus-update-activation-environment --systemd --all"
 dbus-update-activation-environment --systemd --all
 
 echo -e "\n${cyanbold}Print updated systemd user environment${normal}"
-echo -e "$ systemctl --user show-environment\n"
-systemctl --user show-environment
+echo -e "$ systemctl --user show-environment --no-pager\n"
+systemctl --user show-environment --no-pager
 
 fi
 
@@ -386,7 +386,7 @@ SystemdService=plow-plasma.service
 
 # Configure system-wide systemd user units
 
-echo -e "${cyanbold}Define systemd & dbus services for Plow${normal}"
+echo -e "${bluebold}Define systemd & dbus services for Plow${normal}"
 
 # Quietly ensure folders exist (but should already be there)
 sudo mkdir -p /etc/systemd/user
@@ -437,7 +437,7 @@ org.kde.plasmashell.service > /dev/null"
 echo -e "${PLASMA_DBUS}" | sudo tee /usr/share/dbus-1/services/\
 org.kde.plasmashell.service > /dev/null
 echo -e "$ dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
---print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig"
+--print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig\n"
 dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
 --print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig
 fi
@@ -449,9 +449,10 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run plow-plasma.service${normal}"
-echo -e "$ systemctl --user unmask plow-plasma && systemctl --user start \
-plow-plasma &"
-systemctl --user unmask plow-plasma && systemctl --user start plow-plasma &
+echo -e "$ systemctl --user unmask plow-plasma"
+echo -e "$ systemctl --user start plow-plasma &"
+systemctl --user unmask plow-plasma
+systemctl --user start plow-plasma &
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
