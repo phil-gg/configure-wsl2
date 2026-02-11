@@ -81,11 +81,14 @@ echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
 ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
 fi
 
-# Always run sudo apt update
+# Run sudo apt update if not done in last hour
 
+last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin 2>/dev/null || echo 0)
+if (( now - last_update < 3600 )); then
 echo -e "\n${cyanbold}Update apt then check for required packages${normal}"
 echo -e "$ sudo apt update"
 sudo apt update
+fi
 
 # Packages for {wslg > weston > kde-plasma} nested desktop environment
 
@@ -424,6 +427,11 @@ echo -e "\n${bluebold}Stop a Plow session with:${normal}"
 echo -e "${cyanbold}systemctl --user stop plow-plasma${normal}"
 echo -e "${redbold}> Note this kills the session with no requests to save \
 unsaved work${normal}"
+
+# Error logs for Plow
+echo -e "\n${bluebold}View error logs for Plow with:${normal}"
+echo -e "${cyanbold}systemctl --user status "plow-*" --no-pager${normal}"
+echo -e "${cyanbold}journalctl --user -xbu "plow-*" --no-pager${normal}"
 
 # Log this latest `Config` operation and display runtime
 
