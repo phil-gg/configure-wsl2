@@ -81,10 +81,10 @@ echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
 ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
 fi
 
-# Run sudo apt update if not done in last hour
+# Update apt if last `sudo apt update` more than one hour ago
 
 last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin 2>/dev/null || echo 0)
-if (( now - last_update < 3600 )); then
+if (( now - last_update > 3600 )); then
 echo -e "\n${cyanbold}Update apt then check for required packages${normal}"
 echo -e "$ sudo apt update"
 sudo apt update
@@ -252,6 +252,10 @@ xargs systemctl --user set-environment"
 echo -e "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | \
 xargs systemctl --user set-environment
 
+# Add environment variables to D-Bus, too
+echo -e "\n$ dbus-update-activation-environment --systemd --all"
+dbus-update-activation-environment --systemd --all
+
 echo -e "\n${cyanbold}Print updated systemd user environment${normal}"
 echo -e "$ systemctl --user show-environment\n"
 systemctl --user show-environment
@@ -320,8 +324,8 @@ Documentation=man:weston(1)
 After=graphical-session-pre.target
 # Not sure I want Plow to be part of graphical-session
 # PartOf=graphical-session.target
-# Only run while a desktop environment wants to nest within weston
-StopWhenUnneeded=true
+# Looks like the stopping is too agressive for this use-case
+# StopWhenUnneeded=true
 
 [Service]
 Type=notify
@@ -330,7 +334,7 @@ Restart=no
 ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 "
 
-# Define systemd unit for Plasma
+# Define systemd & dbus services for Plasma
 
 PLASMA_SERVICE="\
 # plow-plasma.service
@@ -358,29 +362,35 @@ PartOf=plow-weston.service
 ReloadPropagatedFrom=plow-weston.service
 
 [Service]
-Type=notify
-NotifyAccess=all
+Type=dbus
+BusName=org.kde.plasmashell
 Environment=WAYLAND_DISPLAY=weston
 Environment=XDG_SESSION_CLASS=user
 Environment=XDG_SESSION_TYPE=wayland
 Environment=XDG_SESSION_DESKTOP=KDE
 Environment=XDG_CURRENT_DESKTOP=KDE
-ExecStart=/bin/bash -c '/usr/bin/startplasma-wayland & PID=\$\$!; ( until \
-qdbus org.kde.plasmashell > /dev/null 2>&1; do sleep 0.1; done; systemd-notify \
---ready ) & wait \$\$PID'
+ExecStart=/usr/bin/startplasma-wayland
 Restart=no
 
-[Install]
+# [Install]
 # This allows you to run systemctl --user enable plow-plasma
-WantedBy=graphical-session.target
+# But not sure I want this, and for manual-only service launch, not needed
+# WantedBy=graphical-session.target
+"
+
+PLASMA_DBUS="\
+[D-BUS Service]
+Name=org.kde.plasmashell
+SystemdService=plow-plasma.service
 "
 
 # Configure system-wide systemd user units
 
-echo -e "${cyanbold}Configuring system-wide systemd units${normal}"
+echo -e "${cyanbold}Define systemd & dbus services for Plow${normal}"
 
-# Quietly ensure folder exists (but should already be there)
+# Quietly ensure folders exist (but should already be there)
 sudo mkdir -p /etc/systemd/user
+sudo mkdir -p /usr/share/dbus-1/services/
 
 # Configure plow-weston.service systemd unit
 if [ ! -f /etc/systemd/user/plow-weston.service ] || \
@@ -415,6 +425,23 @@ echo -e "$ systemctl --user daemon-reload"
 systemctl --user daemon-reload
 fi
 
+# Configure org.kde.plasmashell.service D-Bus service file
+if [ ! -f /usr/share/dbus-1/services/org.kde.plasmashell.service ] || \
+! cmp -s <(echo -e "${PLASMA_DBUS}") /usr/share/dbus-1/services/\
+org.kde.plasmashell.service; then
+echo -e "\n${cyanbold}Configure org.kde.plasmashell.service D-Bus service file\
+${normal}"
+# Escape with backslashes to show variable name not contents in echo output
+echo -e "$ echo -e \"\${PLASMA_DBUS}\" | sudo tee /usr/share/dbus-1/services/\
+org.kde.plasmashell.service > /dev/null"
+echo -e "${PLASMA_DBUS}" | sudo tee /usr/share/dbus-1/services/\
+org.kde.plasmashell.service > /dev/null
+echo -e "$ dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
+--print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig"
+dbus-send --session --dest=org.freedesktop.DBus --type=method_call \
+--print-reply /org/freedesktop/DBus org.freedesktop.DBus.ReloadConfig
+fi
+
 # Show all systemd units in context (existing along with new plow & plasma)
 echo -e "\n${cyanbold}Listing all available systemd user unit-files${normal}"
 echo -e "$ systemctl --user list-unit-files --no-pager\n"
@@ -422,14 +449,16 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run plow-plasma.service${normal}"
-echo -e "$ systemctl --user start plow-plasma.service &"
-systemctl --user start plow-plasma &
+echo -e "$ systemctl --user unmask plow-plasma && systemctl --user start \
+plow-plasma &"
+systemctl --user unmask plow-plasma && systemctl --user start plow-plasma &
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}systemctl --user stop plow-plasma${normal}"
+echo -e "${cyanbold}systemctl --user mask plow-plasma${normal}"
 echo -e "${redbold}> Note this kills the session with no requests to save \
 unsaved work${normal}"
+echo -e "> Mask not stop required to prevent WSLg respawn"
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
