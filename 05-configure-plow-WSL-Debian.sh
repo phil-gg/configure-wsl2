@@ -310,7 +310,7 @@ eglinfo -B -p surfaceless
 WESTON_SERVICE="\
 # plow-weston.service
 # Just a virtual display
-# A customised /usr/lib/systemd/user/plasma-plasmashell.service depends on this
+# A customised /usr/lib/systemd/user/plasma-kwin_wayland.service depends on this
 
 [Unit]
 Description=Weston compositor (nested on WSLg)
@@ -333,22 +333,22 @@ ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 
 PLASMA_CONF="\
 # plow-plasma.conf
-# Injects plow-weston dependencies natively into KDE's plasmashell
-# Customises /usr/lib/systemd/user/plasma-plasmashell.service
+# Injects plow-weston dependencies into KWin
+# Customises /usr/lib/systemd/user/plasma-kwin_wayland.service
 
 [Unit]
 After=plow-weston.service
-# Without plow-weston, customised plasmashell cannot run
+# Without plow-weston, customised plasma-kwin_wayland cannot run
 Requires=plow-weston.service
-# When plow-weston stops/dies, apply to plasmashell too (stronger than Wants)
+# When plow-weston stops/dies, apply to kwin too (stronger than Wants)
 BindsTo=plow-weston.service
-# When plow-weston is restarted, apply to customised plasmashell too
+# When plow-weston is restarted, apply to customised plasma-kwin_wayland too
 PartOf=plow-weston.service
-# When plow-weston is reloaded, apply to customised plasmashell too
+# When plow-weston is reloaded, apply to customised plasma-kwin_wayland too
 ReloadPropagatedFrom=plow-weston.service
 
 [Service]
-# Ensure these variables are set as part of plasmashell customisations
+# Ensure these variables are set as part of plasma-kwin_wayland customisations
 Environment=WAYLAND_DISPLAY=weston
 Environment=XDG_SESSION_CLASS=user
 Environment=XDG_SESSION_TYPE=wayland
@@ -364,7 +364,7 @@ echo -e "${bluebold}Define systemd & dbus services for Plow${normal}"
 
 WESTON_UNIT_DIR="/etc/systemd/user"
 WESTON_UNIT_FILE="${WESTON_UNIT_DIR}/plow-weston.service"
-PLASMA_CONF_DIR="/etc/systemd/user/plasma-plasmashell.service.d"
+PLASMA_CONF_DIR="/etc/systemd/user/plasma-kwin_wayland.service.d"
 PLASMA_CONF_FILE="${PLASMA_CONF_DIR}/plow-plasma.conf"
 
 # Quietly ensure folders exist
@@ -424,11 +424,11 @@ echo -e "> This triggers a clean logout & safely stops the nested compositor."
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
-echo -e "${cyanbold}systemctl --user status plow-weston plasma-plasmashell \
+echo -e "${cyanbold}systemctl --user status plow-weston plasma-kwin_wayland \
 plasma-workspace.target --no-pager${normal}"
 echo -e "${cyanbold}journalctl --user -x -b -u plow-weston.service \
 --no-pager${normal}"
-echo -e "${cyanbold}journalctl --user -x -b -u plasma-plasmashell.service \
+echo -e "${cyanbold}journalctl --user -x -b -u plasma-kwin_wayland.service \
 --no-pager${normal}"
 
 # Log this latest `Config` operation and display runtime
