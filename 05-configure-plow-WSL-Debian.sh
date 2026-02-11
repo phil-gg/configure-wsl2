@@ -111,7 +111,8 @@ fonts-noto \
 fonts-noto-color-emoji \
 khelpcenter \
 kinfocenter \
-kwin-wayland"
+kwin-wayland \
+wl-clipboard"
 
 # shellcheck disable=SC2086
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
@@ -356,6 +357,37 @@ Environment=XDG_SESSION_DESKTOP=KDE
 Environment=XDG_CURRENT_DESKTOP=KDE
 "
 
+CLIPPY="\
+# plow-clippy.service
+# Bridge to put each copy within Plow onto Windows host clipboard
+
+[Unit]
+Description=Clipboard Bridge (Plow to Windows)
+# For startup, wait for the whole Plasma workspace to fully initialise
+After=plasma-workspace.target
+# For teardown, stop plow-clippy with the rest of Plasma workspace
+PartOf=plasma-workspace.target
+# Without plasma-kwin_wayland, plow-clippy cannot run
+Requires=plasma-kwin_wayland.service
+# When kwin stops/dies, apply to plow-clippy too (stronger than Wants)
+BindsTo=plasma-kwin_wayland.service
+# When plasma-kwin_wayland is reloaded, apply to plow-clippy too
+ReloadPropagatedFrom=plasma-kwin_wayland.service
+
+[Service]
+Type=simple
+# Pipe the Wayland clipboard into the Windows clip.exe utility
+ExecStart=/bin/bash -c '/usr/bin/wl-paste -t text/plain --watch /mnt/c/Windows/System32/clip.exe'
+Restart=on-failure
+RestartSec=2
+
+[Install]
+# Startup with the rest of Plasma workspace
+WantedBy=plasma-workspace.target
+"
+
+# TO-DO: Further clipboard integration work
+
 # Configure system-wide systemd user units
 
 echo -e "${bluebold}Define systemd & dbus services for Plow${normal}"
@@ -410,6 +442,8 @@ systemctl --user list-unit-files --no-pager
 echo -e "\n${cyanbold}Run Plow session${normal}"
 echo -e "$ startplasma-wayland &"
 startplasma-wayland &
+
+# TO-DO: Still need a clean shutdown command - this one does NOT work!
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
