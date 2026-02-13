@@ -9,6 +9,8 @@
 ## Idiosyncracies
  - I use 1password for my secrets management; this is heavily integrated into the scripts.
  - I have a custom AU locale, a gb/uk keyboard, and Brisbane timezone, all in `04-keyboard-timezone-locale-WSL-Debian.sh`.  This shows you how I manage the warring configurations of Debian (debconf) vs. systemd, but you will likely want to fork and set your own preferences there.
+ - For better or worse this is a wayland & systemd project.  Actually, this is a great project for learning more about wayland and systemd.  X11 programs may work via Xwayland, but this is not actively tested.
+ - The other weirdness in this environment is graphics acceleration.  WSL2 uses Mesa d3d12 and dxgkrnl for this.  The primary target for these scripts is a Surface Laptop Studio 2 with Intel & Nvidia (GeForce RTX 4050) graphics.  This project targets the Nvidia graphics acceleration.  Fork and edit script(s) to target other hardware.
 
 ## Configuration Instructions
 
