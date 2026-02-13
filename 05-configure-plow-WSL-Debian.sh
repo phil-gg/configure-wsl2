@@ -360,9 +360,9 @@ Timeout=0
 kdeglobals="\
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
-lock_screen[\$i]=false
-switch_user[\$i]=false
-start_new_session[\$i]=false
+action/lock_screen[\$i]=false
+action/switch_user[\$i]=false
+action/start_new_session[\$i]=false
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
