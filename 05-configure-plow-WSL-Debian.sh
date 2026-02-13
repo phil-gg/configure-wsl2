@@ -81,6 +81,63 @@ echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
 ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
 fi
 
+# Create plasma-nm-dummy package
+# (Don't need a GUI tool to manage network connections when running within WSL2)
+
+DPKG_OUTPUT=$(dpkg -l plasma-nm-dummy 2> /dev/null)
+DPKG_ERROR=$?
+if [ "${DPKG_ERROR}" -eq 0 ]; then
+START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
+# shellcheck disable=SC2086
+DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
+DUMMY_REQD=$(echo "${DPKG_TAIL}" | awk '!/^(ii |hi )/ {print substr($0, 1, 2)}')
+fi
+
+if [ -n "${DUMMY_REQD}" ] || [ "${DPKG_ERROR}" -ne 0 ]; then
+echo -e "\n${cyanbold}Installing plasma-nm-dummy package${normal}"
+
+echo -e "$ mkdir -p ~/git/${github_username}/${github_project}/tmp"
+mkdir -p "${HOME}/git/${github_username}/${github_project}/tmp"
+
+echo -e "$ cd ~/git/${github_username}/${github_project}/tmp"
+cd "${HOME}/git/${github_username}/${github_project}/tmp" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 103; }
+
+PLASMA_NM_DUMMY="\
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+
+Package: plasma-nm-dummy
+Provides: plasma-nm
+Conflicts: plasma-nm
+Architecture: all
+Description: Dependency resolving dummy pkg for deliberately missing plasma-nm
+"
+# Show variable without expansion here (with backslash escapes)
+echo -e "$ echo -e \"\${PLASMA_NM_DUMMY}\" | sudo tee plasma-nm-dummy > \
+/dev/null 2>&1"
+echo -e "${PLASMA_NM_DUMMY}" | sudo tee plasma-nm-dummy > /dev/null 2>&1
+echo -e "$ cat plasma-nm-dummy\n"
+cat plasma-nm-dummy
+
+echo -e "\n$ equivs-build plasma-nm-dummy\n"
+equivs-build plasma-nm-dummy
+
+echo -e "\n$ sudo dpkg -i plasma-nm-dummy_1.0_all.deb\n"
+sudo dpkg -i plasma-nm-dummy_1.0_all.deb
+
+echo -e "$ cd ~/git/${github_username}/${github_project}"
+cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
+|| { echo -e "  ${redbold}Failed to change directory, exiting${normal}"\
+; exit 104; }
+
+echo -e "$ rm -rf ~/git/${github_username}/${github_project}/tmp"
+rm -rf "${HOME}/git/${github_username}/${github_project}/tmp"
+
+fi
+
 # Update apt if last `sudo apt update` more than one hour ago
 
 last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin 2>/dev/null || echo 0)
