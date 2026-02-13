@@ -383,6 +383,9 @@ Pin-Priority: -1
 if [ ! -f /etc/apt/preferences.d/99pin-prefs ] || \
 ! cmp -s <(echo -e "${PIN_PREFS}") /etc/apt/preferences.d/99pin-prefs;
 then
+echo -e "\n${cyanbold}Updating /etc/apt/preferences.d/99pin-prefs${normal}"
+echo -e "$ echo -e \"\${PIN_PREFS}\" | \
+sudo tee /etc/apt/preferences.d/99pin-prefs 1> /dev/null"
 echo -e "${PIN_PREFS}" | \
 sudo tee /etc/apt/preferences.d/99pin-prefs 1> /dev/null
 fi
