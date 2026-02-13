@@ -345,7 +345,10 @@ echo -e "$ export \$(echo \"\${WSLG_VARS}\" | grep -v '^$' | grep -v '^#' | \
 xargs)"
 export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
-# Disable all screen lock functionality for KDE Plasma
+# TO-DO: How do I remove favourites from the KDE start menu
+
+# Disable screen lock & sleep / shutdown /restart functionality from KDE Plasma
+# Retain just logout
 
 kscreenlockerrc="\
 [Daemon][\$i]
@@ -358,6 +361,7 @@ kdeglobals="\
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
 action/lock_screen[\$i]=false
+action/switch_user[\$i]=false
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
@@ -384,6 +388,23 @@ echo -e "\n${cyanbold}Reload cache for start menu layout${normal}"
 echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
 fi
+
+# run the mask command every time, it is quick enough if services already masked
+echo -e "\n${cyanbold}Disable sleep shutdown restart${normal}"
+echo -e "$ sudo systemctl mask \
+sleep.target \
+suspend.target \
+hibernate.target \
+hybrid-sleep.target \
+poweroff.target \
+reboot.target"
+sudo systemctl mask \
+sleep.target \
+suspend.target \
+hibernate.target \
+hybrid-sleep.target \
+poweroff.target \
+reboot.target
 
 # Check WSL kernel version
 
