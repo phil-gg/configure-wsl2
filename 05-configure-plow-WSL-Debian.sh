@@ -360,6 +360,7 @@ Timeout=0
 kdeglobals="\
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
+# The above webpage is right - 3x 'action/' prefix are required
 action/lock_screen[\$i]=false
 action/switch_user[\$i]=false
 action/start_new_session[\$i]=false
