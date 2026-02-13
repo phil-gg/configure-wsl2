@@ -366,7 +366,6 @@ action/start_new_session[\$i]=false
 lock_screen[\$i]=false
 switch_user[\$i]=false
 start_new_session[\$i]=false
-logout[\$i]=true
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
