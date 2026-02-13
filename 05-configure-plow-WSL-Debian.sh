@@ -70,6 +70,9 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 # Create /etc/xdg/weston/weston.ini if it does not exist or has changed
 
+# TO-DO: Put weston.ini file contents back in here and remove separate file from repo
+# TO-DO: Make an add_config_file function and use it for all the config files
+
 if [ ! -f /etc/xdg/weston/weston.ini ] || \
 ! cmp -s etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini; then
 echo -e "\n${cyanbold}Configure weston${normal}"
@@ -79,6 +82,36 @@ echo -e "$ sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini"
 sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini
 echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
 ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
+fi
+
+# Disable all screen lock functionality for KDE Plasma
+
+kscreenlockerrc="\
+[Daemon]
+Autolock=false
+LockOnResume=false
+Timeout=0
+"
+
+kdeglobals="\
+[KDE Action Restrictions]
+lock_screen=false
+"
+
+if [ ! -f /etc/xdg/kscreenlockerrc ] || \
+! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
+echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
+echo -e "$ echo -e \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/kscreenlockerrc \
+1> /dev/null"
+echo -e "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc 1> /dev/null
+fi
+
+if [ ! -f /etc/xdg/kdeglobals ] || \
+! cmp -s <(echo -e "${kdeglobals}") /etc/xdg/kdeglobals; then
+echo -e "\n${cyanbold}Configure kdeglobals${normal}"
+echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
+1> /dev/null"
+echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
 fi
 
 # Define function to build and install a dummy package
@@ -396,7 +429,11 @@ PartOf=plasma-kwin_wayland.service
 
 [Service]
 Type=notify
+# This is the command to start the service
+# %t resolves to /run/user/\$(id -u)
 ExecStart=/usr/bin/weston --socket=weston
+# Activating and not activated until the following helper completes
+ExecStartPost=/bin/bash -c 'while [ ! -S %t/weston ]; do sleep 0.1; done'
 Restart=no
 ExecStopPost=/bin/rm -f %t/weston %t/weston.lock
 "
