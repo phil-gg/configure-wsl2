@@ -374,9 +374,10 @@ Description=Weston compositor (nested on WSLg)
 # https://manpages.debian.org/trixie/weston/weston.1.en.html
 Documentation=man:weston(1)
 After=graphical-session-pre.target
-# Not sure I want Plow to be part of graphical-session
-# PartOf=graphical-session.target
-# Looks like the stopping is too agressive for this use-case
+# For teardown, stop plow-weston with plasma-kwin_wayland.service
+PartOf=plasma-kwin_wayland.service
+# Could not get the below to stop Weston appropriately (commented out)
+# Instead using the specific PartOf config above for desired stop behaviour
 # StopWhenUnneeded=true
 
 [Service]
@@ -496,8 +497,10 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run Plow session${normal}"
-echo -e "$ startplasma-wayland &"
-startplasma-wayland &
+echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> \
+/dev/null; then startplasma-wayland & disown; fi"
+if ! systemctl --user is-active plasma-workspace.target 1> /dev/null; \
+then startplasma-wayland & disown; fi
 
 # TO-DO: Still need a clean shutdown command - this one does NOT work!
 
