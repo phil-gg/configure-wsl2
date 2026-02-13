@@ -355,9 +355,9 @@ Timeout=0
 "
 
 kdeglobals="\
-[KDE Action Restrictions][\$i]
-action/lock_screen=false
-logout=true
+[KDE Action Restrictions]
+# https://develop.kde.org/docs/administration/kiosk/keys/
+action/lock_screen[\$i]=false
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
