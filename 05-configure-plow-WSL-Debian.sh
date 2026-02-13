@@ -27,6 +27,7 @@ redbold=$(printf '\033[91;1m')
 greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
+LOCK_CONF_CHANGED=0
 UNITS_CHANGED=0
 
 # Now running `${filename}`
@@ -82,36 +83,6 @@ echo -e "$ sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini"
 sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini
 echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
 ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
-fi
-
-# Disable all screen lock functionality for KDE Plasma
-
-kscreenlockerrc="\
-[Daemon]
-Autolock=false
-LockOnResume=false
-Timeout=0
-"
-
-kdeglobals="\
-[KDE Action Restrictions]
-lock_screen=false
-"
-
-if [ ! -f /etc/xdg/kscreenlockerrc ] || \
-! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
-echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
-echo -e "$ echo -e \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/kscreenlockerrc \
-1> /dev/null"
-echo -e "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc 1> /dev/null
-fi
-
-if [ ! -f /etc/xdg/kdeglobals ] || \
-! cmp -s <(echo -e "${kdeglobals}") /etc/xdg/kdeglobals; then
-echo -e "\n${cyanbold}Configure kdeglobals${normal}"
-echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
-1> /dev/null"
-echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
 fi
 
 # Define function to build and install a dummy package
@@ -328,7 +299,9 @@ _JAVA_AWT_WM_NONREPARENTING=1
 
 # --- Session Identity ---
 XDG_SESSION_TYPE=wayland
+XDG_SESSION_DESKTOP=KDE
 XDG_CURRENT_DESKTOP=KDE
+XDG_MENU_PREFIX=plasma-
 KWIN_OPENGL_INTERFACE=egl
 "
 
@@ -371,6 +344,46 @@ echo -e "> Needed for glxinfo & elginfo below in this script"
 echo -e "$ export \$(echo \"\${WSLG_VARS}\" | grep -v '^$' | grep -v '^#' | \
 xargs)"
 export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
+
+# Disable all screen lock functionality for KDE Plasma
+
+kscreenlockerrc="\
+[Daemon][\$i]
+Autolock=false
+LockOnResume=false
+Timeout=0
+"
+
+kdeglobals="\
+[KDE Action Restrictions][\$i]
+action/lock_screen=false
+logout=true
+"
+
+if [ ! -f /etc/xdg/kscreenlockerrc ] || \
+! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
+echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
+echo -e "$ echo -e \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/kscreenlockerrc \
+1> /dev/null"
+echo -e "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc 1> /dev/null
+LOCK_CONF_CHANGED=1
+fi
+
+if [ ! -f /etc/xdg/kdeglobals ] || \
+! cmp -s <(echo -e "${kdeglobals}") /etc/xdg/kdeglobals; then
+echo -e "\n${cyanbold}Configure kdeglobals${normal}"
+echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
+1> /dev/null"
+echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
+LOCK_CONF_CHANGED=1
+fi
+
+# Reload systemd if units changed
+if [ "${LOCK_CONF_CHANGED}" -eq 1 ]; then
+echo -e "\n${cyanbold}Reload cache for start menu layout${normal}"
+echo -e "$ kbuildsycoca6 --noincremental"
+kbuildsycoca6 --noincremental
+fi
 
 # Check WSL kernel version
 
