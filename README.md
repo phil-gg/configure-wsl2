@@ -92,17 +92,11 @@
 
     _Manage dependency on wget_
     ```
-    echo "if [ \"\$(wget -V 2> /dev/null | head -c 8)\" != \"GNU Wget\" ]; \\
-    then \
-    echo -e \"\n\$(printf '\033[96;1m')Installing wget\$(printf '\033[0m')\" \\
-    && echo -e \"\$ sudo apt update && sudo apt -y install wget\n\" \\
-    && sudo apt update && sudo apt -y install wget \\
-    && echo -e \"\n\$(printf '\033[92;1m')wget successfully installed\
-    \$(printf '\033[0m')\n\"; \\
-    else \\
-    echo -e \"\n\$(printf '\033[92;1m')wget already installed\
-    \$(printf '\033[0m')\n\"; \\
-    fi" | bash
+    printf "\n\e[96;1mInstalling wget\e[0m
+    $ sudo apt update && sudo apt -y install wget\n\n" && \
+    { sudo apt update && sudo apt -y install wget && \
+    printf "\n\e[92;1mwget successfully installed\e[0m\n\n"; } || \
+    printf "\n\e[91;1mWarning: Error when installing wget\e[0m\n\n"
     ```
     _Configure repos & update packages_
     ```
@@ -146,6 +140,9 @@
     ```
     ```
     1password
+    ```
+    ```
+    foot
     ```
     _These apps should also be available from Windows start menu with a ` (Debian)` suffix_
 
