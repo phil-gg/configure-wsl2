@@ -362,6 +362,7 @@ kdeglobals="\
 # https://develop.kde.org/docs/administration/kiosk/keys/
 action/lock_screen[\$i]=false
 action/switch_user[\$i]=false
+logout[\$i]=true
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
