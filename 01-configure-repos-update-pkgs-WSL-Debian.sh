@@ -30,14 +30,16 @@ bluebold=$(printf '\033[94;1m')
 
 echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
-# Check for presence of wget gpg debsigs & lynx
+# Check for packages and install if necessary
 # Before network test, because network test uses wget
 
 PACKAGES="\
 wget \
 gpg \
 debsigs \
-lynx"
+lynx \
+equivs \
+foot"
 
 # shellcheck disable=SC2086
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
@@ -297,13 +299,22 @@ fi
 PIN_PREFS="\
 Explanation: This file is /etc/apt/preferences.d/99pin-prefs
 Explanation: https://manpages.debian.org/trixie/apt/apt_preferences.5.en.html
-Explanation: Never downgrade unless the priority of an available version \
-exceeds 1000
-Explanation: Install the highest priority version
-Explanation: If 2+ versions have the same priority, install the most recent \
-one (i.e., the one with the higher version number)
-Explanation: https://salsa.debian.org/debian/package-cycle/-/blob/master/\
-package-cycle.svg
+Explanation: Pin-Priority is the primary form of package prioritisation
+Explanation: Thereafter install higher version of packages with same priority
+Explanation: See the following URL for Debian package cycle for repositories:
+Explanation: https://salsa.debian.org/debian/package-cycle/-/blob/master/package-cycle.svg
+Explanation: Priorities over 1000 forces install even for a downgrade
+Explanation: Currently NO packages are set with Pin-Priorities over 1000
+Explanation: 991-1000 beats target release unless installed a higher version
+Explanation: Currently NO packages are set with Pin-Priorities 991-1000
+Explanation: Target release priority is 990
+Explanation: Prioritise one named terminal emulator here to prevent auto-install
+Explanation: of other terminals by x-terminal-emulator virtual package
+Explanation: Foot is a high-performance, wayland first/only, terminal emulator
+Package: foot
+Pin: version *
+Pin-Priority: 990
+
 Explanation: Target release priority is 990
 Explanation: Trixie/Stable is here at 980 just less than target release priority
 Package: *
@@ -354,18 +365,17 @@ Pin: release o=Debian, n=sid
 Pin-Priority: 110
 
 Explanation: Installed packages have priority 100
-Explanation: Prevent installation on WSL2
+Explanation: Currently NO packages are set with Pin-Priorities 1-100
+Explanation: Warning; Pin-Priority=0 has undefined behaviour; do not use
+Explanation: Negative pin priorities prevent package installation
+Explanation: Don't want network manager on plasma when runing inside WSL2
+Package: plasma-nm
+Pin: version *
+Pin-Priority: -1
+
+Explanation: Don't want to screenshare X11 apps within plasma on WSL2
+Explanation: (and presence of this pkg causes other problems on WSL2)
 Package: xwaylandvideobridge
-Pin: version *
-Pin-Priority: -1
-
-Explanation: Prevent installation on WSL2
-Package: zutty
-Pin: version *
-Pin-Priority: -1
-
-Explanation: Prevent installation on WSL2
-Package: tilix
 Pin: version *
 Pin-Priority: -1
 "
