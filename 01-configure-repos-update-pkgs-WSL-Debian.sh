@@ -368,6 +368,11 @@ Package: plasma-nm
 Pin: version *
 Pin-Priority: -1
 
+Explanation: Don't want power management within plasma when runing inside WSL2
+Package: powerdevil
+Pin: version *
+Pin-Priority: -1
+
 Explanation: Don't want bluetooth within plasma when runing inside WSL2
 Package: bluedevil
 Pin: version *
