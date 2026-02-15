@@ -32,6 +32,9 @@ echo -e "\n${bluebold}Now running ‘${filename}’${normal}"
 
 # Check for packages and install if necessary
 # Before network test, because network test uses wget
+# Include one named terminal emulator here to prevent auto-install of other
+# terminal emulator applications by x-terminal-emulator virtual package later
+# Foot is a high-performance, wayland first/only, terminal emulator
 
 PACKAGES="\
 wget \
@@ -308,14 +311,6 @@ Explanation: Currently NO packages are set with Pin-Priorities over 1000
 Explanation: 991-1000 beats target release unless installed a higher version
 Explanation: Currently NO packages are set with Pin-Priorities 991-1000
 Explanation: Target release priority is 990
-Explanation: Prioritise one named terminal emulator here to prevent auto-install
-Explanation: of other terminals by x-terminal-emulator virtual package
-Explanation: Foot is a high-performance, wayland first/only, terminal emulator
-Package: foot
-Pin: version *
-Pin-Priority: 990
-
-Explanation: Target release priority is 990
 Explanation: Trixie/Stable is here at 980 just less than target release priority
 Package: *
 Pin: release o=Debian, n=trixie-security
@@ -370,11 +365,6 @@ Explanation: Warning; Pin-Priority=0 has undefined behaviour; do not use
 Explanation: Negative pin priorities prevent package installation
 Explanation: Don't want network manager on plasma when runing inside WSL2
 Package: plasma-nm
-Pin: version *
-Pin-Priority: -1
-
-Explanation: Don't want power management within plasma when runing inside WSL2
-Package: powerdevil
 Pin: version *
 Pin-Priority: -1
 
