@@ -153,6 +153,7 @@ fi
 # (Don't need GUI tools for network, power, or bluetooth in WSL2)
 
 create_dummy_pkg "plasma-nm"
+create_dummy_pkg "powerdevil"
 create_dummy_pkg "bluedevil"
 
 # Update apt if last `sudo apt update` more than one hour ago
@@ -391,7 +392,7 @@ echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
 fi
 
-# run the mask commands every time, they run quickly if services already masked
+# run the mask command every time, it's a quick no-op if services already masked
 echo -e "\n${cyanbold}Disable sleep shutdown restart${normal}"
 echo -e "$ sudo systemctl mask \
 sleep.target \
@@ -407,8 +408,6 @@ hibernate.target \
 hybrid-sleep.target \
 poweroff.target \
 reboot.target
-echo -e "$ systemctl --user mask plasma-powerdevil.service"
-systemctl --user mask plasma-powerdevil.service
 
 # Check WSL kernel version
 
