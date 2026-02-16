@@ -419,7 +419,10 @@ Timeout=0
 
 kdeglobals="\
 [KScreen]
+# Master switch (often ignored if per-screen not set as per below)
 ScaleFactor=1.25
+# Specific override for the virtual Weston monitor
+ScreenScaleFactors=WL-0=1.25;
 
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
