@@ -272,6 +272,13 @@ GALLIUM_DRIVER=d3d12
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
 MESA_VK_WSI_PRESENT_MODE=immediate
 
+# --- Session Identity ---
+XDG_SESSION_TYPE=wayland
+XDG_SESSION_DESKTOP=KDE
+XDG_CURRENT_DESKTOP=KDE
+XDG_MENU_PREFIX=plasma-
+KWIN_OPENGL_INTERFACE=egl
+
 # --- Toolkit / Application Layer ---
 # Qt (KDE, VLC, qBittorrent)
 QT_QPA_PLATFORM=wayland
@@ -292,17 +299,21 @@ SDL_VIDEODRIVER=wayland
 GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
+## --- Scaling subsection ---
+## Force Qt/KDE to 125% scaling
+QT_SCALE_FACTOR=1.25
+## Disable auto-scaling to prevent double-scaling issues
+QT_AUTO_SCREEN_SCALE_FACTOR=0
+## GTK3/4 only accepts integer scaling (1, 2), so we keep this at 1
+GDK_SCALE=1
+## We use text/DPI scaling to achieve the 1.25x effect in GTK/Electron apps
+GDK_DPI_SCALE=1.25
+## Scale cursor
+XCURSOR_SIZE=48
 
 # --- Compatibility Fixes ---
 # Fixes blank/gray windows in Java apps (IntelliJ, NetBeans) running on XWayland
 _JAVA_AWT_WM_NONREPARENTING=1
-
-# --- Session Identity ---
-XDG_SESSION_TYPE=wayland
-XDG_SESSION_DESKTOP=KDE
-XDG_CURRENT_DESKTOP=KDE
-XDG_MENU_PREFIX=plasma-
-KWIN_OPENGL_INTERFACE=egl
 "
 
 if ! cmp -s <(echo -e "${WSLG_VARS}") /etc/environment.d/\
@@ -439,7 +450,7 @@ glxinfo -B
 echo -e "\n${cyanbold}Show eglinfo${normal}"
 # Backslash to prevent the variable being set from expanding in echo command
 echo -e "$ \$EGL_LOG_LEVEL=debug eglinfo -B"
-echo -e "${redbold}> Known issue: GBM\EGL (but apparently wslg/d3d12 works \
+echo -e "${redbold}> Known issue: GBM\\\\EGL (but apparently wslg/d3d12 works \
 around this)${normal}\n"
 EGL_LOG_LEVEL=debug eglinfo -p gbm
 eglinfo -B -p wayland
