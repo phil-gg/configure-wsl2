@@ -418,6 +418,9 @@ Timeout=0
 "
 
 kdeglobals="\
+[KScreen]
+ScaleFactor=1.25
+
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
 # The above webpage is right - 3x 'action/' prefix are required
