@@ -300,9 +300,8 @@ GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
 ## --- Scaling subsection ---
-## Use DPI scaling (Content) instead of Scale Factor (Coordinates) for Qt
-## Standard DPI is 96 -- calculation: 96 * 1.25 = 120
-QT_FONT_DPI=120
+## Qt, Plasma, and KDE scaling
+QT_SCALE_FACTOR=1.5
 ## GTK3/4 only accepts integer scaling (1, 2), so we keep this at 1
 GDK_SCALE=1
 ## We use text/DPI scaling to achieve the 1.25x effect in GTK/Electron apps
