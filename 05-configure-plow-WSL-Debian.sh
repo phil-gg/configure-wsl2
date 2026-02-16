@@ -358,12 +358,6 @@ SDL_VIDEODRIVER=wayland
 GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
-## --- Scaling subsection ---
-## Apply DPI font scaling at ( 96 * 1.25 = ) 120
-QT_WAYLAND_FORCE_DPI=120
-## Disable both highdpi scaling & auto-scaling to prevent double-scaling issues
-QT_ENABLE_HIGHDPI_SCALING=0
-QT_AUTO_SCREEN_SCALE_FACTOR=0
 
 # --- Compatibility Fixes ---
 # Fixes blank/gray windows in Java apps (IntelliJ, NetBeans) running on XWayland
@@ -413,8 +407,6 @@ export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 # KDE Plasma config:
 #  - Disable screen lock & sleep / shutdown /restart functionality
 #  - Retain just logout
-#  - 125% (aka 120 DPI) scaling
-#  - Mouse config
 
 kscreenlockerrc="\
 [Daemon][\$i]
