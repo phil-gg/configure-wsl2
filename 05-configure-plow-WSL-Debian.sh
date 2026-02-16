@@ -300,8 +300,11 @@ GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
 ## --- Scaling subsection ---
-## Force Qt/KDE to 125% scaling
-QT_SCALE_FACTOR=1.25
+## Use DPI scaling (Content) instead of Scale Factor (Coordinates) for Qt
+## Standard DPI is 96 -- calculation: 96 * 1.25 = 120
+QT_FONT_DPI=120
+## Reset Scale Factor to 1 render as before (but zoomed into 125%)
+QT_SCALE_FACTOR=1
 ## Disable auto-scaling to prevent double-scaling issues
 QT_AUTO_SCREEN_SCALE_FACTOR=0
 ## GTK3/4 only accepts integer scaling (1, 2), so we keep this at 1
