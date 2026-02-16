@@ -71,18 +71,79 @@ cd "${HOME}/git/${github_username}/${github_project}" 2> /dev/null \
 
 # Create /etc/xdg/weston/weston.ini if it does not exist or has changed
 
-# TO-DO: Put weston.ini file contents back in here and remove separate file from repo
-# TO-DO: Make an add_config_file function and use it for all the config files
+WESTON_FOLDER="/etc/xdg/weston"
+WESTONCONF_FILENAME="weston.ini"
+WESTON_FILEPATH="${WESTON_FOLDER}/${WESTONCONF_FILENAME}"
 
-if [ ! -f /etc/xdg/weston/weston.ini ] || \
-! cmp -s etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini; then
+WESTON_CONFIG="\
+[core]
+# https://manpages.debian.org/trixie/weston/weston.ini.5.en.html
+# Enables support for X11 applications
+# xwayland=true
+# Force wayland backend
+backend=wayland
+# Using Desktop shell with no panel configured in below shell section
+shell=desktop-shell.so
+# Load the systemd notification module
+modules=systemd-notify.so
+# Set output repaint window to 8 ms maximum, which should support up to 125 Hz display refresh rates
+repaint-window=8
+# Disable screen blanking
+idle-time=0
+# Force graphics acceleration
+renderer=gl
+
+[libinput]
+# Enables tap to click on touchpad devices
+enable-tap=true
+# Enables tap and drag on touchpad devices
+tap-and-drag=true
+# Disable other devices while typing on keyboard
+disable-while-typing=false
+# Disable clicking both left and right buttons together simulating middle click
+middle-button-emulation=false
+# Enable touchscreen calibrator interface
+touchscreen_calibrator=false
+
+[shell]
+# Hide Weston panel
+panel-position=none
+# Set background color to opaque black
+background-color=0xff000000
+# Enables screen locking (Boolean)
+locking=false
+# Opening new windows animation
+animation=none
+# Closing windows animation
+close-animation=none
+# Effect used by desktop-shell when starting up
+startup-animation=none
+# Effect used with focused vs unfocused windows
+focus-animation=dim-layer
+# Weston quits when the Ctrl-Alt-Backspace key combination is pressed
+allow-zap=true
+# Modifier key for bindings - see https://manpages.debian.org/trixie/weston/weston-bindings.7.en.html
+binding-modifier=alt
+# Set the cursor theme
+# cursor-theme=
+# Set the cursor size
+cursor-size=48
+
+[keyboard]
+keymap_model=pc105
+keymap_layout=gb
+keymap_variant=extd
+"
+
+if [ ! -f "${WESTON_FILEPATH}" ] || \
+! cmp -s <(echo -e "${WESTON_CONFIG}") "${WESTON_FILEPATH}"; then
 echo -e "\n${cyanbold}Configure weston${normal}"
-echo -e "$ sudo mkdir -p /etc/xdg/weston"
-sudo mkdir -p /etc/xdg/weston
-echo -e "$ sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini"
-sudo cp -f etc/xdg/weston/weston.ini /etc/xdg/weston/weston.ini
-echo -e "$ ln -sf /etc/xdg/weston/weston.ini ~/.config/weston.ini"
-ln -sf /etc/xdg/weston/weston.ini "${HOME}/.config/weston.ini"
+echo -e "$ sudo mkdir -p ${WESTON_FOLDER}"
+sudo mkdir -p "${WESTON_FOLDER}"
+echo -e "$ sudo cp -f <(echo -e \"\${WESTON_CONFIG}\") ${WESTON_FILEPATH}"
+sudo cp -f <(echo -e "${WESTON_CONFIG}") "${WESTON_FILEPATH}"
+echo -e "$ ln -sf ${WESTON_FILEPATH} ~/.config/weston.ini"
+ln -sf "${WESTON_FILEPATH}" "${HOME}/.config/weston.ini"
 fi
 
 # Define function to build and install a dummy package
@@ -345,10 +406,11 @@ echo -e "$ export \$(echo \"\${WSLG_VARS}\" | grep -v '^$' | grep -v '^#' | \
 xargs)"
 export $(echo "${WSLG_VARS}" | grep -v '^$' | grep -v '^#' | xargs)
 
-# TO-DO: How do I remove favourites from the KDE start menu
-
-# Disable screen lock & sleep / shutdown /restart functionality from KDE Plasma
-# Retain just logout
+# KDE Plasma config:
+#  - Disable screen lock & sleep / shutdown /restart functionality
+#  - Retain just logout
+#  - 125% (aka 120 DPI) scaling
+#  - Mouse config
 
 kscreenlockerrc="\
 [Daemon][\$i]
@@ -365,6 +427,16 @@ action/lock_screen[\$i]=false
 action/switch_user[\$i]=false
 action/start_new_session[\$i]=false
 logout[\$i]=true
+"
+
+kcmfonts="\
+[General]
+forceFontDPI=120
+dontChangeAASettings=true
+"
+
+kcminputrc="\
+cursorSize=48
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
@@ -385,6 +457,24 @@ echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
 LOCK_CONF_CHANGED=1
 fi
 
+if [ ! -f /etc/xdg/kcmfonts ] || \
+! cmp -s <(echo -e "${kcmfonts}") /etc/xdg/kcmfonts; then
+echo -e "\n${cyanbold}Configure kcmfonts${normal}"
+echo -e "$ echo -e \"\${kcmfonts}\" | sudo tee /etc/xdg/kcmfonts \
+1> /dev/null"
+echo -e "${kcmfonts}" | sudo tee /etc/xdg/kcmfonts 1> /dev/null
+LOCK_CONF_CHANGED=1
+fi
+
+if [ ! -f /etc/xdg/kcminputrc ] || \
+! cmp -s <(echo -e "${kcminputrc}") /etc/xdg/kcminputrc; then
+echo -e "\n${cyanbold}Configure kcminputrc${normal}"
+echo -e "$ echo -e \"\${kcminputrc}\" | sudo tee /etc/xdg/kcminputrc \
+1> /dev/null"
+echo -e "${kcminputrc}" | sudo tee /etc/xdg/kcminputrc 1> /dev/null
+LOCK_CONF_CHANGED=1
+fi
+
 # Reload systemd if units changed
 if [ "${LOCK_CONF_CHANGED}" -eq 1 ]; then
 echo -e "\n${cyanbold}Reload cache for start menu layout${normal}"
@@ -392,7 +482,7 @@ echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
 fi
 
-# run the mask command every time, it's a quick no-op if services already masked
+# run the mask command every time; it's a quick no-op if services already masked
 echo -e "\n${cyanbold}Disable sleep shutdown restart${normal}"
 echo -e "$ sudo systemctl mask \
 sleep.target \
@@ -438,7 +528,7 @@ echo -e "$ glxinfo -B\n"
 glxinfo -B
 echo -e "\n${cyanbold}Show eglinfo${normal}"
 # Backslash to prevent the variable being set from expanding in echo command
-echo -e "$ \$EGL_LOG_LEVEL=debug eglinfo -B"
+echo -e "$ EGL_LOG_LEVEL=debug eglinfo -B"
 echo -e "${redbold}> Known issue: GBM\\\\EGL (but apparently wslg/d3d12 works \
 around this)${normal}\n"
 EGL_LOG_LEVEL=debug eglinfo -p gbm
@@ -468,7 +558,7 @@ PartOf=plasma-kwin_wayland.service
 Type=notify
 # This is the command to start the service
 # %t resolves to /run/user/\$(id -u)
-ExecStart=/usr/bin/weston --socket=weston
+ExecStart=/usr/bin/weston --socket=weston --width=1280 --height=960
 # Activating and not activated until the following helper completes
 ExecStartPost=/bin/bash -c 'while [ ! -S %t/weston ]; do sleep 0.1; done'
 Restart=no
@@ -501,6 +591,8 @@ Environment=XDG_SESSION_TYPE=wayland
 Environment=XDG_SESSION_DESKTOP=KDE
 Environment=XDG_CURRENT_DESKTOP=KDE
 "
+
+# Add services to share clipboards between host & guest
 
 CLIPPY="\
 # plow-clippy.service
