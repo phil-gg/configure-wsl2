@@ -186,6 +186,10 @@ fonts-noto-color-emoji \
 khelpcenter \
 kinfocenter \
 kwin-wayland \
+kde-config-gtk-style \
+kde-config-gtk-style-preview \
+xsettings-kde \
+xsettingsd \
 wl-clipboard"
 
 # shellcheck disable=SC2086
@@ -300,8 +304,12 @@ GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
 ## --- Scaling subsection ---
-## Qt, Plasma, and KDE scaling
-QT_SCALE_FACTOR=1.5
+## Force Qt, Plasma, and KDE scale factor to remain unchanged
+QT_SCALE_FACTOR=1
+## Apply DPI font scaling at ( 96 * 1.25 = ) 120
+QT_FONT_DPI=120
+## Disable auto-scaling to prevent double-scaling issues
+QT_AUTO_SCREEN_SCALE_FACTOR=0
 ## GTK3/4 only accepts integer scaling (1, 2), so we keep this at 1
 GDK_SCALE=1
 ## We use text/DPI scaling to achieve the 1.25x effect in GTK/Electron apps
