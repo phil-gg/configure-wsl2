@@ -382,6 +382,23 @@ https://github.com/barrett101/Intune-Desktop-Shortcut-with-embedded-icon-in-scri
 
 
 
+Avenues for scaling plasma 6 to 125%
+
+## --- Scaling subsection ---
+## Apply DPI font scaling at ( 96 * 1.25 = ) 120
+QT_WAYLAND_FORCE_DPI=120
+## Disable both highdpi scaling & auto-scaling to prevent double-scaling issues
+QT_ENABLE_HIGHDPI_SCALING=0
+QT_AUTO_SCREEN_SCALE_FACTOR=0
+
+kdeglobals file, kscreen section, scalefactor and screenscalefactor configuration keys
+kcmfonts file, general section, forceFontDPI and dontChangeAASettings configuration keys < THIS IS BEST
+
+For firefox, you may need to set widget.wayland.fractional-scale.enabled to true in about:config.
+For chrome/chromium, see https://wiki.archlinux.org/title/HiDPI#Chromium_/_Google_Chrome
+
+
+
 Overall, this project is to build two bash scripts with the below functionality:
 
 Bash script `falkon-captive-portal.sh`, which on Debian Trixie, with a KDE desktop environment, performs the following:
