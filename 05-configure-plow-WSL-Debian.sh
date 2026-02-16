@@ -358,6 +358,12 @@ SDL_VIDEODRIVER=wayland
 GLFW_PLATFORM=wayland
 # Rust winit (Alacritty, WezTerm)
 WINIT_UNIX_BACKEND=wayland
+## --- Scaling subsection ---
+## Apply DPI font scaling at ( 96 * 1.25 = ) 120
+QT_WAYLAND_FORCE_DPI=120
+## Disable both highdpi scaling & auto-scaling to prevent double-scaling issues
+QT_ENABLE_HIGHDPI_SCALING=0
+QT_AUTO_SCREEN_SCALE_FACTOR=0
 
 # --- Compatibility Fixes ---
 # Fixes blank/gray windows in Java apps (IntelliJ, NetBeans) running on XWayland
@@ -418,12 +424,6 @@ Timeout=0
 "
 
 kdeglobals="\
-[KScreen]
-# Master switch (often ignored if per-screen not set as per below)
-ScaleFactor=1.25
-# Specific override for the virtual Weston monitor
-ScreenScaleFactors=WL-0=1.25;
-
 [KDE Action Restrictions]
 # https://develop.kde.org/docs/administration/kiosk/keys/
 # The above webpage is right - 3x 'action/' prefix are required
@@ -431,16 +431,6 @@ action/lock_screen[\$i]=false
 action/switch_user[\$i]=false
 action/start_new_session[\$i]=false
 logout[\$i]=true
-"
-
-kcmfonts="\
-[General]
-forceFontDPI=120
-dontChangeAASettings=true
-"
-
-kcminputrc="\
-cursorSize=48
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
@@ -458,24 +448,6 @@ echo -e "\n${cyanbold}Configure kdeglobals${normal}"
 echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
 1> /dev/null"
 echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
-LOCK_CONF_CHANGED=1
-fi
-
-if [ ! -f /etc/xdg/kcmfonts ] || \
-! cmp -s <(echo -e "${kcmfonts}") /etc/xdg/kcmfonts; then
-echo -e "\n${cyanbold}Configure kcmfonts${normal}"
-echo -e "$ echo -e \"\${kcmfonts}\" | sudo tee /etc/xdg/kcmfonts \
-1> /dev/null"
-echo -e "${kcmfonts}" | sudo tee /etc/xdg/kcmfonts 1> /dev/null
-LOCK_CONF_CHANGED=1
-fi
-
-if [ ! -f /etc/xdg/kcminputrc ] || \
-! cmp -s <(echo -e "${kcminputrc}") /etc/xdg/kcminputrc; then
-echo -e "\n${cyanbold}Configure kcminputrc${normal}"
-echo -e "$ echo -e \"\${kcminputrc}\" | sudo tee /etc/xdg/kcminputrc \
-1> /dev/null"
-echo -e "${kcminputrc}" | sudo tee /etc/xdg/kcminputrc 1> /dev/null
 LOCK_CONF_CHANGED=1
 fi
 
