@@ -82,8 +82,8 @@ WESTON_CONFIG="\
 # xwayland=true
 # Force wayland backend
 backend=wayland
-# Using Desktop shell with no panel configured in below shell section
-shell=desktop-shell.so
+# Use the Kiosk shell to force the nested app to fill the screen
+shell=kiosk-shell.so
 # Load the systemd notification module
 modules=systemd-notify.so
 # Set output repaint window to 8 ms maximum, which should support up to 125 Hz display refresh rates
@@ -106,8 +106,6 @@ middle-button-emulation=false
 touchscreen_calibrator=false
 
 [shell]
-# Hide Weston panel
-panel-position=none
 # Set background color to opaque black
 background-color=0xff000000
 # Enables screen locking (Boolean)
