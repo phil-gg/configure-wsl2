@@ -138,8 +138,8 @@ if [ ! -f "${WESTON_FILEPATH}" ] || \
 echo -e "\n${cyanbold}Configure weston${normal}"
 echo -e "$ sudo mkdir -p ${WESTON_FOLDER}"
 sudo mkdir -p "${WESTON_FOLDER}"
-echo -e "$ sudo cp -f <(echo -e \"\${WESTON_CONFIG}\") ${WESTON_FILEPATH}"
-sudo cp -f <(echo -e "${WESTON_CONFIG}") "${WESTON_FILEPATH}"
+echo -e "$ echo -e \"\${WESTON_CONFIG}\" | sudo tee ${WESTON_FILEPATH} > /dev/null"
+echo -e "${WESTON_CONFIG}" | sudo tee "${WESTON_FILEPATH}" > /dev/null
 echo -e "$ ln -sf ${WESTON_FILEPATH} ~/.config/weston.ini"
 ln -sf "${WESTON_FILEPATH}" "${HOME}/.config/weston.ini"
 fi
