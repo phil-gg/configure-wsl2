@@ -400,10 +400,10 @@ For chrome/chromium, see https://wiki.archlinux.org/title/HiDPI#Chromium_/_Googl
 
 
 TO-DO:
-  - Get rid of "kwin_core: Configured compositor not supported by Platform. Falling back to defaults"
-  - Fix two qdbus issues - 1 = qt.dbus.integration: QDBusConnection: couldn't handle call to Teardown, no slot matched and - 2 =  kwin_wayland_wrapper[15281]: qt.dbus.integration: Could not find slot Krunner1Adaptor::Teardown
   - kwin_xwl: /tmp/.X11-unix has no sticky bit on
   - Disable kwin_screencast
+  - Unpin KE Plasma Taskbar apps
+  - Remove Show Desktop button
   - Share clipboards
   - Connect WSL Pipewire audio to KDE Plasma session
   - Still haven't succeeded with 125% screen scaling
