@@ -421,6 +421,18 @@ action/start_new_session[\$i]=false
 logout[\$i]=true
 "
 
+ksmserverrc="\
+[General]
+# Do require logout confirmation and check for unsaved work
+confirmLogout=true
+# On login, start with an empty session (no reopening apps from last logout)
+loginMode=emptySession
+"
+
+TEN_SEC_LOGOUT=$(cat /usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
+/contents/logout/Logout.qml | \
+sed 's/property real timeout: 30/property real timeout: 10/')
+
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
 ! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
 echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
@@ -437,6 +449,31 @@ echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
 1> /dev/null"
 echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
 LOCK_CONF_CHANGED=1
+fi
+
+if [ ! -f /etc/xdg/ksmserverrc ] || \
+! cmp -s <(echo -e "${ksmserverrc}") /etc/xdg/ksmserverrc; then
+echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
+echo -e "$ echo -e \"\${ksmserverrc}\" | sudo tee /etc/xdg/ksmserverrc \
+1> /dev/null"
+echo -e "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc 1> /dev/null
+LOCK_CONF_CHANGED=1
+fi
+
+# TO-DO: 3x user config equivalents of the above, here.
+
+if [ ! -f ${HOME}/.local/share/plasma/look-and-feel/\
+org.kde.breeze.desktop/contents/logout/Logout.qml ] || \
+! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") ${HOME}/.local/share/plasma/\
+look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml; then
+echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
+mkdir -p ${HOME}/.local/share/plasma/look-and-feel/org.kde.breeze.desktop/\
+contents/logout/
+echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | tee ${HOME}/.local/share/\
+plasma/look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml 1> \
+/dev/null"
+printf "%s" "${TEN_SEC_LOGOUT}" | tee ${HOME}/.local/share/plasma/\
+look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml 1> /dev/null
 fi
 
 # Reload systemd if units changed
@@ -648,8 +685,8 @@ then startplasma-wayland & disown; fi
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}dbus-send --session --dest=org.kde.ksmserver \
---type=method_call /KSMServer org.kde.KSMServerInterface.closeSession${normal}"
+echo -e "${cyanbold}qdbus6 org.kde.LogoutPrompt /LogoutPrompt \
+org.kde.LogoutPrompt.promptLogout${normal}"
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
