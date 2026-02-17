@@ -27,7 +27,7 @@ redbold=$(printf '\033[91;1m')
 greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
-LOCK_CONF_CHANGED=0
+KDE_CONF_CHANGED=0
 UNITS_CHANGED=0
 
 # Now running `${filename}`
@@ -429,17 +429,13 @@ confirmLogout=true
 loginMode=emptySession
 "
 
-TEN_SEC_LOGOUT=$(cat /usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
-/contents/logout/Logout.qml | \
-sed 's/property real timeout: 30/property real timeout: 10/')
-
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
 ! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
 echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
 echo -e "$ echo -e \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/kscreenlockerrc \
 1> /dev/null"
 echo -e "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc 1> /dev/null
-LOCK_CONF_CHANGED=1
+KDE_CONF_CHANGED=1
 fi
 
 if [ ! -f /etc/xdg/kdeglobals ] || \
@@ -448,7 +444,7 @@ echo -e "\n${cyanbold}Configure kdeglobals${normal}"
 echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
 1> /dev/null"
 echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
-LOCK_CONF_CHANGED=1
+KDE_CONF_CHANGED=1
 fi
 
 if [ ! -f /etc/xdg/ksmserverrc ] || \
@@ -457,30 +453,55 @@ echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
 echo -e "$ echo -e \"\${ksmserverrc}\" | sudo tee /etc/xdg/ksmserverrc \
 1> /dev/null"
 echo -e "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc 1> /dev/null
-LOCK_CONF_CHANGED=1
+KDE_CONF_CHANGED=1
 fi
 
-# TO-DO: 3x user config equivalents of the above, here.
-
-if [ ! -f ${HOME}/.local/share/plasma/look-and-feel/\
-org.kde.breeze.desktop/contents/logout/Logout.qml ] || \
-! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") ${HOME}/.local/share/plasma/\
-look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml; then
-echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
-mkdir -p ${HOME}/.local/share/plasma/look-and-feel/org.kde.breeze.desktop/\
-contents/logout/
-echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | tee ${HOME}/.local/share/\
-plasma/look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml 1> \
+if [ ! -f "${HOME}/.config/kscreenlockerrc" ] || \
+! cmp -s <(echo -e "${kscreenlockerrc}") "${HOME}/.config/kscreenlockerrc"; then
+echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
+echo -e "$ echo -e \"\${kscreenlockerrc}\" | tee ~/.config/kscreenlockerrc 1> \
 /dev/null"
-printf "%s" "${TEN_SEC_LOGOUT}" | tee ${HOME}/.local/share/plasma/\
-look-and-feel/org.kde.breeze.desktop/contents/logout/Logout.qml 1> /dev/null
+echo -e "${kscreenlockerrc}" | tee "${HOME}/.config/kscreenlockerrc" 1> /dev/null
+KDE_CONF_CHANGED=1
+fi
+
+if [ ! -f "${HOME}/.config/kdeglobals" ] || \
+! cmp -s <(echo -e "${kdeglobals}") "${HOME}/.config/kdeglobals"; then
+echo -e "\n${cyanbold}Configure kdeglobals${normal}"
+echo -e "$ echo -e \"\${kdeglobals}\" | tee ~/.config/kdeglobals 1> \
+/dev/null"
+echo -e "${kdeglobals}" | tee "${HOME}/.config/kdeglobals" 1> /dev/null
+KDE_CONF_CHANGED=1
+fi
+
+if [ ! -f "${HOME}/.config/ksmserverrc" ] || \
+! cmp -s <(echo -e "${ksmserverrc}") "${HOME}/.config/ksmserverrc"; then
+echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
+echo -e "$ echo -e \"\${ksmserverrc}\" | tee ~/.config/ksmserverrc 1> \
+/dev/null"
+echo -e "${ksmserverrc}" | tee "${HOME}/.config/ksmserverrc" 1> /dev/null
+KDE_CONF_CHANGED=1
 fi
 
 # Reload systemd if units changed
-if [ "${LOCK_CONF_CHANGED}" -eq 1 ]; then
+if [ "${KDE_CONF_CHANGED}" -eq 1 ]; then
 echo -e "\n${cyanbold}Reload cache for start menu layout${normal}"
 echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
+fi
+
+# This will revert to 30s every plasma pkg update: Just re-run this script
+LOGOUT_FILE="/usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
+/contents/logout/Logout.qml"
+if [ -f "${LOGOUT_FILE}" ]; then
+TEN_SEC_LOGOUT=$(cat "${LOGOUT_FILE}" | \
+sed 's/property real timeout: 30/property real timeout: 10/')
+if ! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") "${LOGOUT_FILE}"; then
+echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
+echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | sudo tee ${LOGOUT_FILE} 1> \
+/dev/null"
+printf "%s" "${TEN_SEC_LOGOUT}" | sudo tee "${LOGOUT_FILE}" 1> /dev/null
+fi
 fi
 
 # run the mask command every time; it's a quick no-op if services already masked
