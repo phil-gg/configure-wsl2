@@ -329,20 +329,16 @@ EGL_PLATFORM=wayland
 WSA_RENDER_DEVICE=/dev/dri/renderD128
 GALLIUM_DRIVER=d3d12
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
-MESA_VK_WSI_PRESENT_MODE=immediate
 
 # --- Session Identity ---
 XDG_SESSION_TYPE=wayland
 XDG_SESSION_DESKTOP=KDE
 XDG_CURRENT_DESKTOP=KDE
 XDG_MENU_PREFIX=plasma-
-KWIN_OPENGL_INTERFACE=egl
 
 # --- Toolkit / Application Layer ---
 # Qt (KDE, VLC, qBittorrent)
 QT_QPA_PLATFORM=wayland
-# KWin Direct Rendering Manager No Atomic Mode Setting
-KWIN_DRM_NO_AMS=1
 # Set KDE version for file paths
 KDE_SESSION_VERSION=6
 # GTK (GNOME, GIMP, LibreOffice)
@@ -645,23 +641,15 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run Plow session${normal}"
-echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> \
-/dev/null; then startplasma-wayland & disown; fi"
+echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> /dev/null\
+; then WAYLAND_DISPLAY=weston startplasma-wayland & disown; fi"
 if ! systemctl --user is-active plasma-workspace.target 1> /dev/null; \
-then startplasma-wayland & disown; fi
-
-# TO-DO: Still need a clean shutdown command - this one does NOT work!
+then WAYLAND_DISPLAY=weston startplasma-wayland & disown; fi
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
 echo -e "${cyanbold}dbus-send --session --dest=org.kde.ksmserver \
---type=method_call /KSMServer org.kde.KSMServerInterface.logout \
-int32:0 int32:0 int32:0${normal}"
-# The three zeros are:
-# Confirm (0): Do not show the graphical logout confirmation dialogue
-# Type (0): Perform a standard logout (rather than a reboot or shutdown)
-# Mode (0): Schedule the logout, allowing applications to save state gracefully
-echo -e "> This triggers a clean logout & safely stops the nested compositor."
+--type=method_call /KSMServer org.kde.KSMServerInterface.closeSession${normal}"
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
