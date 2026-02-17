@@ -329,16 +329,20 @@ EGL_PLATFORM=wayland
 WSA_RENDER_DEVICE=/dev/dri/renderD128
 GALLIUM_DRIVER=d3d12
 MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA
+MESA_VK_WSI_PRESENT_MODE=immediate
 
 # --- Session Identity ---
 XDG_SESSION_TYPE=wayland
 XDG_SESSION_DESKTOP=KDE
 XDG_CURRENT_DESKTOP=KDE
 XDG_MENU_PREFIX=plasma-
+KWIN_OPENGL_INTERFACE=egl
 
 # --- Toolkit / Application Layer ---
 # Qt (KDE, VLC, qBittorrent)
 QT_QPA_PLATFORM=wayland
+# KWin Direct Rendering Manager No Atomic Mode Setting
+KWIN_DRM_NO_AMS=1
 # Set KDE version for file paths
 KDE_SESSION_VERSION=6
 # GTK (GNOME, GIMP, LibreOffice)
@@ -456,32 +460,32 @@ echo -e "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc 1> /dev/null
 KDE_CONF_CHANGED=1
 fi
 
-if [ ! -f "${HOME}/.config/kscreenlockerrc" ] || \
-! cmp -s <(echo -e "${kscreenlockerrc}") "${HOME}/.config/kscreenlockerrc"; then
-echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
-echo -e "$ echo -e \"\${kscreenlockerrc}\" | tee ~/.config/kscreenlockerrc 1> \
-/dev/null"
-echo -e "${kscreenlockerrc}" | tee "${HOME}/.config/kscreenlockerrc" 1> /dev/null
-KDE_CONF_CHANGED=1
-fi
+# if [ ! -f "${HOME}/.config/kscreenlockerrc" ] || \
+# ! cmp -s <(echo -e "${kscreenlockerrc}") "${HOME}/.config/kscreenlockerrc"; then
+# echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
+# echo -e "$ echo -e \"\${kscreenlockerrc}\" | tee ~/.config/kscreenlockerrc 1> \
+# /dev/null"
+# echo -e "${kscreenlockerrc}" | tee "${HOME}/.config/kscreenlockerrc" 1> /dev/null
+# KDE_CONF_CHANGED=1
+# fi
 
-if [ ! -f "${HOME}/.config/kdeglobals" ] || \
-! cmp -s <(echo -e "${kdeglobals}") "${HOME}/.config/kdeglobals"; then
-echo -e "\n${cyanbold}Configure kdeglobals${normal}"
-echo -e "$ echo -e \"\${kdeglobals}\" | tee ~/.config/kdeglobals 1> \
-/dev/null"
-echo -e "${kdeglobals}" | tee "${HOME}/.config/kdeglobals" 1> /dev/null
-KDE_CONF_CHANGED=1
-fi
+# if [ ! -f "${HOME}/.config/kdeglobals" ] || \
+# ! cmp -s <(echo -e "${kdeglobals}") "${HOME}/.config/kdeglobals"; then
+# echo -e "\n${cyanbold}Configure kdeglobals${normal}"
+# echo -e "$ echo -e \"\${kdeglobals}\" | tee ~/.config/kdeglobals 1> \
+# /dev/null"
+# echo -e "${kdeglobals}" | tee "${HOME}/.config/kdeglobals" 1> /dev/null
+# KDE_CONF_CHANGED=1
+# fi
 
-if [ ! -f "${HOME}/.config/ksmserverrc" ] || \
-! cmp -s <(echo -e "${ksmserverrc}") "${HOME}/.config/ksmserverrc"; then
-echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
-echo -e "$ echo -e \"\${ksmserverrc}\" | tee ~/.config/ksmserverrc 1> \
-/dev/null"
-echo -e "${ksmserverrc}" | tee "${HOME}/.config/ksmserverrc" 1> /dev/null
-KDE_CONF_CHANGED=1
-fi
+# if [ ! -f "${HOME}/.config/ksmserverrc" ] || \
+# ! cmp -s <(echo -e "${ksmserverrc}") "${HOME}/.config/ksmserverrc"; then
+# echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
+# echo -e "$ echo -e \"\${ksmserverrc}\" | tee ~/.config/ksmserverrc 1> \
+# /dev/null"
+# echo -e "${ksmserverrc}" | tee "${HOME}/.config/ksmserverrc" 1> /dev/null
+# KDE_CONF_CHANGED=1
+# fi
 
 # Reload systemd if units changed
 if [ "${KDE_CONF_CHANGED}" -eq 1 ]; then
