@@ -490,19 +490,19 @@ echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
 fi
 
-# This will revert to 30s every plasma pkg update: Just re-run this script
-LOGOUT_FILE="/usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
-/contents/logout/Logout.qml"
-if [ -f "${LOGOUT_FILE}" ]; then
-TEN_SEC_LOGOUT=$(cat "${LOGOUT_FILE}" | \
-sed 's/property real timeout: 30/property real timeout: 10/')
-if ! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") "${LOGOUT_FILE}"; then
-echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
-echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | sudo tee ${LOGOUT_FILE} 1> \
-/dev/null"
-printf "%s" "${TEN_SEC_LOGOUT}" | sudo tee "${LOGOUT_FILE}" 1> /dev/null
-fi
-fi
+# # This will revert to 30s every plasma pkg update: Just re-run this script
+# LOGOUT_FILE="/usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
+# /contents/logout/Logout.qml"
+# if [ -f "${LOGOUT_FILE}" ]; then
+# TEN_SEC_LOGOUT=$(cat "${LOGOUT_FILE}" | \
+# sed 's/property real timeout: 30/property real timeout: 10/')
+# if ! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") "${LOGOUT_FILE}"; then
+# echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
+# echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | sudo tee ${LOGOUT_FILE} 1> \
+# /dev/null"
+# printf "%s" "${TEN_SEC_LOGOUT}" | sudo tee "${LOGOUT_FILE}" 1> /dev/null
+# fi
+# fi
 
 # run the mask command every time; it's a quick no-op if services already masked
 echo -e "\n${cyanbold}Disable sleep shutdown restart${normal}"
