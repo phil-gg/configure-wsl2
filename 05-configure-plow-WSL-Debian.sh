@@ -268,25 +268,36 @@ fi
 # /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so must exist (from apt install above)
 if [ -e "/usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so" ]; then
 
-echo -e "\n${cyanbold}Symlinks to gbm/dri_gbm.so${normal}"
-echo -e "> Note: Overwrites symlinks every time"
+if [ ! -L "/usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so" ] || \
+[ ! -L "/usr/lib/x86_64-linux-gnu/dri/dri_gbm.so" ] || \
+[ ! -L "/usr/lib/x86_64-linux-gnu/dri/drm_gbm.so" ]; then
+
+echo -e "\n${cyanbold}Create symlinks to gbm/dri_gbm.so${normal}"
 # Quietly ensure other folder exists (but should already be there)
 sudo mkdir -p /usr/lib/x86_64-linux-gnu/dri
 
+if [ ! -L "/usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so" ]; then
 echo -e "$ sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so"
 sudo ln -sf /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/gbm/drm_gbm.so
+fi
 
+if [ ! -L "/usr/lib/x86_64-linux-gnu/dri/dri_gbm.so" ]; then
 echo -e "$ sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/dri/dri_gbm.so"
 sudo ln -sf /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/dri/dri_gbm.so
+fi
 
+if [ ! -L "/usr/lib/x86_64-linux-gnu/dri/drm_gbm.so" ]; then
 echo -e "$ sudo ln -s /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/dri/drm_gbm.so"
 sudo ln -sf /usr/lib/x86_64-linux-gnu/gbm/dri_gbm.so \
 /usr/lib/x86_64-linux-gnu/dri/drm_gbm.so
+fi
+
+fi
 
 fi
 
@@ -460,53 +471,12 @@ echo -e "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc 1> /dev/null
 KDE_CONF_CHANGED=1
 fi
 
-# if [ ! -f "${HOME}/.config/kscreenlockerrc" ] || \
-# ! cmp -s <(echo -e "${kscreenlockerrc}") "${HOME}/.config/kscreenlockerrc"; then
-# echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
-# echo -e "$ echo -e \"\${kscreenlockerrc}\" | tee ~/.config/kscreenlockerrc 1> \
-# /dev/null"
-# echo -e "${kscreenlockerrc}" | tee "${HOME}/.config/kscreenlockerrc" 1> /dev/null
-# KDE_CONF_CHANGED=1
-# fi
-
-# if [ ! -f "${HOME}/.config/kdeglobals" ] || \
-# ! cmp -s <(echo -e "${kdeglobals}") "${HOME}/.config/kdeglobals"; then
-# echo -e "\n${cyanbold}Configure kdeglobals${normal}"
-# echo -e "$ echo -e \"\${kdeglobals}\" | tee ~/.config/kdeglobals 1> \
-# /dev/null"
-# echo -e "${kdeglobals}" | tee "${HOME}/.config/kdeglobals" 1> /dev/null
-# KDE_CONF_CHANGED=1
-# fi
-
-# if [ ! -f "${HOME}/.config/ksmserverrc" ] || \
-# ! cmp -s <(echo -e "${ksmserverrc}") "${HOME}/.config/ksmserverrc"; then
-# echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
-# echo -e "$ echo -e \"\${ksmserverrc}\" | tee ~/.config/ksmserverrc 1> \
-# /dev/null"
-# echo -e "${ksmserverrc}" | tee "${HOME}/.config/ksmserverrc" 1> /dev/null
-# KDE_CONF_CHANGED=1
-# fi
-
 # Reload systemd if units changed
 if [ "${KDE_CONF_CHANGED}" -eq 1 ]; then
 echo -e "\n${cyanbold}Reload cache for start menu layout${normal}"
 echo -e "$ kbuildsycoca6 --noincremental"
 kbuildsycoca6 --noincremental
 fi
-
-# # This will revert to 30s every plasma pkg update: Just re-run this script
-# LOGOUT_FILE="/usr/share/plasma/look-and-feel/org.kde.breeze.desktop\
-# /contents/logout/Logout.qml"
-# if [ -f "${LOGOUT_FILE}" ]; then
-# TEN_SEC_LOGOUT=$(cat "${LOGOUT_FILE}" | \
-# sed 's/property real timeout: 30/property real timeout: 10/')
-# if ! cmp -s <(printf "%s" "${TEN_SEC_LOGOUT}") "${LOGOUT_FILE}"; then
-# echo -e "\n${cyanbold}Configure 10 second logout timer${normal}"
-# echo -e "$ printf \"%s\" \"\${TEN_SEC_LOGOUT}\" | sudo tee ${LOGOUT_FILE} 1> \
-# /dev/null"
-# printf "%s" "${TEN_SEC_LOGOUT}" | sudo tee "${LOGOUT_FILE}" 1> /dev/null
-# fi
-# fi
 
 # run the mask command every time; it's a quick no-op if services already masked
 echo -e "\n${cyanbold}Disable sleep shutdown restart${normal}"
