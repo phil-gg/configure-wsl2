@@ -641,10 +641,10 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run Plow session${normal}"
-echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> /dev/null\
-; then WAYLAND_DISPLAY=weston startplasma-wayland & disown; fi"
+echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> \
+/dev/null; then startplasma-wayland & disown; fi"
 if ! systemctl --user is-active plasma-workspace.target 1> /dev/null; \
-then WAYLAND_DISPLAY=weston startplasma-wayland & disown; fi
+then startplasma-wayland & disown; fi
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
