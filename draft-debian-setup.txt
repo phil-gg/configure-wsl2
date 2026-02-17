@@ -399,6 +399,17 @@ For chrome/chromium, see https://wiki.archlinux.org/title/HiDPI#Chromium_/_Googl
 
 
 
+TO-DO:
+  - Get rid of "kwin_core: Configured compositor not supported by Platform. Falling back to defaults"
+  - Fix two qdbus issues - 1 = qt.dbus.integration: QDBusConnection: couldn't handle call to Teardown, no slot matched and - 2 =  kwin_wayland_wrapper[15281]: qt.dbus.integration: Could not find slot Krunner1Adaptor::Teardown
+  - kwin_xwl: /tmp/.X11-unix has no sticky bit on
+  - Disable kwin_screencast
+  - Share clipboards
+  - Connect WSL Pipewire audio to KDE Plasma session
+  - Still haven't succeeded with 125% screen scaling
+
+
+
 Overall, this project is to build two bash scripts with the below functionality:
 
 Bash script `falkon-captive-portal.sh`, which on Debian Trixie, with a KDE desktop environment, performs the following:
