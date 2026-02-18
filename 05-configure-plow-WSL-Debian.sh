@@ -144,6 +144,55 @@ echo -e "$ ln -sf ${WESTON_FILEPATH} ~/.config/weston.ini"
 ln -sf "${WESTON_FILEPATH}" "${HOME}/.config/weston.ini"
 fi
 
+# Apply KDE plasma taskbar customisations once, on first session launch
+
+CUSTOMISE_DESKTOP_ONCE="\
+[Desktop Entry]
+Type=Application
+Name=Cleanup Taskbar Layout
+Comment=One-shot script to remove Show Desktop and unpin apps.
+X-KDE-StartupNotify=false
+Exec=/bin/bash -c 'dbus-send --session --dest=org.kde.plasmashell \
+--type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript \"string: \
+var a = panels(); \
+for (var i = 0; i < a.length; i++) { \
+var w = a[i].widgets(); \
+for (var j = w.length - 1; j >= 0; j--) { \
+if (w[j].type == \\\"org.kde.plasma.showdesktop\\\") { \
+w[j].remove(); \
+} \
+if (w[j].type == \\\"org.kde.plasma.icontasks\\\") { \
+w[j].currentConfigGroup = [\\\"General\\\"]; \
+w[j].writeConfig(\\\"launchers\\\", \\\"\\\"); \
+w[j].reloadConfig(); \
+} \
+} \
+}\" \
+&& rm \"\$HOME/.config/autostart/cleanup.desktop\"'
+"
+
+if [ ! -f /etc/skel/.config/autostart/cleanup.desktop ] || \
+! cmp -s <(printf "%s" "${CUSTOMISE_DESKTOP_ONCE}") \
+/etc/skel/.config/autostart/cleanup.desktop; then
+
+echo -e "\n${cyanbold}Configure first-run KDE plasma customisations${normal}"
+
+# The /etc/skel location applies this to each newly created user
+sudo mkdir -p /etc/skel/.config/autostart
+echo -e "$ printf \"%s\" \"\${CUSTOMISE_DESKTOP_ONCE}\" | \
+sudo tee /etc/skel/.config/autostart/cleanup.desktop > /dev/null"
+printf "%s" "${CUSTOMISE_DESKTOP_ONCE}" | \
+sudo tee /etc/skel/.config/autostart/cleanup.desktop > /dev/null
+
+# The symlink applies this once for current user, next kde plasma session start
+mkdir -p "${HOME}/.config/autostart"
+echo -e "$ ln -sf /etc/skel/.config/autostart/cleanup.desktop \
+~/.config/autostart/cleanup.desktop"
+ln -sf /etc/skel/.config/autostart/cleanup.desktop \
+"${HOME}/.config/autostart/cleanup.desktop"
+
+fi
+
 # Define function to build and install a dummy package
 
 create_dummy_pkg() {
