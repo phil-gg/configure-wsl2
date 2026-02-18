@@ -1,86 +1,44 @@
-#!/bin/bash
 
-# ~/.config/weston.ini
-
-[core]
-# https://manpages.debian.org/trixie/weston/weston.ini.5.en.html
-# Enables support for X11 applications
-# xwayland=true
-# Use the Kiosk shell to force the nested app to fill the screen
-shell=kiosk-shell.so
-# force wayland backend
-backend=wayland
-# disable screen blanking
-idle-time=0
-
-[libinput]
-# Enables tap to click on touchpad devices
-enable-tap=true
-# Enables tap and drag on touchpad devices
-tap-and-drag=true
-# disable other devices while typing on keyboard
-disable-while-typing=false
-# clicking both left and right buttons together simulates middle click
-middle-button-emulation=false
-# enable touchscreen calibrator interface
-touchscreen_calibrator=false
-
-[shell]
-# set background color to opaque black
-background-color=0xff000000
-# Enables screen locking (Boolean)
-locking=false
-# Opening new windows animation
-animation=none
-# Closing windows animation
-close-animation=none
-# Effect used by desktop-shell when starting up
-startup-animation=none
-# Effect used with focused vs unfocused windows
-focus-animation=dim-layer
-# Weston quits when the Ctrl-Alt-Backspace key combination is pressed
-allow-zap=true
-# Modifier key for bindings - see https://manpages.debian.org/trixie/weston/weston-bindings.7.en.html
-binding-modifier=alt
-# Set the cursor theme
-# cursor-theme=
-# Set the cursor size
-cursor-size=48
-
-[keyboard]
-keymap_model=pc105
-keymap_layout=gb
-keymap_variant=extd
-
-# Set up virtual screen on Weston, in the background (final ampersand)
-
-weston --socket=weston > /dev/null 2>&1 &
-
-ls /run/user/$(id -u)/weston
-
-# Run weston with log output to terminal for troubleshooting
-# weston --socket=weston
-# End weston session
-# pkill -f "weston --socket=weston"
-
-# Run kde-plasma in weston
-
-WAYLAND_DISPLAY=weston \
-GALLIUM_DRIVER=d3d12 \
-MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-dbus-run-session startplasma-wayland > /dev/null 2>&1 &
+TO-DO:
+  - kwin_xwl: /tmp/.X11-unix has no sticky bit on
+  - Disable kwin_screencast
+  - Unpin KE Plasma Taskbar apps
+  - Remove Show Desktop button
+  - Share clipboards
+  - Connect WSL Pipewire audio to KDE Plasma session
+  - Still haven't succeeded with 125% screen scaling
 
 
+# Review similar WSL configurations from others:
+https://gist.github.com/tdcosta100
+https://gist.github.com/lzlrd/0d9b757d2122f551794fd00c7f0752d6
+https://gist.github.com/davidedmundson/8e1732b2c8b539fd3e6ab41a65bcab74
+https://gist.github.com/lucsoft/40c929537e083f1984d4dedd393eae80
 
 
+# Avenues for scaling plasma 6 to 125%
 
+## --- Scaling subsection ---
+## Apply DPI font scaling at ( 96 * 1.25 = ) 120
+QT_WAYLAND_FORCE_DPI=120
+## Disable both highdpi scaling & auto-scaling to prevent double-scaling issues
+QT_ENABLE_HIGHDPI_SCALING=0
+QT_AUTO_SCREEN_SCALE_FACTOR=0
+
+kdeglobals file, kscreen section, scalefactor and screenscalefactor configuration keys
+kcmfonts file, general section, forceFontDPI and dontChangeAASettings configuration keys
+
+For firefox, you may need to set widget.wayland.fractional-scale.enabled to true in about:config.
+For chrome/chromium, see https://wiki.archlinux.org/title/HiDPI#Chromium_/_Google_Chrome
+
+
+# A custom cursor would be nice (probably configured in Weston)
+# Need a custom invisible cursor in KDE Plasma too
 # Add google dot white cursor
 https://github.com/ful1e5/Google_Cursor/releases/latest
 
 
-
-
-
+# Don't need / not using ananicy / gamescope - now using Weston instead
 # Packages to build ananicy-cpp
 
 sudo apt update && sudo apt install -y \
@@ -138,8 +96,6 @@ cpack -G DEB
 echo "Build complete. Your .deb package is located in:"
 echo "$(pwd)"
 
-# TO-DO: Install deb package
-
 if ! -f /etc/ananicy.d/gamescope.rules; then
 echo '{"name": "gamescope", "nice": -20, "ioclass": "realtime"}' | \
 sudo tee /etc/ananicy.d/gamescope.rules
@@ -151,6 +107,7 @@ sudo systemctl enable --now ananicy-cpp
 
 systemctl status ananicy-cpp
 
+# Start of gamescope config (but not using this)
 # Set dir for user runtime files (sockets, named pipes, temp locks, etc.)
 export XDG_RUNTIME_DIR=/run/user/$(id -u)  && \
 # Configure mesa
@@ -168,10 +125,7 @@ dbus-run-session gamescope -f -w 2400 -h 1600 -r 120.000191 --framerate-limit 12
 # Symlink from runtime dir tp WSLg Wayland socket
 ln -sf /mnt/wslg/runtime-dir/wayland-0* "$XDG_RUNTIME_DIR/" && \
 
-
-
-
-
+# Start of gnome config (but not using this)
 sudo apt install -y /
 gnome-core /
 evince- /
@@ -229,8 +183,6 @@ XDG_SESSION_TYPE=wayland \
 XMODIFIERS=@im=ibus \
 MUTTER_DEBUG_DUMMY_MODE_SPECS=2368x1480 \
 gnome-session
-
-D3F3JM6D24303H7:3389
 
 Try again from scratch (no mucking about with polkit this time)
 Enable only remote desktop and not screensharing (and not both)
@@ -351,8 +303,6 @@ https://github.com/LizardByte/Sunshine?tab=readme-ov-file#sunshine
 https://github.com/moonlight-stream/moonlight-qt?tab=readme-ov-file#moonlight-pc
 ...with a forced EDID to set monitor and resolution
 
-
-
 ...or maybe use gamescope instead:
 
 (1) Add unstable repo with Pin-Priority favouring Stable > Testing > Unstable
@@ -375,39 +325,8 @@ Need KDE without:
 "Wayland to X recording bridge" "Xwayland video bridge"
 sudo apt purge xwaylandvideobridge
 
-
-
 https://stackoverflow.com/questions/69550071/how-to-create-a-linux-gui-app-short-cut-for-wsl2-on-windows10
 https://github.com/barrett101/Intune-Desktop-Shortcut-with-embedded-icon-in-script
-
-
-
-Avenues for scaling plasma 6 to 125%
-
-## --- Scaling subsection ---
-## Apply DPI font scaling at ( 96 * 1.25 = ) 120
-QT_WAYLAND_FORCE_DPI=120
-## Disable both highdpi scaling & auto-scaling to prevent double-scaling issues
-QT_ENABLE_HIGHDPI_SCALING=0
-QT_AUTO_SCREEN_SCALE_FACTOR=0
-
-kdeglobals file, kscreen section, scalefactor and screenscalefactor configuration keys
-kcmfonts file, general section, forceFontDPI and dontChangeAASettings configuration keys < THIS IS BEST
-
-For firefox, you may need to set widget.wayland.fractional-scale.enabled to true in about:config.
-For chrome/chromium, see https://wiki.archlinux.org/title/HiDPI#Chromium_/_Google_Chrome
-
-
-
-TO-DO:
-  - kwin_xwl: /tmp/.X11-unix has no sticky bit on
-  - Disable kwin_screencast
-  - Unpin KE Plasma Taskbar apps
-  - Remove Show Desktop button
-  - Share clipboards
-  - Connect WSL Pipewire audio to KDE Plasma session
-  - Still haven't succeeded with 125% screen scaling
-
 
 
 Overall, this project is to build two bash scripts with the below functionality:
