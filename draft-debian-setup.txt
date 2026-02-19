@@ -1,8 +1,5 @@
 
 TO-DO:
-  - kwin_xwl: /tmp/.X11-unix has no sticky bit on (in progress)
-  - Unpin KE Plasma Taskbar apps (first attempt broken - commmented out)
-  - Remove Show Desktop button (first attempt broken - commmented out)
   - Disable kwin_screencast
   - Link KDE plasma taskbar sound widget to WSL audio
   - Share clipboards
