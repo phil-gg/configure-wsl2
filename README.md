@@ -16,7 +16,13 @@
 
 ## Configuration Instructions
 
-1. Install WSL on Windows host
+1. Install required Windows software
+    ```
+    winget install -e --id Microsoft.WindowsTerminal
+    ```
+    ```
+    winget install -e --id Microsoft.WSL
+    ```
     ```
     wsl.exe --install --no-distribution --web-download
     ```
