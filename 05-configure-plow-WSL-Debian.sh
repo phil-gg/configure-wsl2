@@ -144,57 +144,121 @@ echo -e "$ ln -sf ${WESTON_FILEPATH} ~/.config/weston.ini"
 ln -sf "${WESTON_FILEPATH}" "${HOME}/.config/weston.ini"
 fi
 
-# Apply KDE plasma taskbar customisations once, on first session launch
+# Ensure /tmp/.X11-unix is a local, writable directory with a sticky bit
+# This allows a nested Xwayland (inside Plow) to create its own sockets
 
-CUSTOMISE_DESKTOP_ONCE="\
-[Desktop Entry]
-Type=Application
-Name=Cleanup Taskbar Layout
-Comment=One-shot script to remove Show Desktop and unpin apps.
-X-KDE-StartupNotify=false
-Exec=/bin/bash -c 'while [ \"\$(systemctl --user is-active \
-plasma-plasmashell.service)\" != \"active\" ]; do sleep 0.1; done; \
-until dbus-send --session --dest=org.kde.plasmashell --print-reply \
-/PlasmaShell org.kde.PlasmaShell.evaluateScript \"string:panels().length\" | \
-grep -q \"int32 [1-9][0-9]*\"; do sleep 0.1; done; \
-dbus-send --session --dest=org.kde.plasmashell \
---type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript \"string: \
-var a = panels(); \
-for (var i = 0; i < a.length; i++) { \
-var w = a[i].widgets(); \
-for (var j = w.length - 1; j >= 0; j--) { \
-if (w[j].type == \\\"org.kde.plasma.showdesktop\\\") { \
-w[j].remove(); \
-} \
-if (w[j].type == \\\"org.kde.plasma.icontasks\\\") { \
-w[j].currentConfigGroup = [\\\"General\\\"]; \
-w[j].writeConfig(\\\"launchers\\\", \\\"\\\"); \
-w[j].reloadConfig(); \
-} \
-} \
-}\" \
-&& rm \"\$HOME/.config/autostart/cleanup.desktop\"'
+TMPCONF_FILE="/etc/tmpfiles.d/plow-xwayland.conf"
+TMPCONF_TEXT="\
+# See tmpfiles.d(5) for details
+# Type Path           Mode UID  GID  Age Argument
+d      /tmp/.X11-unix 1777 root root -   -
 "
 
-if [ ! -f /etc/skel/.config/autostart/cleanup.desktop ] || \
-! cmp -s <(printf "%s" "${CUSTOMISE_DESKTOP_ONCE}") \
-/etc/skel/.config/autostart/cleanup.desktop; then
+if [ ! -f "${TMPCONF_FILE}" ] || \
+! cmp -s <(printf "%s" "${TMPCONF_TEXT}") "${TMPCONF_FILE}"; then
 
-echo -e "\n${cyanbold}Configure first-run KDE plasma customisations${normal}"
+echo -e "\n${cyanbold}Configuring Xwayland for Plow${normal}"
+sudo mkdir -p /etc/tmpfiles.d
+echo -e "$ printf \"%s\" \"\${TMPCONF_TEXT}\" | sudo tee ${TMPCONF_FILE} > \
+/dev/null"
+printf "%s" "${TMPCONF_TEXT}" | sudo tee "${TMPCONF_FILE}" > /dev/null
+# Apply the fix immediately to the current session
+echo -e "$ sudo systemd-tmpfiles --create ${TMPCONF_FILE}"
+sudo systemd-tmpfiles --create "${TMPCONF_FILE}"
 
-# The /etc/skel location applies this to each newly created user
-sudo mkdir -p /etc/skel/.config/autostart
-echo -e "$ printf \"%s\" \"\${CUSTOMISE_DESKTOP_ONCE}\" | \
-sudo tee /etc/skel/.config/autostart/cleanup.desktop > /dev/null"
-printf "%s" "${CUSTOMISE_DESKTOP_ONCE}" | \
-sudo tee /etc/skel/.config/autostart/cleanup.desktop > /dev/null
+fi
 
-# The symlink applies this once for current user, next kde plasma session start
-mkdir -p "${HOME}/.config/autostart"
-echo -e "$ ln -sf /etc/skel/.config/autostart/cleanup.desktop \
-~/.config/autostart/cleanup.desktop"
-ln -sf /etc/skel/.config/autostart/cleanup.desktop \
-"${HOME}/.config/autostart/cleanup.desktop"
+# Apply KDE plasma taskbar customisations once, on first session launch
+
+L_DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+L_DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+L_FILE_HOME="${L_DIR_HOME}/layout.js"
+L_FILE_SKEL="${L_DIR_SKEL}/layout.js"
+
+LAYOUT_JS_TEXT="\
+var taskbar = new Panel
+taskbar.height = 44
+taskbar.location = \"bottom\"
+taskbar.floating = 0
+
+// Kickoff (Start Menu) with custom SVG icon
+var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
+kickoff.currentConfigGroup = [\"General\"]
+kickoff.writeConfig(\"icon\", \"${SVG_FILE}\")
+
+// Standard Task Manager (Icons + Text, no pinned apps)
+var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
+tasks.currentConfigGroup = [\"General\"]
+tasks.writeConfig(\"launchers\", \"\")
+
+// Spacer (Expanding pushes subsequent widgets to the right)
+var spacer = taskbar.addWidget(\"org.kde.plasma.panelspacer\")
+
+// System Tray (Right-aligned via the spacer)
+var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
+
+// Digital Clock (Far right edge)
+var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
+"
+
+SVG_DIR="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+SVG_FILE="${SVG_DIR}/kde-plasma.svg"
+
+SVG_TEXT="\
+<svg viewBox=\"0 0 44 44\" xmlns=\"http://www.w3.org/2000/svg\">
+  <defs>
+    <linearGradient
+      id=\"a\"
+      gradientUnits=\"userSpaceOnUse\"
+      x1=\"3\"
+      y1=\"3\"
+      x2=\"41\"
+      y2=\"41\">
+      <stop
+        offset=\"0\"
+        stop-color=\"#2bc0ff\" />
+      <stop
+        offset=\"1\"
+        stop-color=\"#1d99f3\" />
+    </linearGradient>
+  </defs>
+  <rect fill=\"url(#a)\"
+    width=\"40\"
+    height=\"40\"
+    x=\"2\"
+    y=\"2\"
+    rx=\"5\"
+    ry=\"5\" />
+  <path fill=\"#fff\"
+    d=\"m14 6c-1.108 0-2 0.892-2 2c0 1.108 0.892 2 2 2c1.108 0 2-0.892 2-2c0
+       -1.108-0.892-2-2-2zm14 0l-4 4l6 6l-6 6l4 4l6-6l4-4zm-19 12c-1.662 0-3
+       1.338-3 3c0 1.662 1.338 3 3 3c1.662 0 3-1.338 3-3c0-1.662-1.338-3-3-3zm9
+       12c-2.216 0-4 1.784-4 4c0 2.216 1.784 4 4 4c2.216 0 4-1.784 4-4c0-2.216
+       -1.784-4-4-4z\" />
+</svg>
+"
+if [ ! -f "${L_FILE_SKEL}" ] || \
+     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_SKEL}" || \
+   [ ! -e "${L_FILE_HOME}" ] || \
+     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_HOME}" || \
+   [ ! -f "${SVG_FILE}" ] || \
+     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${SVG_FILE}"; then
+
+echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
+
+# Force regeneration by removing existing config
+echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
+rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+
+sudo mkdir -p "${L_DIR_SKEL}"
+echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE}"
+printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}"
+echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL}"
+printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}"
+
+mkdir -p "${L_DIR_HOME}"
+echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
+ln -sf "${L_FILE_SKEL}" "${L_FILE_HOME}"
 
 fi
 
@@ -299,6 +363,7 @@ fonts-noto-color-emoji \
 khelpcenter \
 kinfocenter \
 kwin-wayland \
+x11-apps \
 wl-clipboard"
 
 # shellcheck disable=SC2086
