@@ -258,7 +258,7 @@ printf "%s" "${TASKBAR_TEXT}" | sudo tee "${SKEL_FILE}" > /dev/null
 
 echo -e "$ printf \"%s\" \"\${TASKBAR_TEXT}\" | sudo tee ${USER_FILE} > \
 /dev/null"
-printf "%s" "${TASKBAR_TEXT}" | sudo tee "${USER_FILE}" > /dev/null
+printf "%s" "${TASKBAR_TEXT}" | tee "${USER_FILE}" > /dev/null
 
 fi
 
