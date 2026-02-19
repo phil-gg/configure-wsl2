@@ -28,7 +28,8 @@ greenbold=$(printf '\033[92;1m')
 cyanbold=$(printf '\033[96;1m')
 bluebold=$(printf '\033[94;1m')
 KDE_CONF_CHANGED=0
-UNITS_CHANGED=0
+USR_UNITS_CHANGED=0
+SYS_UNITS_CHANGED=0
 
 # Now running `${filename}`
 
@@ -134,41 +135,15 @@ keymap_variant=extd
 "
 
 if [ ! -f "${WESTON_FILEPATH}" ] || \
-! cmp -s <(echo -e "${WESTON_CONFIG}") "${WESTON_FILEPATH}"; then
+! cmp -s <(printf "%s" "${WESTON_CONFIG}") "${WESTON_FILEPATH}"; then
 echo -e "\n${cyanbold}Configure weston${normal}"
 echo -e "$ sudo mkdir -p ${WESTON_FOLDER}"
 sudo mkdir -p "${WESTON_FOLDER}"
-echo -e "$ echo -e \"\${WESTON_CONFIG}\" | sudo tee ${WESTON_FILEPATH} > /dev/null"
-echo -e "${WESTON_CONFIG}" | sudo tee "${WESTON_FILEPATH}" > /dev/null
+echo -e "$ printf \"%s\" \"\${WESTON_CONFIG}\" | sudo tee ${WESTON_FILEPATH} > \
+/dev/null"
+printf "%s" "${WESTON_CONFIG}" | sudo tee "${WESTON_FILEPATH}" > /dev/null
 echo -e "$ ln -sf ${WESTON_FILEPATH} ~/.config/weston.ini"
 ln -sf "${WESTON_FILEPATH}" "${HOME}/.config/weston.ini"
-fi
-
-# Ensure /tmp/.X11-unix is a local, writable directory with a sticky bit
-# This allows a nested Xwayland (inside Plow) to create its own sockets
-
-TMPCONF_FILE="/etc/tmpfiles.d/plow-xwayland.conf"
-TMPCONF_TEXT="\
-# See tmpfiles.d(5) for details
-# Type Path           Mode UID  GID  Age Argument
-d      /tmp/.X11-unix 1777 root root -   -
-"
-
-if [ ! -f "${TMPCONF_FILE}" ] || \
-! cmp -s <(printf "%s" "${TMPCONF_TEXT}") "${TMPCONF_FILE}"; then
-
-echo -e "\n${cyanbold}Configuring Xwayland for Plow${normal}"
-sudo mkdir -p /etc/tmpfiles.d
-echo -e "$ printf \"%s\" \"\${TMPCONF_TEXT}\" | sudo tee ${TMPCONF_FILE} > \
-/dev/null"
-printf "%s" "${TMPCONF_TEXT}" | sudo tee "${TMPCONF_FILE}" > /dev/null
-
-# Apply the fix immediately to the current session
-if [ ! -d "/tmp/.X11-unix" ]; then
-echo -e "$ sudo systemd-tmpfiles --create ${TMPCONF_FILE}"
-sudo systemd-tmpfiles --create "${TMPCONF_FILE}"
-fi
-
 fi
 
 # Whole section commented out as it does not work as desired yet
@@ -313,8 +288,9 @@ Architecture: all
 Description: Dependency resolving dummy pkg for deliberately missing ${TARGET_PKG}
 "
 # Show payload variable without expansion here (with backslash escapes)
-echo -e "$ echo -e \"\${DUMMY_PAYLOAD}\" | sudo tee ${DUMMY_PKG} > /dev/null 2>&1"
-echo -e "${DUMMY_PAYLOAD}" | sudo tee "${DUMMY_PKG}" > /dev/null 2>&1
+echo -e "$ printf \"%s\" \"\${DUMMY_PAYLOAD}\" | sudo tee ${DUMMY_PKG} > \
+/dev/null"
+printf "%s" "${DUMMY_PAYLOAD}" | sudo tee "${DUMMY_PKG}" > /dev/null
 echo -e "$ cat ${DUMMY_PKG}\n"
 cat "${DUMMY_PKG}"
 
@@ -503,7 +479,7 @@ WINIT_UNIX_BACKEND=wayland
 _JAVA_AWT_WM_NONREPARENTING=1
 "
 
-if ! cmp -s <(echo -e "${WSLG_VARS}") /etc/environment.d/\
+if ! cmp -s <(printf "%s" "${WSLG_VARS}") /etc/environment.d/\
 01-graphics-on-wsl.conf; then
 
 echo -e "\n${cyanbold}Setting system-wide environment variables for WSLg\
@@ -511,10 +487,10 @@ ${normal}"
 # Quietly ensure folder exists (but should already be there)
 sudo mkdir -p /etc/environment.d
 
-echo -e "$ echo -e \"\${WSLG_VARS}\" | sudo tee /etc/environment.d/\
-01-graphics-on-wsl.conf 1> /dev/null"
-echo -e "${WSLG_VARS}" | sudo tee /etc/environment.d/\
-01-graphics-on-wsl.conf 1> /dev/null
+echo -e "$ printf \"%s\" \"\${WSLG_VARS}\" | sudo tee /etc/environment.d/\
+01-graphics-on-wsl.conf > /dev/null"
+printf "%s" "${WSLG_VARS}" | sudo tee /etc/environment.d/\
+01-graphics-on-wsl.conf > /dev/null
 
 echo -e "\n${cyanbold}Print current systemd user environment${normal}"
 echo -e "$ systemctl --user show-environment --no-pager\n"
@@ -573,29 +549,29 @@ loginMode=emptySession
 "
 
 if [ ! -f /etc/xdg/kscreenlockerrc ] || \
-! cmp -s <(echo -e "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
+! cmp -s <(printf "%s" "${kscreenlockerrc}") /etc/xdg/kscreenlockerrc; then
 echo -e "\n${cyanbold}Configure kscreenlockerrc${normal}"
-echo -e "$ echo -e \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/kscreenlockerrc \
-1> /dev/null"
-echo -e "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc 1> /dev/null
+echo -e "$ printf \"%s\" \"\${kscreenlockerrc}\" | sudo tee /etc/xdg/\
+kscreenlockerrc > /dev/null"
+printf "%s" "${kscreenlockerrc}" | sudo tee /etc/xdg/kscreenlockerrc > /dev/null
 KDE_CONF_CHANGED=1
 fi
 
 if [ ! -f /etc/xdg/kdeglobals ] || \
-! cmp -s <(echo -e "${kdeglobals}") /etc/xdg/kdeglobals; then
+! cmp -s <(printf "%s" "${kdeglobals}") /etc/xdg/kdeglobals; then
 echo -e "\n${cyanbold}Configure kdeglobals${normal}"
-echo -e "$ echo -e \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals \
-1> /dev/null"
-echo -e "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals 1> /dev/null
+echo -e "$ printf \"%s\" \"\${kdeglobals}\" | sudo tee /etc/xdg/kdeglobals > \
+/dev/null"
+printf "%s" "${kdeglobals}" | sudo tee /etc/xdg/kdeglobals > /dev/null
 KDE_CONF_CHANGED=1
 fi
 
 if [ ! -f /etc/xdg/ksmserverrc ] || \
-! cmp -s <(echo -e "${ksmserverrc}") /etc/xdg/ksmserverrc; then
+! cmp -s <(printf "%s" "${ksmserverrc}") /etc/xdg/ksmserverrc; then
 echo -e "\n${cyanbold}Configure ksmserverrc${normal}"
-echo -e "$ echo -e \"\${ksmserverrc}\" | sudo tee /etc/xdg/ksmserverrc \
-1> /dev/null"
-echo -e "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc 1> /dev/null
+echo -e "$ printf \"%s\" \"\${ksmserverrc}\" | sudo tee /etc/xdg/ksmserverrc > \
+/dev/null"
+printf "%s" "${ksmserverrc}" | sudo tee /etc/xdg/ksmserverrc > /dev/null
 KDE_CONF_CHANGED=1
 fi
 
@@ -660,6 +636,49 @@ eglinfo -B -p wayland
 eglinfo -B -p x11
 eglinfo -B -p surfaceless
 
+# Define systemd unit to fix /tmp/.X11-unix for Xwayland nested in Plow
+
+TMP_X_SERVICE="\
+# plow-tmp-x-unix.service
+# System service (root) to fix running XWayland nested within a Plow session
+
+[Unit]
+Description=Setup writable /tmp/.X11-unix for Xwayland nested in Plow
+# Run after systemd has finished configuring local filesystems
+After=local-fs.target
+# Run before user sessions start
+Before=systemd-user-sessions.service
+
+[Service]
+# Check mounts are in place before service is Active
+Type=notify
+# Required so the script (subprocess) can communicate with systemd
+NotifyAccess=all
+# Service stays 'active' even after the setup script exits
+RemainAfterExit=yes
+# This is the command to start the service (wrapped in bash)
+# Unmount existing if present (ignore errors with || true)
+# Mount a writable tmpfs at /tmp/.X11-unix
+# Create /tmp/.X11-unix/X0 location
+# Mount WSLg as X0 only
+# Make X0 read-only (like original WSLg /tmp/.X11-unix mount)
+# Check for writable mount, and X0 mounted to WSLg
+# Check if parent dir is writable AND X0 is a mountpoint
+# Notify ready if check true else error
+ExecStart=/bin/bash -c '\
+/usr/bin/umount /tmp/.X11-unix 2>/dev/null || true; \
+/usr/bin/mount -t tmpfs -o mode=1777,size=1m tmpfs /tmp/.X11-unix && \
+/usr/bin/touch /tmp/.X11-unix/X0 && \
+/usr/bin/mount --bind /mnt/wslg/.X11-unix/X0 /tmp/.X11-unix/X0 && \
+/usr/bin/mount -o remount,ro,bind /tmp/.X11-unix/X0 && \
+if [ -w /tmp/.X11-unix ] && /usr/bin/mountpoint -q /tmp/.X11-unix/X0; then \
+/usr/bin/systemd-notify --ready; \
+else echo \"Error: X11 socket setup failed verification.\" && exit 1; fi'
+
+[Install]
+WantedBy=multi-user.target
+"
+
 # Define systemd unit for Weston (Plow)
 
 WESTON_SERVICE="\
@@ -674,9 +693,6 @@ Documentation=man:weston(1)
 After=graphical-session-pre.target
 # For teardown, stop plow-weston with plasma-kwin_wayland.service
 PartOf=plasma-kwin_wayland.service
-# Could not get the below to stop Weston appropriately (commented out)
-# Instead using the specific PartOf config above for desired stop behaviour
-# StopWhenUnneeded=true
 
 [Service]
 Type=notify
@@ -755,6 +771,8 @@ echo -e "${bluebold}Define systemd & dbus services for Plow${normal}"
 
 # Set file locations once as variables
 
+TMP_X_UNIT_DIR="/etc/systemd/system"
+TMP_X_UNIT_FILE="${TMP_X_UNIT_DIR}/plow-tmp-x-unix.service"
 WESTON_UNIT_DIR="/etc/systemd/user"
 WESTON_UNIT_FILE="${WESTON_UNIT_DIR}/plow-weston.service"
 PLASMA_CONF_DIR="/etc/systemd/user/plasma-kwin_wayland.service.d"
@@ -763,35 +781,54 @@ PLASMA_CONF_FILE="${PLASMA_CONF_DIR}/plow-plasma.conf"
 # Quietly ensure folders exist
 sudo mkdir -p "${PLASMA_CONF_DIR}"
 
+# Configure plow-tmp-x-unix.service systemd unit
+if [ ! -f "${TMP_X_UNIT_FILE}" ] || \
+! cmp -s <(printf "%s" "${TMP_X_SERVICE}") "${TMP_X_UNIT_FILE}"; then
+echo -e "\n${cyanbold}Configure plow-tmp-x-unix.service systemd unit${normal}"
+# Choosing to expand path but not file contents in echo output here
+# Hence backslash escapes for TMP_X_SERVICE variable
+echo -e "$ printf \"%s\" \"\${TMP_X_SERVICE}\" | sudo tee ${TMP_X_UNIT_FILE} > \
+/dev/null"
+printf "%s" "${TMP_X_SERVICE}" | sudo tee "${TMP_X_UNIT_FILE}" > /dev/null
+SYS_UNITS_CHANGED=1
+fi
+
 # Configure plow-weston.service systemd unit
 if [ ! -f "${WESTON_UNIT_FILE}" ] || \
-! cmp -s <(echo -e "${WESTON_SERVICE}") "${WESTON_UNIT_FILE}"; then
+! cmp -s <(printf "%s" "${WESTON_SERVICE}") "${WESTON_UNIT_FILE}"; then
 echo -e "\n${cyanbold}Configure plow-weston.service systemd unit${normal}"
 # Choosing to expand path but not file contents in echo output here
 # Hence backslash escapes for WESTON_SERVICE variable
-echo -e "$ echo -e \"\${WESTON_SERVICE}\" | sudo tee ${WESTON_UNIT_FILE} > \
-/dev/null"
-echo -e "${WESTON_SERVICE}" | sudo tee "${WESTON_UNIT_FILE}" > /dev/null
-UNITS_CHANGED=1
+echo -e "$ printf \"%s\" \"\${WESTON_SERVICE}\" | sudo tee ${WESTON_UNIT_FILE} \
+> /dev/null"
+printf "%s" "${WESTON_SERVICE}" | sudo tee "${WESTON_UNIT_FILE}" > /dev/null
+USR_UNITS_CHANGED=1
 fi
 
 # Configure plasmashell customisation
 if [ ! -f "${PLASMA_CONF_FILE}" ] || \
-! cmp -s <(echo -e "${PLASMA_CONF}") "${PLASMA_CONF_FILE}"; then
+! cmp -s <(printf "%s" "${PLASMA_CONF}") "${PLASMA_CONF_FILE}"; then
 echo -e "\n${cyanbold}Customise plasmashell systemd unit${normal}"
 # Choosing to expand path but not file contents in echo output here
 # Hence backslash escapes for PLASMA_CONF variable
-echo -e "$ echo -e \"\${PLASMA_CONF}\" | sudo tee ${PLASMA_CONF_FILE} > \
+echo -e "$ printf \"%s\" \"\${PLASMA_CONF}\" | sudo tee ${PLASMA_CONF_FILE} > \
 /dev/null"
-echo -e "${PLASMA_CONF}" | sudo tee "${PLASMA_CONF_FILE}" > /dev/null
-UNITS_CHANGED=1
+printf "%s" "${PLASMA_CONF}" | sudo tee "${PLASMA_CONF_FILE}" > /dev/null
+USR_UNITS_CHANGED=1
 fi
 
 # Reload systemd if units changed
-if [ "${UNITS_CHANGED}" -eq 1 ]; then
+if [ "${USR_UNITS_CHANGED}" -eq 1 ]; then
 echo -e "\n${cyanbold}Reload systemd user daemon${normal}"
 echo -e "$ systemctl --user daemon-reload"
 systemctl --user daemon-reload
+fi
+if [ "${SYS_UNITS_CHANGED}" -eq 1 ]; then
+echo -e "\n${cyanbold}Reload systemd system daemon${normal}"
+echo -e "$ sudo systemctl daemon-reload"
+sudo systemctl daemon-reload
+echo -e "$ sudo systemctl enable --now plow-tmp-x-unix.service"
+sudo systemctl enable --now plow-tmp-x-unix.service
 fi
 
 # Show all systemd units in context (existing along with new plow & plasma)
@@ -801,10 +838,11 @@ systemctl --user list-unit-files --no-pager
 
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run Plow session${normal}"
-echo -e "$ if ! systemctl --user is-active plasma-workspace.target 1> \
-/dev/null; then startplasma-wayland & disown; fi"
-if ! systemctl --user is-active plasma-workspace.target 1> /dev/null; \
-then startplasma-wayland & disown; fi
+echo -e "$ if ! systemctl --user is-active plasma-workspace.target > /dev/null; \
+then startplasma-wayland & disown; fi"
+if ! systemctl --user is-active plasma-workspace.target > /dev/null; \
+then startplasma-wayland & disown; \
+fi
 
 # Stop a Plow session
 echo -e "\n${bluebold}Stop a Plow session with:${normal}"
