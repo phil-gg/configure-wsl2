@@ -162,9 +162,12 @@ sudo mkdir -p /etc/tmpfiles.d
 echo -e "$ printf \"%s\" \"\${TMPCONF_TEXT}\" | sudo tee ${TMPCONF_FILE} > \
 /dev/null"
 printf "%s" "${TMPCONF_TEXT}" | sudo tee "${TMPCONF_FILE}" > /dev/null
+
 # Apply the fix immediately to the current session
+if [ ! -d "/tmp/.X11-unix" ]; then
 echo -e "$ sudo systemd-tmpfiles --create ${TMPCONF_FILE}"
 sudo systemd-tmpfiles --create "${TMPCONF_FILE}"
+fi
 
 fi
 
@@ -251,10 +254,11 @@ echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
 rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
 sudo mkdir -p "${L_DIR_SKEL}"
-echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE}"
-printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}"
-echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL}"
-printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}"
+echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE} > /dev/null"
+printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}" > /dev/null
+echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
+/dev/null"
+printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL} > /dev/null"
 
 mkdir -p "${L_DIR_HOME}"
 echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
