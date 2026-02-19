@@ -148,10 +148,9 @@ fi
 
 # Apply KDE plasma taskbar customisations once, on first session launch
 
-DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-
-S_FILE_SKEL="${DIR_SKEL}/kde-plasma.svg"
+TARGET_DIR="/usr/share/plasma/shells/org.kde.plasma.desktop/contents"
+SVG_FILE="${TARGET_DIR}/kde-plasma.svg"
+LAYOUT_FILE="${TARGET_DIR}/layout.js"
 
 SVG_TEXT="\
 <svg viewBox=\"0 0 44 44\" xmlns=\"http://www.w3.org/2000/svg\">
@@ -187,10 +186,7 @@ SVG_TEXT="\
 </svg>
 "
 
-L_FILE_SKEL="${DIR_SKEL}/layout.js"
-L_FILE_HOME="${DIR_HOME}/layout.js"
-
-LAYOUT_JS_TEXT="\
+LAYOUT_TEXT="\
 var taskbar = new Panel(\"org.kde.plasma.panel\")
 taskbar.height = 44
 taskbar.location = \"bottom\"
@@ -199,7 +195,7 @@ taskbar.floating = 0
 // Kickoff (Start Menu) with custom SVG icon
 var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
 kickoff.currentConfigGroup = [\"General\"]
-kickoff.writeConfig(\"icon\", \"${S_FILE_SKEL}\")
+kickoff.writeConfig(\"icon\", \"${SVG_FILE}\")
 
 // Standard Task Manager (Icons + Text, no pinned apps)
 var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
@@ -216,12 +212,10 @@ var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
 var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
 "
 
-if [ ! -f "${L_FILE_SKEL}" ] || \
-     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_SKEL}" || \
-   [ ! -e "${L_FILE_HOME}" ] || \
-     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_HOME}" || \
-   [ ! -f "${S_FILE_SKEL}" ] || \
-     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${S_FILE_SKEL}"; then
+if [ ! -f "${LAYOUT_FILE}" ] || \
+     ! cmp -s <(printf "%s" "${LAYOUT_TEXT}") "${LAYOUT_FILE}" || \
+   [ ! -f "${SVG_FILE}" ] || \
+     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${SVG_FILE}"; then
 
 echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
 
@@ -229,23 +223,18 @@ echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
 echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
 rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
-sudo mkdir -p "${DIR_SKEL}"
-mkdir -p "${DIR_HOME}"
+sudo mkdir -p "${TARGET_DIR}"
 
-echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${S_FILE_SKEL} > \
+echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE} > /dev/null"
+printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}" > /dev/null
+
+echo -e "$ printf \"%s\" \"\${LAYOUT_TEXT}\" | sudo tee ${LAYOUT_FILE} > \
 /dev/null"
-printf "%s" "${SVG_TEXT}" | sudo tee "${S_FILE_SKEL}" > /dev/null
-
-echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
-/dev/null"
-printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}" > /dev/null
-
-echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
-ln -sf "${L_FILE_SKEL}" "${L_FILE_HOME}"
+printf "%s" "${LAYOUT_TEXT}" | sudo tee "${LAYOUT_FILE}" > /dev/null
 
 fi
 
-Define function to build and install a dummy package
+# Define function to build and install a dummy package
 
 create_dummy_pkg() {
 local TARGET_PKG="$1"
@@ -804,10 +793,10 @@ printf "%s" "${WESTON_SERVICE}" | sudo tee "${WESTON_UNIT_FILE}" > /dev/null
 USR_UNITS_CHANGED=1
 fi
 
-# Configure plasmashell customisation
+# Configure plasma-kwin_wayland.service customisation
 if [ ! -f "${PLASMA_CONF_FILE}" ] || \
 ! cmp -s <(printf "%s" "${PLASMA_CONF}") "${PLASMA_CONF_FILE}"; then
-echo -e "\n${cyanbold}Customise plasmashell systemd unit${normal}"
+echo -e "\n${cyanbold}Customise plasma-kwin_wayland systemd unit${normal}"
 # Choosing to expand path but not file contents in echo output here
 # Hence backslash escapes for PLASMA_CONF variable
 echo -e "$ printf \"%s\" \"\${PLASMA_CONF}\" | sudo tee ${PLASMA_CONF_FILE} > \
