@@ -1,12 +1,11 @@
 
 TO-DO:
-  - Unpin KE Plasma Taskbar apps (in progress)
-  - Remove Show Desktop button (in progress)
   - kwin_xwl: /tmp/.X11-unix has no sticky bit on (in progress)
+  - Unpin KE Plasma Taskbar apps (first attempt broken - commmented out)
+  - Remove Show Desktop button (first attempt broken - commmented out)
   - Disable kwin_screencast
-  - Link KDE plasma taskbar sound widget to pulse
+  - Link KDE plasma taskbar sound widget to WSL audio
   - Share clipboards
-  - Connect WSL Pipewire audio to KDE Plasma session
   - Still haven't succeeded with 125% screen scaling
   - May need vgem back, not to use, but to avoid xwayland errors
 
