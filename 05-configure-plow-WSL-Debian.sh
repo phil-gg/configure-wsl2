@@ -258,7 +258,7 @@ echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE} > /dev/null"
 printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}" > /dev/null
 echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
 /dev/null"
-printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL} > /dev/null"
+printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}" > /dev/null
 
 mkdir -p "${L_DIR_HOME}"
 echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
