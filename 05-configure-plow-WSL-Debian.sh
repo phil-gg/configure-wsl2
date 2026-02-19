@@ -151,15 +151,15 @@ fi
 FACE_FILE="${HOME}/.face.icon"
 FACE_TEXT="\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-2 -2 36 36\">
+<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"-2 -1 36 36\">
 <defs>
-<linearGradient id=\"a\" gradientUnits=\"userSpaceOnUse\" x1=\"-1\" y1=\"-1\"
-  x2=\"33\" y2=\"33\">
+<linearGradient id=\"a\" gradientUnits=\"userSpaceOnUse\" x1=\"-1\" y1=\"0\"
+  x2=\"33\" y2=\"34\">
 <stop offset=\"0\" stop-color=\"#2bc0ff\"/>
 <stop offset=\"1\" stop-color=\"#1d99f3\"/>
 </linearGradient>
 </defs>
-<rect fill=\"url(#a)\" width=\"36\" height=\"36\" x=\"-2\" y=\"-2\" rx=\"4\"
+<rect fill=\"url(#a)\" width=\"36\" height=\"36\" x=\"-2\" y=\"-1\" rx=\"4\"
       ry=\"4\"/>
 <path d=\"M27.83 25.07c-.16.18-.58.55-.83.79-.48.46-.7.66-1.29 1.13-1.16.94-1.15
          1.19-1.71 1.85-.38.44-.56.63-.75.75-.19.12-.45.26-.59.3-.69.21-1.44.03
