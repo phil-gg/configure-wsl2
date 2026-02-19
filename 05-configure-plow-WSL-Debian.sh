@@ -171,104 +171,105 @@ fi
 
 fi
 
-# Apply KDE plasma taskbar customisations once, on first session launch
-
-DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-
-S_FILE_SKEL="${DIR_SKEL}/kde-plasma.svg"
-
-SVG_TEXT="\
-<svg viewBox=\"0 0 44 44\" xmlns=\"http://www.w3.org/2000/svg\">
-  <defs>
-    <linearGradient
-      id=\"a\"
-      gradientUnits=\"userSpaceOnUse\"
-      x1=\"3\"
-      y1=\"3\"
-      x2=\"41\"
-      y2=\"41\">
-      <stop
-        offset=\"0\"
-        stop-color=\"#2bc0ff\" />
-      <stop
-        offset=\"1\"
-        stop-color=\"#1d99f3\" />
-    </linearGradient>
-  </defs>
-  <rect fill=\"url(#a)\"
-    width=\"40\"
-    height=\"40\"
-    x=\"2\"
-    y=\"2\"
-    rx=\"5\"
-    ry=\"5\" />
-  <path fill=\"#fff\"
-    d=\"m14 6c-1.108 0-2 0.892-2 2c0 1.108 0.892 2 2 2c1.108 0 2-0.892 2-2c0
-       -1.108-0.892-2-2-2zm14 0l-4 4l6 6l-6 6l4 4l6-6l4-4zm-19 12c-1.662 0-3
-       1.338-3 3c0 1.662 1.338 3 3 3c1.662 0 3-1.338 3-3c0-1.662-1.338-3-3-3zm9
-       12c-2.216 0-4 1.784-4 4c0 2.216 1.784 4 4 4c2.216 0 4-1.784 4-4c0-2.216
-       -1.784-4-4-4z\" />
-</svg>
-"
-
-L_FILE_SKEL="${DIR_SKEL}/layout.js"
-L_FILE_HOME="${DIR_HOME}/layout.js"
-
-LAYOUT_JS_TEXT="\
-var taskbar = new Panel(\"org.kde.plasma.panel\")
-taskbar.height = 44
-taskbar.location = \"bottom\"
-taskbar.floating = 0
-
-// Kickoff (Start Menu) with custom SVG icon
-var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
-kickoff.currentConfigGroup = [\"General\"]
-kickoff.writeConfig(\"icon\", \"${S_FILE_SKEL}\")
-
-// Standard Task Manager (Icons + Text, no pinned apps)
-var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
-tasks.currentConfigGroup = [\"General\"]
-tasks.writeConfig(\"launchers\", \"\")
-
-// Spacer (Expanding pushes subsequent widgets to the right)
-var spacer = taskbar.addWidget(\"org.kde.plasma.panelspacer\")
-
-// System Tray (Right-aligned via the spacer)
-var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
-
-// Digital Clock (Far right edge)
-var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
-"
-
-if [ ! -f "${L_FILE_SKEL}" ] || \
-     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_SKEL}" || \
-   [ ! -e "${L_FILE_HOME}" ] || \
-     ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_HOME}" || \
-   [ ! -f "${S_FILE_SKEL}" ] || \
-     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${S_FILE_SKEL}"; then
-
-echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
-
-# Force regeneration by removing existing config
-echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
-rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
-
-sudo mkdir -p "${DIR_SKEL}"
-mkdir -p "${DIR_HOME}"
-
-echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${S_FILE_SKEL} > \
-/dev/null"
-printf "%s" "${SVG_TEXT}" | sudo tee "${S_FILE_SKEL}" > /dev/null
-
-echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
-/dev/null"
-printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}" > /dev/null
-
-echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
-ln -sf "${L_FILE_SKEL}" "${L_FILE_HOME}"
-
-fi
+# Whole section commented out as it does not work as desired yet
+# # Apply KDE plasma taskbar customisations once, on first session launch
+# 
+# DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+# DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+# 
+# S_FILE_SKEL="${DIR_SKEL}/kde-plasma.svg"
+# 
+# SVG_TEXT="\
+# <svg viewBox=\"0 0 44 44\" xmlns=\"http://www.w3.org/2000/svg\">
+#   <defs>
+#     <linearGradient
+#       id=\"a\"
+#       gradientUnits=\"userSpaceOnUse\"
+#       x1=\"3\"
+#       y1=\"3\"
+#       x2=\"41\"
+#       y2=\"41\">
+#       <stop
+#         offset=\"0\"
+#         stop-color=\"#2bc0ff\" />
+#       <stop
+#         offset=\"1\"
+#         stop-color=\"#1d99f3\" />
+#     </linearGradient>
+#   </defs>
+#   <rect fill=\"url(#a)\"
+#     width=\"40\"
+#     height=\"40\"
+#     x=\"2\"
+#     y=\"2\"
+#     rx=\"5\"
+#     ry=\"5\" />
+#   <path fill=\"#fff\"
+#     d=\"m14 6c-1.108 0-2 0.892-2 2c0 1.108 0.892 2 2 2c1.108 0 2-0.892 2-2c0
+#        -1.108-0.892-2-2-2zm14 0l-4 4l6 6l-6 6l4 4l6-6l4-4zm-19 12c-1.662 0-3
+#        1.338-3 3c0 1.662 1.338 3 3 3c1.662 0 3-1.338 3-3c0-1.662-1.338-3-3-3zm9
+#        12c-2.216 0-4 1.784-4 4c0 2.216 1.784 4 4 4c2.216 0 4-1.784 4-4c0-2.216
+#        -1.784-4-4-4z\" />
+# </svg>
+# "
+# 
+# L_FILE_SKEL="${DIR_SKEL}/layout.js"
+# L_FILE_HOME="${DIR_HOME}/layout.js"
+# 
+# LAYOUT_JS_TEXT="\
+# var taskbar = new Panel(\"org.kde.plasma.panel\")
+# taskbar.height = 44
+# taskbar.location = \"bottom\"
+# taskbar.floating = 0
+# 
+# // Kickoff (Start Menu) with custom SVG icon
+# var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
+# kickoff.currentConfigGroup = [\"General\"]
+# kickoff.writeConfig(\"icon\", \"${S_FILE_SKEL}\")
+# 
+# // Standard Task Manager (Icons + Text, no pinned apps)
+# var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
+# tasks.currentConfigGroup = [\"General\"]
+# tasks.writeConfig(\"launchers\", \"\")
+# 
+# // Spacer (Expanding pushes subsequent widgets to the right)
+# var spacer = taskbar.addWidget(\"org.kde.plasma.panelspacer\")
+# 
+# // System Tray (Right-aligned via the spacer)
+# var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
+# 
+# // Digital Clock (Far right edge)
+# var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
+# "
+# 
+# if [ ! -f "${L_FILE_SKEL}" ] || \
+#      ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_SKEL}" || \
+#    [ ! -e "${L_FILE_HOME}" ] || \
+#      ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_HOME}" || \
+#    [ ! -f "${S_FILE_SKEL}" ] || \
+#      ! cmp -s <(printf "%s" "${SVG_TEXT}") "${S_FILE_SKEL}"; then
+# 
+# echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
+# 
+# # Force regeneration by removing existing config
+# echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
+# rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
+# 
+# sudo mkdir -p "${DIR_SKEL}"
+# mkdir -p "${DIR_HOME}"
+# 
+# echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${S_FILE_SKEL} > \
+# /dev/null"
+# printf "%s" "${SVG_TEXT}" | sudo tee "${S_FILE_SKEL}" > /dev/null
+# 
+# echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
+# /dev/null"
+# printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}" > /dev/null
+# 
+# echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
+# ln -sf "${L_FILE_SKEL}" "${L_FILE_HOME}"
+# 
+# fi
 
 # Define function to build and install a dummy package
 
