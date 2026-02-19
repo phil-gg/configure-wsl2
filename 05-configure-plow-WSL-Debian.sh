@@ -152,7 +152,12 @@ Type=Application
 Name=Cleanup Taskbar Layout
 Comment=One-shot script to remove Show Desktop and unpin apps.
 X-KDE-StartupNotify=false
-Exec=/bin/bash -c 'dbus-send --session --dest=org.kde.plasmashell \
+Exec=/bin/bash -c 'while [ \"\$(systemctl --user is-active \
+plasma-plasmashell.service)\" != \"active\" ]; do sleep 0.1; done; \
+until dbus-send --session --dest=org.kde.plasmashell --print-reply \
+/PlasmaShell org.kde.PlasmaShell.evaluateScript \"string:panels().length\" | \
+grep -q \"int32 [1-9][0-9]*\"; do sleep 0.1; done; \
+dbus-send --session --dest=org.kde.plasmashell \
 --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript \"string: \
 var a = panels(); \
 for (var i = 0; i < a.length; i++) { \
