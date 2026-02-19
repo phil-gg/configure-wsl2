@@ -173,39 +173,10 @@ fi
 
 # Apply KDE plasma taskbar customisations once, on first session launch
 
-L_DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-L_DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-L_FILE_HOME="${L_DIR_HOME}/layout.js"
-L_FILE_SKEL="${L_DIR_SKEL}/layout.js"
+DIR_SKEL="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
+DIR_HOME="${HOME}/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
 
-LAYOUT_JS_TEXT="\
-var taskbar = new Panel
-taskbar.height = 44
-taskbar.location = \"bottom\"
-taskbar.floating = 0
-
-// Kickoff (Start Menu) with custom SVG icon
-var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
-kickoff.currentConfigGroup = [\"General\"]
-kickoff.writeConfig(\"icon\", \"${SVG_FILE}\")
-
-// Standard Task Manager (Icons + Text, no pinned apps)
-var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
-tasks.currentConfigGroup = [\"General\"]
-tasks.writeConfig(\"launchers\", \"\")
-
-// Spacer (Expanding pushes subsequent widgets to the right)
-var spacer = taskbar.addWidget(\"org.kde.plasma.panelspacer\")
-
-// System Tray (Right-aligned via the spacer)
-var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
-
-// Digital Clock (Far right edge)
-var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
-"
-
-SVG_DIR="/etc/skel/.local/share/plasma/shells/org.kde.plasma.desktop/contents"
-SVG_FILE="${SVG_DIR}/kde-plasma.svg"
+S_FILE_SKEL="${DIR_SKEL}/kde-plasma.svg"
 
 SVG_TEXT="\
 <svg viewBox=\"0 0 44 44\" xmlns=\"http://www.w3.org/2000/svg\">
@@ -240,12 +211,42 @@ SVG_TEXT="\
        -1.784-4-4-4z\" />
 </svg>
 "
+
+L_FILE_SKEL="${DIR_SKEL}/layout.js"
+L_FILE_HOME="${DIR_HOME}/layout.js"
+
+LAYOUT_JS_TEXT="\
+var taskbar = new Panel(\"org.kde.plasma.panel\")
+taskbar.height = 44
+taskbar.location = \"bottom\"
+taskbar.floating = 0
+
+// Kickoff (Start Menu) with custom SVG icon
+var kickoff = taskbar.addWidget(\"org.kde.plasma.kickoff\")
+kickoff.currentConfigGroup = [\"General\"]
+kickoff.writeConfig(\"icon\", \"${S_FILE_SKEL}\")
+
+// Standard Task Manager (Icons + Text, no pinned apps)
+var tasks = taskbar.addWidget(\"org.kde.plasma.taskmanager\")
+tasks.currentConfigGroup = [\"General\"]
+tasks.writeConfig(\"launchers\", \"\")
+
+// Spacer (Expanding pushes subsequent widgets to the right)
+var spacer = taskbar.addWidget(\"org.kde.plasma.panelspacer\")
+
+// System Tray (Right-aligned via the spacer)
+var systray = taskbar.addWidget(\"org.kde.plasma.systemtray\")
+
+// Digital Clock (Far right edge)
+var digitalclock = taskbar.addWidget(\"org.kde.plasma.digitalclock\")
+"
+
 if [ ! -f "${L_FILE_SKEL}" ] || \
      ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_SKEL}" || \
    [ ! -e "${L_FILE_HOME}" ] || \
      ! cmp -s <(printf "%s" "${LAYOUT_JS_TEXT}") "${L_FILE_HOME}" || \
-   [ ! -f "${SVG_FILE}" ] || \
-     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${SVG_FILE}"; then
+   [ ! -f "${S_FILE_SKEL}" ] || \
+     ! cmp -s <(printf "%s" "${SVG_TEXT}") "${S_FILE_SKEL}"; then
 
 echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
 
@@ -253,14 +254,17 @@ echo -e "\n${cyanbold}Set custom KDE plasma 6 layout${normal}"
 echo -e "$ rm -f ~/.config/plasma-org.kde.plasma.desktop-appletsrc"
 rm -f "${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc"
 
-sudo mkdir -p "${L_DIR_SKEL}"
-echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${SVG_FILE} > /dev/null"
-printf "%s" "${SVG_TEXT}" | sudo tee "${SVG_FILE}" > /dev/null
+sudo mkdir -p "${DIR_SKEL}"
+mkdir -p "${DIR_HOME}"
+
+echo -e "$ printf \"%s\" \"\${SVG_TEXT}\" | sudo tee ${S_FILE_SKEL} > \
+/dev/null"
+printf "%s" "${SVG_TEXT}" | sudo tee "${S_FILE_SKEL}" > /dev/null
+
 echo -e "$ printf \"%s\" \"\${LAYOUT_JS_TEXT}\" | sudo tee ${L_FILE_SKEL} > \
 /dev/null"
 printf "%s" "${LAYOUT_JS_TEXT}" | sudo tee "${L_FILE_SKEL}" > /dev/null
 
-mkdir -p "${L_DIR_HOME}"
 echo -e "$ ln -sf ${L_FILE_SKEL} ${L_FILE_HOME}"
 ln -sf "${L_FILE_SKEL}" "${L_FILE_HOME}"
 
