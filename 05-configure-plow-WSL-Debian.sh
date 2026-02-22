@@ -3,10 +3,14 @@
 ################################################################################
 # Configure a {wslg > weston > kde-plasma} nested desktop environment, in an
 # idempotent manner.
-# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg.
-#
 # See `#term-Idempotency` definition at:
 # https://docs.ansible.com/ansible/latest/reference_appendices/glossary.html
+# I'm calling this nested monstrosity 'plow', short for Plasma on WSLg.
+#
+# Copyright 2025-26 Philip Antrobus.
+# Execution or reuse of this script, in part or in whole, indicates you accept
+# that this work is made available strictly and only under the MIT-0 licence.
+# SPDX-License-Identifier: MIT-0
 #
 # This shell script attempts to comply with:
 # https://google.github.io/styleguide/shellguide.html
@@ -247,8 +251,7 @@ FACE_TEXT="\
          opacity=\".2\"/>
 </svg>
 "
-if [ ! -f "${FACE_FILE}" ] || \
-     ! cmp -s <(printf "%s" "${FACE_TEXT}") "${FACE_FILE}"; then
+if [ ! -f "${FACE_FILE}" ]; then
 echo -e "\n${cyanbold}Set tux user avatar${normal}"
 echo -e "$ printf \"%s\" \"\${FACE_TEXT}\" | tee ${FACE_FILE} > /dev/null"
 printf "%s" "${FACE_TEXT}" | tee "${FACE_FILE}" > /dev/null
@@ -371,7 +374,7 @@ DPKG_ERROR=$?
 DUMMY_REQD=""
 
 if [ "${DPKG_ERROR}" -eq 0 ]; then
-START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
+START_LINE=$(echo "${DPKG_OUTPUT}" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
 # shellcheck disable=SC2086
 DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
 DUMMY_REQD=$(echo "${DPKG_TAIL}" | awk '!/^(ii |hi )/ {print substr($0, 1, 2)}')
@@ -426,15 +429,22 @@ fi
 
 # Create dummy packages
 # (Don't need GUI tools for network, power, or bluetooth in WSL2)
+# equivs dependency was installed by script 01
 
+if ! command -v equivs; then
+echo -e "  ${redbold}Missing equivs package dependency, exiting${normal}"
+exit 105
+else
 create_dummy_pkg "plasma-nm"
 create_dummy_pkg "powerdevil"
 create_dummy_pkg "bluedevil"
+fi
 
 # Update apt if last `sudo apt update` more than one hour ago
 
+now=$(date +%s)
 last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin 2>/dev/null || echo 0)
-if (( now - last_update > 3600 )); then
+if ${now} - ${last_update} > 3600; then
 echo -e "\n${cyanbold}Update apt then check for required packages${normal}"
 echo -e "$ sudo apt update"
 sudo apt update
@@ -468,7 +478,7 @@ wl-clipboard"
 DPKG_OUTPUT=$(dpkg -l ${PACKAGES} 2> /dev/null)
 DPKG_ERROR=$?
 if [ "${DPKG_ERROR}" -eq 0 ]; then
-START_LINE=$(echo "$DPKG_OUTPUT" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
+START_LINE=$(echo "${DPKG_OUTPUT}" | awk '/^\+\+\+-=/ {print NR + 1; exit}')
 # shellcheck disable=SC2086
 DPKG_TAIL=$(echo "${DPKG_OUTPUT}" | tail -n +${START_LINE})
 APT_REQD=$(echo "${DPKG_TAIL}" | awk '!/^(ii |hi )/ {print substr($0, 1, 2)}')
@@ -949,6 +959,50 @@ echo -e "\n${cyanbold}Listing all available systemd user unit-files${normal}"
 echo -e "$ systemctl --user list-unit-files --no-pager\n"
 systemctl --user list-unit-files --no-pager
 
+# create sps (start plow session) command at /usr/bin/sps
+
+SPS_FILE="/usr/bin/sps"
+SPS_TEXT="\
+#!/bin/bash
+if ! systemctl --user is-active plasma-workspace.target > /dev/null
+then startplasma-wayland & disown
+fi
+"
+
+echo -e "\n${cyanbold}Configure /usr/bin/sps (Start Plow Session)${normal}"
+if ! command -v sps &> /dev/null; then
+echo -e "$ printf \"%s\" \"\${SPS_TEXT}\" | sudo tee ${SPS_FILE} > /dev/null"
+printf "%s" "${SPS_TEXT}" | sudo tee "${SPS_FILE}" > /dev/null
+echo -e "$ sudo chmod +x ${SPS_FILE}"
+sudo chmod +x "${SPS_FILE}"
+echo -e "${bluebold}Command within /usr/bin/sps is:"
+echo -e "${cyanbold}if ! systemctl --user is-active plasma-workspace.target > \
+/dev/null; then startplasma-wayland & disown; fi"
+else
+echo -e "> /usr/bin/sps already exists"
+fi
+
+# create eps (end plow session) command at /usr/bin/eps
+
+EPS_FILE="/usr/bin/eps"
+EPS_TEXT="\
+#!/bin/bash
+qdbus6 org.kde.LogoutPrompt /LogoutPrompt org.kde.LogoutPrompt.promptLogout
+"
+
+echo -e "\n${cyanbold}Configure /usr/bin/eps (End Plow Session)${normal}"
+if ! command -v eps &> /dev/null; then
+echo -e "$ printf \"%s\" \"\${EPS_TEXT}\" | sudo tee ${EPS_FILE} > /dev/null"
+printf "%s" "${EPS_TEXT}" | sudo tee "${EPS_FILE}" > /dev/null
+echo -e "$ sudo chmod +x ${EPS_FILE}"
+sudo chmod +x "${EPS_FILE}"
+echo -e "${bluebold}Command within /usr/bin/eps is:"
+echo -e "${cyanbold}qdbus6 org.kde.LogoutPrompt /LogoutPrompt \
+org.kde.LogoutPrompt.promptLogout${normal}"
+else
+echo -e "> /usr/bin/eps already exists"
+fi
+
 # Run plow-plasma.service
 echo -e "\n${cyanbold}Run Plow session${normal}"
 echo -e "$ if ! systemctl --user is-active plasma-workspace.target > /dev/null; \
@@ -956,11 +1010,6 @@ then startplasma-wayland & disown; fi"
 if ! systemctl --user is-active plasma-workspace.target > /dev/null; \
 then startplasma-wayland & disown; \
 fi
-
-# Stop a Plow session
-echo -e "\n${bluebold}Stop a Plow session with:${normal}"
-echo -e "${cyanbold}qdbus6 org.kde.LogoutPrompt /LogoutPrompt \
-org.kde.LogoutPrompt.promptLogout${normal}"
 
 # Error logs for Plow
 echo -e "\n${bluebold}View error logs for Plow with:${normal}"
