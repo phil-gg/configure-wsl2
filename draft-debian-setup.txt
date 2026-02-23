@@ -7,13 +7,6 @@ TO-DO:
   - May need vgem back, not to use, but to avoid xwayland errors
 
 
-# Review similar WSL configurations from others:
-https://gist.github.com/tdcosta100
-https://gist.github.com/lzlrd/0d9b757d2122f551794fd00c7f0752d6
-https://gist.github.com/davidedmundson/8e1732b2c8b539fd3e6ab41a65bcab74
-https://gist.github.com/lucsoft/40c929537e083f1984d4dedd393eae80
-
-
 # Avenues for scaling plasma 6 to 125%
 
 ## --- Scaling subsection ---
