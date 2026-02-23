@@ -181,5 +181,6 @@
 >   - _TO-DO: Plow command in WSL CLI launches the nested desktop environment._
 >   - _TO-DO: Config to make Plow with an app icon show up in Windows start menu._
 >   - _Cursor ghosting a known issue.  TO-DO: Apply invisible cursor theme to remove one of the stacked cursors._
+>   - _Weston 16 has just been released, with lua scripted shell option.  TO-DO: This could be a way for the Weston window to have minimise and maximise buttons, not just close buttons, with Win+Arrow and Ctrl+Alt+F keyboard shortcuts relied upon to manipulate window size._
 
 `TO-DO: Document config`
