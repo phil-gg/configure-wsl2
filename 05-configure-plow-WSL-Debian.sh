@@ -431,8 +431,8 @@ fi
 # (Don't need GUI tools for network, power, or bluetooth in WSL2)
 # equivs dependency was installed by script 01
 
-if ! command -v equivs; then
-echo -e "  ${redbold}Missing equivs package dependency, exiting${normal}"
+if ! command -v equivs-build; then
+echo -e "${redbold}> Missing equivs package dependency, exiting${normal}"
 exit 105
 else
 create_dummy_pkg "plasma-nm"
