@@ -444,7 +444,7 @@ fi
 
 now=$(date +%s)
 last_update=$(stat -c %Y /var/cache/apt/pkgcache.bin 2>/dev/null || echo 0)
-if ${now} - ${last_update} > 3600; then
+if (( ${now} - ${last_update} > 3600 )); then
 echo -e "\n${cyanbold}Update apt then check for required packages${normal}"
 echo -e "$ sudo apt update"
 sudo apt update
