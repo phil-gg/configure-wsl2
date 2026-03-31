@@ -525,7 +525,7 @@ fi
 # Configure debsig policy for repos that support it
 # (currently only 1Password so can't be turned on globally)
 
-onepname="1Password"
+onepname="1password"
 onepid=$(gpg --list-packets /usr/share/keyrings/1password-archive-keyring.gpg \
 | awk '$1=="keyid:"{print$2}')
 
